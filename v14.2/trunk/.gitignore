@@ -1,0 +1,6 @@
+bin/
+build/
+deploy/
+.classpath
+.project
+*.launch

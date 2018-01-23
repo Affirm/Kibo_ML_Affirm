@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+           http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <import resource="controllers.xml" />
+
+    <mvc:resources mapping="/includes/**" location="/includes/" />
+    <mvc:resources mapping="/splash*" location="/" />
+    <mvc:resources mapping="/text/**" location="/text/" />
+
+    <mvc:interceptors>
+        <bean class="com.marketlive.web.interceptors.SSLSupportHandlerInterceptor" />
+        <bean class="com.marketlive.web.interceptors.LocaleHandlerInterceptor"/>
+        <mvc:interceptor>
+            <mvc:mapping path="/account/*" />
+			<mvc:mapping path="/wishlist/*" />
+            <mvc:exclude-mapping path="/account/passwordrecovery**"/>
+            <mvc:exclude-mapping path="/account/passwordreset**"/>
+			<mvc:exclude-mapping path="/wishlist/select/additem**"/>
+			<mvc:exclude-mapping path="/wishlist/friendfind**"/>
+			<mvc:exclude-mapping path="/wishlist/friendview**"/>
+            <bean class="com.marketlive.web.interceptors.AccountHandlerInterceptor" />
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+    <mvc:annotation-driven conversion-service="conversionService"/>
+
+    <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+        <property name="registerDefaultFormatters" value="true" />
+        <property name="formatters">
+            <set>
+                <bean class="com.marketlive.app.common.format.CountryFormatter"/>
+                <bean class="com.marketlive.app.common.format.HintFormatter"/>
+                <bean class="com.marketlive.app.common.format.StateFormatter"/>
+                <bean class="com.marketlive.app.common.format.ShipMethodFormatter"/>
+                <bean class="com.marketlive.app.common.format.GiftWrapFormatter"/>
+                <bean class="com.marketlive.app.common.format.ContactFormatter"/>
+            </set>
+        </property>
+    </bean>
+
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver" />
+
+    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"/>
+
+    <bean id="handlerMapping" class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+        <property name="order" value="0"/>
+    </bean>
+
+    <bean id="urlMappingStruts" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="order" value="1"/>
+        <property name="mappings">
+            <props>
+                <prop key="**/*.do">strutsWrappingController</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="strutsWrappingController" class="org.springframework.web.servlet.mvc.ServletWrappingController"
+          scope="singleton">
+        <property name="servletClass">
+            <value>com.marketlive.app.b2c.struts.MarketLiveActionServlet</value>
+        </property>
+        <property name="servletName">
+            <value>action</value>
+        </property>
+        <property name="initParameters">
+            <props>
+                <prop key="config/admin">/WEB-INF/struts-admin-config.xml</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
+        <property name="definitions">
+            <list>
+                <value>/WEB-INF/tiles/tiles.xml</value>
+            	<value>/WEB-INF/tiles/affirm-tiles.xml</value>
+            </list>
+        </property>
+        <!-- resolving preparer names as Spring bean definition names -->
+        <property name="preparerFactoryClass"
+                  value="org.springframework.web.servlet.view.tiles3.SpringBeanPreparerFactory"/>
+    </bean>
+
+    <bean id="viewResolverTiles" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+        <property name="order" value="1"/>
+        <property name="viewClass" value="org.springframework.web.servlet.view.tiles3.TilesView"/>
+    </bean>
+
+    <bean id="viewResolverJsp" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+        <property name="order" value="2"/>
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+    </bean>
+
+</beans>

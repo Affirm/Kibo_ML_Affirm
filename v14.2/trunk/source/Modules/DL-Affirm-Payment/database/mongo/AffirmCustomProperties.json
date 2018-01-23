@@ -1,0 +1,643 @@
+[{
+		"path" : "custom.affirmpayment_public_api_key",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_public_api_key",
+		"displayName" : "affirmpayment_public_api_key",
+		"value" : "3JI8S4SX92K6DENK",
+		"description" : "affirmpayment_public_api_key",
+		"type" : "Text",
+		"groups" : ["Affirm Payment"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23",
+		"dateCreated" : {
+			"$date" : 1473344404288
+		},
+		"dateUpdated" : {
+			"$date" : 1473344404288
+		}
+	}, {
+		"path" : "custom.affirmpayment_financial_product_key",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_financial_product_key",
+		"displayName" : "affirmpayment_financial_product_key",
+		"value" : "J6WICDJTT1Y27X45",
+		"description" : "affirmpayment_financial_product_key",
+		"type" : "Text",
+		"groups" : ["Affirm"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23",
+		"dateCreated" : {
+			"$date" : 1473344426112
+		},
+		"dateUpdated" : {
+			"$date" : 1473344426112
+		}
+	}, {
+		"path" : "custom.affirmpayment_checkout_cancel_url",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_checkout_cancel_url",
+		"displayName" : "affirmpayment_checkout_cancel_url",
+		"value" : "http://177.71.184.145:21080/checkout/affirm-payment/payment.do?method=cancel",
+		"description" : "affirmpayment_checkout_cancel_url",
+		"type" : "Text",
+		"groups" : ["Affirm"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23",
+		"dateCreated" : {
+			"$date" : 1473344499774
+		},
+		"dateUpdated" : {
+			"$date" : 1475200641100
+		}
+	}, {
+		"path" : "custom.affirmpayment_checkout_confirm_url",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_checkout_confirm_url",
+		"displayName" : "affirmpayment_checkout_confirm_url",
+		"value" : "http://177.71.184.145:21080/checkout/affirm-payment/payment.do?method=confirm",
+		"description" : "affirmpayment_checkout_confirm_url",
+		"type" : "Text",
+		"groups" : ["Affirm"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23",
+		"dateCreated" : {
+			"$date" : 1473344532785
+		},
+		"dateUpdated" : {
+			"$date" : 1475200472179
+		}
+	}, {
+		"path" : "custom.affirmpayment_checkout_confirm_url_action",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_checkout_confirm_url_action",
+		"displayName" : "affirmpayment_checkout_confirm_url_action",
+		"value" : "POST",
+		"description" : "affirmpayment_checkout_confirm_url_action",
+		"type" : "Text",
+		"groups" : ["Affirm"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23",
+		"dateCreated" : {
+			"$date" : 1473344552084
+		},
+		"dateUpdated" : {
+			"$date" : 1473344552084
+		}
+	}, {
+		"path" : "custom.affirmpayment_js_url",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_js_url",
+		"displayName" : "affirmpayment_js_url",
+		"value" : "https://cdn1-sandbox.affirm.com",
+		"description" : "SANDBOX: https://cdn1-sandbox.affirm.com - LIVE: https://cdn1.affirm.com",
+		"type" : "Text",
+		"groups" : ["Affirm"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23",
+		"dateCreated" : {
+			"$date" : 1473344647431
+		},
+		"dateUpdated" : {
+			"$date" : 1473344647431
+		}
+	}, {
+		"path" : "custom.affirmpayment_paymentenabled",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_paymentenabled",
+		"displayName" : "affirmpayment_paymentenabled",
+		"value" : true,
+		"description" : "affirmpayment_paymentenabled",
+		"type" : "Boolean",
+		"groups" : ["Affirm"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23",
+		"dateCreated" : {
+			"$date" : 1473344668982
+		},
+		"dateUpdated" : {
+			"$date" : 1473344668982
+		}
+	}, {
+		"path" : "custom.affirmpayment_checkout_affirmUrl",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_checkout_affirmUrl",
+		"displayName" : "affirmpayment_checkout_affirmUrl",
+		"value" : "https://sandbox.affirm.com",
+		"description" : "affirmpayment_checkout_affirmUrl",
+		"type" : "Text",
+		"groups" : ["Affirm Payment"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23",
+		"dateCreated" : {
+			"$date" : 1473855100213
+		},
+		"dateUpdated" : {
+			"$date" : 1473860149881
+		}
+	}, {
+		"path" : "biz.payment.ccAuth.realTimeCreditCardAuthCall",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "realTimeCreditCardAuthCall",
+		"displayName" : "Real Time Auth Call",
+		"value" : false,
+		"description" : "Tells whether to authorize credit card in real time or not. Default value is 'false', i.e. do not authorize credit card in real time. If you want to perform credit card authorization in real time then change the value to 'true'.",
+		"type" : "Boolean",
+		"groups" : ["CC Auth"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23",
+		"dateCreated" : {
+			"$date" : 1398207646980
+		},
+		"dateUpdated" : {
+			"$date" : 1473968213956
+		}
+	}, {
+		"path" : "custom.affirmpayment_gateway_name",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_gateway_name",
+		"displayName" : "affirmpayment_gateway_name",
+		"value" : "AFFIRM",
+		"description" : "affirmpayment_gateway_name",
+		"type" : "Text",
+		"groups" : ["Affirm Payment"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23"
+	}, {
+		"path" : "custom.affirmpayment_real_time_auth_call",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_real_time_auth_call",
+		"displayName" : "affirmpayment_real_time_auth_call",
+		"value" : true,
+		"description" : "affirmpayment_real_time_auth_call",
+		"type" : "Boolean",
+		"groups" : ["Affirm Payment"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23"
+	}, {
+		"path" : "custom.affirmpayment_contentType",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_contentType",
+		"displayName" : "affirmpayment_contentType",
+		"value" : "application/json",
+		"description" : "affirmpayment_contentType",
+		"type" : "Text",
+		"groups" : ["Affirm Payment"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23"
+	}, {
+		"path" : "custom.affirmpayment_authorization",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_authorization",
+		"displayName" : "affirmpayment_authorization",
+		"value" : "Basic",
+		"description" : "affirmpayment_authorization",
+		"type" : "Text",
+		"groups" : ["Affirm Payment"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23"
+	}, {
+		"path" : "custom.affirmpayment_maxErrorRetry",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_maxErrorRetry",
+		"displayName" : "affirmpayment_maxErrorRetry",
+		"value" : 3,
+		"description" : "affirmpayment_maxErrorRetry",
+		"type" : "Integer",
+		"groups" : ["Affirm Payment"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23"
+	}, {
+		"path" : "custom.affirmpayment_maxConnections",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_maxConnections",
+		"displayName" : "affirmpayment_maxConnections",
+		"value" : 100,
+		"description" : "affirmpayment_maxConnections",
+		"type" : "Integer",
+		"groups" : ["Affirm Payment"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23"
+	}, {
+		"path" : "custom.affirmpayment_connectionTimeout",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_connectionTimeout",
+		"displayName" : "affirmpayment_connectionTimeout",
+		"value" : 50000,
+		"description" : "affirmpayment_connectionTimeout",
+		"type" : "Integer",
+		"groups" : ["Affirm Payment"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23"
+	}, {
+		"path" : "custom.affirmpayment_soTimeout",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_soTimeout",
+		"displayName" : "affirmpayment_soTimeout",
+		"value" : 50000,
+		"description" : "affirmpayment_soTimeout",
+		"type" : "Integer",
+		"groups" : ["Affirm Payment"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23"
+	}, {
+		"path" : "custom.affirmpayment_baseServiceURL",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_baseServiceURL",
+		"displayName" : "affirmpayment_baseServiceURL",
+		"value" : "https://sandbox.affirm.com",
+		"description" : "affirmpayment_baseServiceURL",
+		"type" : "Text",
+		"groups" : ["Affirm Payment"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23"
+	}, {
+		"path" : "custom.affirmpayment_authorizeServiceURL",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_authorizeServiceURL",
+		"displayName" : "affirmpayment_authorizeServiceURL",
+		"value" : "/api/v2/charges",
+		"description" : "affirmpayment_authorizeServiceURL",
+		"type" : "Text",
+		"groups" : ["Affirm Payment"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23"
+	}, {
+		"path" : "custom.affirmpayment_captureServiceURL",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_captureServiceURL",
+		"displayName" : "affirmpayment_captureServiceURL",
+		"value" : "/api/v2/charges/{0}/capture",
+		"description" : "affirmpayment_captureServiceURL",
+		"type" : "Text",
+		"groups" : ["Affirm Payment"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23"
+	}, {
+		"path" : "custom.affirmpayment_refundServiceURL",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_refundServiceURL",
+		"displayName" : "affirmpayment_refundServiceURL",
+		"value" : "/api/v2/charges/{0}/refund",
+		"description" : "affirmpayment_refundServiceURL",
+		"type" : "Text",
+		"groups" : ["Affirm Payment"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23"
+	}, {
+		"path" : "custom.affirmpayment_voidServiceURL",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_voidServiceURL",
+		"displayName" : "affirmpayment_voidServiceURL",
+		"value" : "/api/v2/charges/{0}/void",
+		"description" : "affirmpayment_voidServiceURL",
+		"type" : "Text",
+		"groups" : ["Affirm Payment"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23"
+	}, {
+		"path" : "custom.affirmpayment_readServiceURL",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_readServiceURL",
+		"displayName" : "affirmpayment_readServiceURL",
+		"value" : "/api/v2/charges/{0}",
+		"description" : "affirmpayment_readServiceURL",
+		"type" : "Text",
+		"groups" : ["Affirm Payment"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23"
+	}, {
+		"path" : "custom.affirmpayment_updateServiceURL",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_updateServiceURL",
+		"displayName" : "affirmpayment_updateServiceURL",
+		"value" : "/api/v2/charges/{0}/update",
+		"description" : "affirmpayment_updateServiceURL",
+		"type" : "Text",
+		"groups" : ["Affirm Payment"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23"
+	}, {
+		"path" : "app.b2c.checkout.preFinalizeChecks",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "preFinalizeChecks",
+		"displayName" : "Pre Finalize Checks",
+		"value" : {
+			"1" : "queueOrderPreFinalizeCheck",
+			"2" : "preFinalizeSingleUseCouponCheck",
+			"3" : "preFinalizeCreditCardAuthorizationCheck",
+			"4" : "payPalExpressCheckoutCheck",
+			"5" : "preFinalizeBorderFreePlaceOrder",
+			"6" : "preFinalizeADSSaleAuthorizationCheck",
+			"7" : "preFinalizeAffirmAuthorizationCheck"
+		},
+		"description" : "Checkout Manager Pre finalize Checks.",
+		"type" : "Map",
+		"groups" : ["Checkout Manager"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23"
+	}, {
+		"path" : "custom.affirmpayment_private_api_key",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_private_api_key",
+		"displayName" : "affirmpayment_private_api_key",
+		"value" : "SVBwsdxChDMbvUAE3q2uyoMtep3HJGdZ",
+		"description" : "affirmpayment_private_api_key",
+		"type" : "Text",
+		"groups" : ["Affirm Payment"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23",
+		"dateCreated" : {
+			"$date" : 1473799947088
+		},
+		"dateUpdated" : {
+			"$date" : 1473799947088
+		}
+	}, {
+		"path" : "app.b2c.checkout.postFinalizeChecks",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "postFinalizeChecks",
+		"displayName" : "Post Finalize Checks",
+		"value" : {
+			"1" : "postFinalizeCreditCardAuthorizationCheck",
+			"2" : "logOrderPlacedCheck",
+			"3" : "singleUseCouponCheck",
+			"4" : "sourceCodeCheck",
+			"5" : "orderConfirmationEmailCheck",
+			"6" : "orderABTestCheck",
+			"7" : "orderCodeCheck",
+			"8" : "decrementStockCheck",
+			"9" : "postFinalizeBorderFreePlaceOrderCheck",
+			"10" : "updateCustomerHistoryCheck",
+			"11" : "updateWishListCheck",
+			"12" : "queueOrderCheck",
+			"13" : "clearCreditCardNumberCheck",
+			"14" : "postFinalizeAffirmAuthorizationCheck"
+		},
+		"description" : "Checkout Manager Post Checks.",
+		"type" : "Map",
+		"groups" : ["Checkout Manager"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23",
+		"dateCreated" : {
+			"$date" : 1475103158488
+		},
+		"dateUpdated" : {
+			"$date" : 1475103203409
+		}
+	}, {
+		"path" : "custom.affirmpayment_monthly_payment_apr_loan",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_monthly_payment_apr_loan",
+		"displayName" : "Affirm Monthly Payment APR Loan",
+		"value" : "0.10",
+		"description" : "Affirm Monthly Payment APR Loan",
+		"type" : "Text",
+		"groups" : ["Affirm Montly Payment Price"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23",
+		"dateCreated" : {
+			"$date" : 1475513937528
+		},
+		"dateUpdated" : {
+			"$date" : 1475513937528
+		}
+	}, {
+		"path" : "custom.affirmpayment_monthly_payment_directory_enabled",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_monthly_payment_directory_enabled",
+		"displayName" : "Affirm Monthly Payment Directory Enabled",
+		"value" : true,
+		"description" : "Enable Affirm Monthly Payment for Directory",
+		"type" : "Boolean",
+		"groups" : ["Affirm Montly Payment Price"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23",
+		"dateCreated" : {
+			"$date" : 1475514008092
+		},
+		"dateUpdated" : {
+			"$date" : 1475514008092
+		}
+	}, {
+		"path" : "custom.affirmpayment_monthly_payment_max_price_range",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_monthly_payment_max_price_range",
+		"displayName" : "Affirm Monthly Payment Max Price Range",
+		"value" : 17500,
+		"description" : "Only display as low as for items less than affirmpayment_monthly_payment_max_price_range in USD cents. Default value: 17500 ($175.00)",
+		"type" : "Integer",
+		"groups" : ["Affirm Montly Payment Price"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23",
+		"dateCreated" : {
+			"$date" : 1475514112047
+		},
+		"dateUpdated" : {
+			"$date" : 1475514112047
+		}
+	}, {
+		"path" : "custom.affirmpayment_monthly_payment_min_price_range",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_monthly_payment_min_price_range",
+		"displayName" : "Affirm Monthly Payment Min Price Range",
+		"value" : 5000,
+		"description" : "Only display as low as for items over affirmpayment_monthly_payment_min_price_range in USD cents. Default value 5000 ($50.00)",
+		"type" : "Integer",
+		"groups" : ["Affirm Montly Payment Price"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23",
+		"dateCreated" : {
+			"$date" : 1475514176506
+		},
+		"dateUpdated" : {
+			"$date" : 1475514176506
+		}
+	}, {
+		"path" : "custom.affirmpayment_monthly_payment_months",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_monthly_payment_months",
+		"displayName" : "Affirm Monthly Payment Months",
+		"value" : 12,
+		"description" : "can be 3, 6, or 12",
+		"type" : "Integer",
+		"groups" : ["Affirm Montly Payment Price"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23",
+		"dateCreated" : {
+			"$date" : 1475514247987
+		},
+		"dateUpdated" : {
+			"$date" : 1475514247987
+		}
+	}, {
+		"path" : "custom.affirmpayment_monthly_payment_product_enabled",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_monthly_payment_product_enabled",
+		"displayName" : "Enable Affirm Monthly Payment PDP",
+		"value" : true,
+		"description" : "Enable Affirm Monthly Payment for Product Detail page",
+		"type" : "Boolean",
+		"groups" : ["Affirm Montly Payment Price"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23",
+		"dateCreated" : {
+			"$date" : 1475514426858
+		},
+		"dateUpdated" : {
+			"$date" : 1475514426858
+		}
+	}, {
+		"path" : "custom.affirmpayment_checkout_discount_category",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppPropertiesOverride"
+		},
+		"name" : "affirmpayment_checkout_discount_category",
+		"displayName" : "Affirm Discount Category Name",
+		"value" : "Affirm",
+		"description" : "Discount Category name for financing_program",
+		"type" : "Text",
+		"groups" : ["Affrim Payment Method"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23",
+		"dateCreated" : {
+			"$date" : 1475587931498
+		},
+		"dateUpdated" : {
+			"$date" : 1475587931498
+		}
+	}
+]

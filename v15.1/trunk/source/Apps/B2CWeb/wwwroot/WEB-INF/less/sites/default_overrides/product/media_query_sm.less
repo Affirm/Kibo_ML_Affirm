@@ -1,0 +1,42 @@
+.dl-mq-sm-mixin-product (@a) when (@a = true), (@a = SM_screenWidth) {
+
+   div#calculatorTileNeeded:before {
+      display: inline-block;
+	  content: "YOU WILL NEED";
+	  margin-left: -30px;
+	  margin-right: 70px;
+	  font-size: 18px;
+	  font-family: lato;
+	  font-weight: 300;
+	  letter-spacing: .2px;
+	}
+	
+	#calculatorTileNeeded {
+		span {
+		  display: inline-block;
+		  text-transform: uppercase;
+		  font-size: 18px;
+		  font-family: lato;
+		  font-weight: 300;
+		}
+		input[type=text] {
+		  display: inline-block;
+		  background: none;
+		  color: #646464;
+		  font-size: 24px;
+		  font-weight: 400;
+		  text-align: center;
+		  padding: 0;
+		  border: none;
+		  outline: none;
+		  -webkit-appearance: none;
+		  -moz-appearance: none;
+		  appearance: none;
+		  font-weight: 300;
+		}
+	}
+	
+	.dl-detailroom-desingstudiobanner {
+		display:block;
+	}
+}

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<project name="ClientTemplate.Filesets" basedir="../../..">
+	<!--
+     These are MarketLive libraries and files that should be included for this section.
+     The build script or build manager is responsible for making sure these dependencies
+     have been generated prior to calling tasks that depend on it
+    -->
+    <fileset dir="${basedir}/../build" id="MarketLiveLibraries.file">
+      <include name="Platform/lib/marketlive/*"/>
+    </fileset>
+
+    <fileset dir="${basedir}/../build" id="MarketLiveTestLibraries.file">
+      <include name="Platform/lib/marketlive-test/*"/>
+    </fileset>
+
+    <fileset dir="${MARKETLIVE_LIBRARIES}" id="RunTimeLibraries.file">
+	</fileset>
+
+    <fileset dir="${MARKETLIVE_LIBRARIES}" id="BuildTimeLibraries.file">
+    </fileset>
+    
+</project>

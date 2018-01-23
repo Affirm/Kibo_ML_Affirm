@@ -1,0 +1,14 @@
+<!-- insert module hibernate mapping resources below -->
+
+<hibernate-configuration>
+
+	<session-factory>
+	
+	<!-- Example
+		<mapping resource="abc.hbm.xml"/>
+		<mapping resource="xyz.hbm.xml"/>     
+	-->
+	
+	</session-factory>
+
+</hibernate-configuration>

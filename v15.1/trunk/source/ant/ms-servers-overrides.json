@@ -1,0 +1,179 @@
+[
+    {
+        "path" : "com.marketlive.ms.mongo",
+        "context" : {
+            "env" : "master",
+            "configType" : "ServicesOverride",
+            "org":"mldev"
+        },
+        "type" : "Map",
+        "value" : {
+                "hostname" : "localhost",
+                "database" : "master",
+                "port" : 27017,
+                "environmentType" : "master"
+        },
+        "dateCreated" : {
+            "$date" : 1330480704429
+        }
+    },
+    {
+        "path" : "com.marketlive.ms.mongo",
+        "context" : {
+            "env" : "review",
+            "configType" : "ServicesOverride",
+            "org":"mldev"
+        },
+        "type" : "Map",
+        "value" : {
+            "hostname" : "localhost",
+            "database" : "review",
+            "port" : 27017,
+            "environmentType" : "review"
+        },
+        "dateCreated" : {
+            "$date" : 1330480704435
+        }
+    },
+    {
+        "path" : "com.marketlive.ms.mongo",
+        "context" : {
+            "env" : "staging",
+            "configType" : "ServicesOverride",
+            "org":"mldev"
+        },
+        "type" : "Map",
+        "value" : {
+            "hostname" : "localhost",
+            "database" : "staging",
+            "port" : 27017,
+            "environmentType" : "staging"
+        },
+        "dateCreated" : {
+            "$date" : 1330480704437
+        }
+    },
+    {
+        "path" : "com.marketlive.ms.mongo",
+        "context" : {
+            "env" : "production",
+            "configType" : "ServicesOverride",
+            "org":"mldev"
+        },
+        "type" : "Map",
+        "value" : {
+            "hostname" : "localhost",
+            "database" : "prod",
+            "port" : 27017,
+            "environmentType" : "production",
+            "publishSourceEnv" : "staging"
+        },
+        "dateCreated" : {
+            "$date" : 1330480704440
+        }
+    },
+    {
+        "path" : "com.marketlive.ms.mongo",
+        "context" : {
+            "env" : "dev",
+            "configType" : "ServicesOverride",
+            "org":"mldev"
+        },
+        "type" : "Map",
+        "value" : {
+            "hostname" : "localhost",
+            "database" : "dev",
+            "port" : 27017,
+            "environmentType" : "staging"
+        },
+        "dateCreated" : {
+            "$date" : 1330480704440
+        }
+    },
+    {
+        "path" : "com.marketlive.ms.bus",
+        "context" : {
+            "env" : "master",
+            "configType" : "ServicesOverride",
+            "org":"mldev"
+        },
+        "type" : "Map",
+        "value" : {
+            "host" : "localhost",
+            "username" : "msuser",
+            "password" : "msuser"
+        },
+        "dateCreated" : {
+            "$date" : 1330480704440
+        }
+    },
+    {
+        "path" : "com.marketlive.ms.bus",
+        "context" : {
+            "env" : "production",
+            "configType" : "ServicesOverride",
+            "org":"mldev"
+        },
+        "type" : "Map",
+        "value" : {
+            "host" : "localhost",
+            "username" : "msuser",
+            "password" : "msuser"
+        },
+        "dateCreated" : {
+            "$date" : 1330480704440
+        }
+    },
+    {
+        "path" : "com.marketlive.ms.bus",
+        "context" : {
+            "env" : "staging",
+            "configType" : "ServicesOverride",
+            "org":"mldev"
+        },
+        "type" : "Map",
+        "value" : {
+            "host" : "localhost",
+            "username" : "msuser",
+            "password" : "msuser"
+        },
+        "dateCreated" : {
+            "$date" : 1330480704440
+        }
+    },
+    {
+        "path" : "com.marketlive.ms.bus",
+        "context" : {
+            "env" : "review",
+            "configType" : "ServicesOverride",
+            "org":"mldev"
+        },
+        "type" : "Map",
+        "value" : {
+            "host" : "localhost",
+            "username" : "msuser",
+            "password" : "msuser"
+        },
+        "dateCreated" : {
+            "$date" : 1330480704440
+        }
+    },
+    {
+        "path" : "com.marketlive.ms.bus",
+        "context" : {
+            "env" : "dev",
+            "configType" : "ServicesOverride",
+            "org":"mldev"
+        },
+        "type" : "Map",
+        "value" : {
+            "host" : "localhost",
+            "username" : "msuser",
+            "password" : "msuser"
+        },
+        "dateCreated" : {
+            "$date" : 1330480704440
+        }
+    }
+
+]

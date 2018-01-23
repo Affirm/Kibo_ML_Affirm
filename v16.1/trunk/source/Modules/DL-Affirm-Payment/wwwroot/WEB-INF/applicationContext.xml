@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+    <context:component-scan base-package="com.marketlive, com.mmlive, com.deplabs.app,com.deplabs.affirm,com.deplabs.entity,org.deplabs.entity" use-default-filters="false">
+        <context:include-filter type="annotation" expression="com.marketlive.system.annotation.ApplicationConfiguration"/>
+        <context:include-filter type="annotation" expression="com.marketlive.system.annotation.ApplicationComponent"/>
+        <context:include-filter type="annotation" expression="com.marketlive.system.annotation.ApplicationService"/>
+        <context:exclude-filter type="regex" expression="com.marketlive.app.service.checkout.impl.CheckoutService"/>
+        <context:exclude-filter type="regex" expression="com.marketlive.app.service.checkout.impl.PaymentService"/>
+        <context:exclude-filter type="regex" expression="com.marketlive.app.service.checkout.impl.ReviewService"/>
+   </context:component-scan>
+
+    <!-- omniture.context.xml -->
+    <import resource="classpath:/omniture.context.xml"/>
+
+    <!-- Admin scans (has dependencies on  com.marketlive.app.b2c.images) -->
+    <import resource="classpath:/adminScan.context.xml"/>
+
+    <context:component-scan base-package="com.marketlive" use-default-filters="false">
+        <context:include-filter type="annotation" expression="com.marketlive.system.annotation.ReportingComponent"/>
+    </context:component-scan>
+
+</beans>

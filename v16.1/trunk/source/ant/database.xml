@@ -1,0 +1,1448 @@
+<?xml version="1.0"?>
+
+<project name="Marketlive Product Master Database Build Script" basedir="..">
+  <!-- Custom TaskDefs -->
+  <taskdef resource="net/sf/antcontrib/antlib.xml" classpath="${MARKETLIVE_LIBRARIES}/ant-contrib-1.0b2/lib/ant-contrib.jar"/>
+
+  <scriptdef language="javascript" name="upper">
+    <attribute name="string"/> 
+    <attribute name="to"/>
+    project.setProperty(attributes.get("to"), attributes.get("string").toUpperCase());
+  </scriptdef>
+
+  <!-- All user-modifiable properties stored here. -->
+  <if>
+    <and>
+      <available file="${deploy.root}/conf/environment/${env}/system/db-build.properties" type="file" />
+      <not><isset property="default" /></not>
+    </and>
+    <then>
+      <property file="${deploy.root}/conf/environment/${env}/system/db-build.properties"/>
+    </then>
+    <else>
+      <property file="${deploy.root}/conf/default/system/db-build.properties"/>
+    </else>
+  </if>
+  
+  <upper string="${username}" to="schema"/>
+
+  <!-- The explicit classpath required for database builds and maintenance. -->
+  <path id="class.path">
+    <pathelement path="${deploy.root}/wwwroot/WEB-INF/classes"/>
+    <fileset dir="${deploy.root}/wwwroot/WEB-INF/lib">
+      <include name="**/marketlive*.jar"/>
+    </fileset>
+    <fileset dir="${MARKETLIVE_LIBRARIES}/hibernate-refreshDb">
+      <include name="**/*.jar"/>
+      <exclude name="**/slf4j*.jar"/>
+    </fileset>
+    <fileset dir="${MARKETLIVE_LIBRARIES}/slf4j-1.6.2">
+      <include name="slf4j-api-1.6.2.jar"/>
+      <include name="slf4j-log4j12-1.6.2.jar"/>
+    </fileset>
+    <fileset dir="${MARKETLIVE_LIBRARIES}/logging-log4j-1.2.14">
+      <include name="dist/lib/log4j-1.2.14.jar"/>
+    </fileset>
+    <fileset dir="${MARKETLIVE_LIBRARIES}/commons-logging-1.1">
+      <include name="commons-logging-1.1.jar"/>
+    </fileset>
+    <fileset dir="${MARKETLIVE_LIBRARIES}/oracle-11.2.0.3">
+      <include name="**/*.jar"/>
+    </fileset>
+    <fileset dir="${MARKETLIVE_LIBRARIES}/jtds-1.0-dist">
+      <include name="**/*.jar"/>
+    </fileset>
+    <fileset dir="${MARKETLIVE_LIBRARIES}/spring-framework-3.2.4/dist">
+      <include name="**/*.jar"/>
+    </fileset>
+    <fileset dir="${MARKETLIVE_LIBRARIES}/dbunit-2.1">
+      <include name="**/*.jar"/>
+    </fileset>
+  </path>
+
+  <!-- These filters are used when copying tokenized create scripts to the build tree. -->
+  <filterset id="sqlfilters" begintoken="@" endtoken="@">
+    <filter token="db.name" value="${name}"/>
+    <filter token="db.app.username" value="${username}"/>
+    <filter token="db.app.password" value="${password}"/>
+    <filter token="db.app.filedir" value="${datafile.dir}"/>
+    <filter token="db.sys.username" value="${sys.username}"/>
+    <filter token="db.sys.password" value="${sys.password}"/>
+    <filter token="db.url" value="${url}"/>
+    <filter token="db.driver" value="${driver}"/>
+    <filter token="db.type.dialect" value="${dialect}"/>
+    <filter token="db.initialsize" value="${initialSize}"/>
+    <filter token="db.maxactive" value="${maxActive}"/>
+    <filter token="db.maxidle" value="${maxIdle}"/>
+    <filter token="db.maxwait" value="${maxWait}"/>
+    <filter token="db.minidle" value="${minIdle}"/>
+    <filter token="db.accessunderlyingconnection" value="${accessToUnderlyingConnectionAllowed}"/>
+    <filter token="db.minevictableidletimemillis" value="${minEvictableIdleTimeMillis}"/>
+    <filter token="db.timebetweenevictionrunsmillis" value="${timeBetweenEvictionRunsMillis}"/>
+    <filter token="db.quartz.delegate" value="${db.quartz.delegate}"/>
+    <filter token="db.quartz.lock.sql" value="${db.quartz.lock.sql}"/>
+  </filterset>
+
+  <!-- Use when creating a new database. This task will perform
+       the following functions, using the settings from the file,
+       db-build.properties:
+
+       a) Create database login(s) if not pre-existing.
+       b) Create the database if not pre-existing.
+       c) Use the Hibernate "hbm2ddl" tool to create all schema
+       objects as defined in the Hibernate mapping files.
+       d) Create remaining database objects, not built in the
+       prior step.
+       e) Use DbUnit to import seed data from XML.
+       f) Finally execute the P_REFRESH_MAX_ID stored procedure.
+  -->
+  
+  <target name="timestamp">
+  <tstamp>
+    <format property="current.time" pattern="MM/dd/yyyy hh:mm:ss aa" />
+  </tstamp>
+
+  <echo message="${message} ${current.time}" />      
+</target>
+
+  <target name="createDb" description="Creates a database" depends="checkDeploy, init, preparesql, addsecurity, addschemaspace, schemaexport, addbaseschema, addquartzschema, showDbConfig">
+	<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <target name="patchDb" description="Applies a patch to an existing database" depends="checkDeploy, init, preparesql">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+    <fail unless="file.name">You must specify a patch file name using -Dfile.name=[patch file name]</fail>
+    <taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask" classpathref="class.path"/>
+    <dbunit
+      driver="${driver}"
+      url="${url}"
+      schema="${username}"
+      userid="${username}"
+      password="${password}">
+      <operation type="${dbunit.optype.prefix}REFRESH"
+        src="${basedir}/../build/database/patch/${file.name}"
+        format="flat"/>
+      <classpath refid="class.path"/>
+    </dbunit>
+    <antcall target="-refreshMaxId"/>
+	<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <!-- Use to drop a database/schema space. -->
+  <!-- added an if statement to verify you actually want to drop the db -->
+  <target name="removeDb" description="Drops an existing database" depends="checkDeploy, init, showDbConfig">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+    <input message="Are you positive you want to drop database: ${name} from ${host}?" validargs="yes,no" defaultvalue="no" addproperty="input.dropdb" />
+    <if>
+      <equals arg1="${input.dropdb}" arg2="yes" />
+      <then>
+        <antcall target="preparesql"/>
+        <antcall target="dropschemaspace"/>
+      </then>
+      <else>
+        <fail message="NOT Dropping Database: ${name}" />
+      </else>
+    </if>
+	<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <!-- The ultimate entry point for all other tasks defined in this
+       build file. It removes the build/Platform/database directory,
+       all generated database build files and related subdirectories.
+  -->
+  <target name="cleanDb" description="Remove all generated database files">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+	<delete dir="${basedir}/../build/database" quiet="true" /> 
+	<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <target name="defaultDbConfig">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+    <!-- Have the Deploy default to these database settings -->
+    <copy toDir="${deploy.root}/conf/default/system/" overwrite="true">
+      <fileset dir="${build.root}/database/system">
+        <include name="hibernate.properties"/>
+      </fileset>
+      <filterset refid="sqlfilters"/>
+    </copy>
+
+    <if>
+      <available file="${basedir}/Apps/B2C/conf/default/system/db.properties" type="file" />
+      <then>
+      </then>
+      <else>
+			    <copy toDir="${deploy.root}/conf/default/system/" overwrite="true">
+			      <fileset dir="${build.root}/database/system">
+			        <include name="db.properties"/>
+			      </fileset>
+			      <filterset refid="sqlfilters"/>
+			    </copy>
+      </else>
+    </if>
+	<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <!-- If (1)an "env" parameter (-Denv=*) is specified and (2)a db-build.properties file exists
+  for the environment specified in (1), copy hibernate.properties and db.properties into the
+  deployment's /conf directory under the specified environment(i.e. /conf/environment/{env}),
+  replacing the tokens in these two files with values from the environment specific
+  db-build.properties file.
+  -->
+  <target name="envDbConfig">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+    <if>
+     <and>
+      <isset property="env" />
+      <available file="${deploy.root}/conf/environment/${env}/system/db-build.properties" type="file" />
+     </and>
+      <then>
+        <copy toDir="${deploy.root}/conf/environment/${env}/system/" overwrite="true">
+          <fileset dir="${build.root}/database/system">
+            <include name="hibernate.properties"/>
+          </fileset>
+          <filterset refid="sqlfilters"/>
+        </copy>
+      </then>
+    </if>
+
+   <if>
+      <available file="${basedir}/Apps/B2C/conf/environment/${env}/system/db.properties" type="file" />
+      <then>
+      </then>
+      <else>
+      <if><isset property="env" />
+      <then>
+        <copy toDir="${deploy.root}/conf/environment/${env}/system/" overwrite="true">
+          <fileset dir="${build.root}/database/system">
+            <include name="db.properties"/>
+          </fileset>
+          <filterset refid="sqlfilters"/>
+        </copy>
+        </then>
+        </if>
+      </else>
+    </if>
+	<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <target name="showConfigFile">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+    <if>
+      <and>
+        <isset property="env" />
+        <available file="${deploy.root}/conf/environment/${env}/system/db-build.properties" type="file" />
+      </and>
+      <then>
+        <echo message="Property File = ${deploy.root}/conf/environment/${env}/system/db-build.properties"/>
+      </then>
+      <else>
+        <echo message="Property File = ${deploy.root}/conf/default/system/db-build.properties"/>
+      </else>
+    </if>
+	<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <!-- All tasks other than "clean" are dependent on this task. It
+       is responsible for preparing the build directory structure
+       and all related scripts, with filters applied to tokenized
+       files. Files are copied, based on defined database type.
+
+       This task includes building static versions of *.properties
+       files (e.g. "db.properties", "hibernate.properties", etc),
+       to the matching location in the build tree.
+  -->
+  <target name="preparesql" depends="cleanDb">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+    <mkdir dir="${basedir}/../build/database/system"/>
+    <copy toDir="${basedir}/../build/database/system">
+      <fileset dir="${build.root}/database/system">
+        <include name="**/${type}_*.sql"/>
+        <include name="**/*.properties"/>
+      </fileset>
+      <filterset refid="sqlfilters"/>
+    </copy>
+    <if>
+      <and>
+        <isset property="env" />
+        <available file="${deploy.root}/conf/environment/${env}/system/db-build.properties" type="file" />
+      </and>
+      <then>
+        <copy toDir="${deploy.root}/conf/environment/${env}/system/" overwrite="true">
+          <fileset dir="${basedir}/../build/database/system">
+            <include name="**/db.properties"/>
+            <include name="**/hibernate.properties"/>
+          </fileset>
+          <filterset refid="sqlfilters"/>
+        </copy>
+      </then>
+    </if>
+
+    <mkdir dir="${basedir}/../build/database/schema"/>
+    <copy toDir="${basedir}/../build/database/schema">
+      <fileset dir="${build.root}/database/schema">
+        <include name="**/${script.schema}"/>
+        <include name="**/${script.quartz.schema}"/>
+        <include name="**/*.dtd"/>
+      </fileset>
+    </copy>
+
+	<if>
+		<available file="${build.root}/database/schema/oracle" type="dir"/>
+		<then>
+			<mkdir dir="${basedir}/../build/database/schema/oracle"/>
+			<copy toDir="${basedir}/../build/database/schema/oracle">
+			  <fileset dir="${build.root}/database/schema/oracle" casesensitive="false">
+				<include name="**/*.sql"/>
+			  </fileset>
+			</copy>
+		</then>
+	</if>
+
+    <mkdir dir="${basedir}/../build/database/data/section"/>
+    <copy toDir="${basedir}/../build/database/data/section" overwrite="true">
+      <fileset dir="${build.root}/database/data/section">
+        <include name="**/*.xml"/>
+        <include name="**/*.properties"/>
+      </fileset>
+    </copy>
+
+	<if>
+		<available file="${build.root}/database/data/oracle" type="dir"/>
+		<then>
+			<mkdir dir="${basedir}/../build/database/data/oracle"/>
+			<copy toDir="${basedir}/../build/database/data/oracle" overwrite="true">
+			  <fileset dir="${build.root}/database/data/oracle" casesensitive="false">
+				<include name="**/*.sql"/>
+			  </fileset>
+			</copy>
+		</then>
+	</if>
+
+	<if>
+		<available file="${build.root}/database/data/xml" type="dir"/>
+		<then>
+			<mkdir dir="${basedir}/../build/database/data/xml"/>
+			<copy toDir="${basedir}/../build/database/data/xml" overwrite="true">
+			  <fileset dir="${build.root}/database/data/xml" casesensitive="false">
+				<include name="**/*.xml"/>
+			  </fileset>
+			</copy>
+		</then>
+	</if>
+
+    <mkdir dir="${basedir}/../build/database/hbm"/>
+    <copy toDir="${basedir}/../build/database/hbm">
+      <fileset dir="${build.root}/database/hbm">
+        <include name="**/*.hbm.xml"/>
+      </fileset>
+    </copy>
+
+    <mkdir dir="${basedir}/../build/database/patch"/>
+    <copy toDir="${basedir}/../build/database/patch">
+      <fileset dir="${build.root}/database/patch">
+        <include name="**/*.*"/>
+      </fileset>
+    </copy>
+	<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <target name="showDbConfig" description="Displays database configurations" depends="checkDeploy, init, showConfigFile">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+    <echo message="Database configuration..."/>
+    <echo message="name = ${name}"/>
+    <echo message="system username = ${sys.username}"/>
+    <echo message="system password = ${sys.password}"/>
+    <echo message="schema   = ${schema}"/>
+    <echo message="username = ${username}"/>
+    <echo message="password = ${password}"/>
+    <echo message="url = ${url}"/>
+    <echo message="driver = ${driver}"/>
+    <echo message="dialect = ${dialect}"/>
+    <echo message="maxactive = ${maxActive}"/>
+	<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <!-- Create database login(s) if not pre-existing. -->
+  <target name="addsecurity">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+    <echo message="Adding ${username} login(s) to ${host}..."/>
+    <sql driver="${driver}"
+      url="${sys.url}"
+      userid="${sys.username}"
+      password="${sys.password}"
+      autocommit="yes"
+      rdbms="${type.vendor}"
+      keepformat="yes"
+      delimiter="${type.delimiter}">
+      <transaction src="${basedir}/../build/database/system/${type}_logins.sql"/>
+      <classpath refid="class.path"/>
+    </sql>
+    <echo message="Login(s) successfully added to ${host}"/>
+	<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <!-- Create the database if not pre-existing. -->
+  <target name="addschemaspace">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+    <echo message="Creating ${name} database on ${host}..."/>
+    <sql driver="${driver}"
+      url="${sys.url}"
+      userid="${sys.username}"
+      password="${sys.password}"
+      autocommit="yes"
+      rdbms="${type.vendor}"
+      keepformat="yes"
+      delimiter="${type.delimiter}">
+      <transaction src="${basedir}/../build/database/system/${type}_schemaspace.sql"/>
+      <transaction src="${basedir}/../build/database/system/${type}_grants.sql"/>
+      <classpath refid="class.path"/>
+    </sql>
+    <echo message="${name} database successfully created on ${host}"/>
+	<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <!-- Use the Hibernate "hbm2ddl" tool to create/re-create all schema
+       objects as defined in the Hibernate mapping files.
+  -->
+  <target name="schemaexport">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+    <taskdef name="schemaexport" classname="org.hibernate.tool.hbm2ddl.SchemaExportTask"
+      classpathref="class.path"/>
+    <schemaexport
+      properties="${basedir}/../build/database/system/hibernate.properties"
+      quiet="yes"
+      text="no"
+      drop="no"
+      delimiter=";"
+      output="${basedir}/../build/database/schema/${script.schema.export}">
+      <fileset dir="${basedir}/../build/database/hbm">
+        <include name="*.hbm.xml"/>
+      </fileset>
+    </schemaexport>
+	<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <!-- Create remaining database objects, not built in the "schemaexport" task. -->
+  <target name="addbaseschema">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+    <echo message="Adding base schema objects..."/>
+    <sql driver="${driver}"
+      url="${url}"
+      userid="${username}"
+      password="${password}"
+      autocommit="yes"
+      rdbms="${type.vendor}"
+      onerror="continue"
+      keepformat="yes"
+      delimitertype="row"
+      delimiter="${type.delimiter}"
+      output="${basedir}/../build/database/schema/${name}.log"
+      print="false"
+      showheaders="false">
+      <transaction src="${build.root}/database/schema/${script.schema}"/>
+      <classpath refid="class.path"/>
+    </sql>
+    <if>
+			<equals arg1="${type}" arg2="sqlserver" />
+			<then>
+				<if>
+          <available file="${basedir}/../build/database/schema/mssql" type="dir" />
+          <then>
+            <if>
+          <!--check if any sql files exist in the schema directory and then run them -->
+          <resourcecount count="0" when="greater">
+              <fileset dir="${basedir}/../build/database/schema/mssql" casesensitive="no">
+                <include name="**/*.sql"/>
+              </fileset>
+          </resourcecount>
+					<then>
+						<sql driver="${driver}"
+						  url="${url}"
+						  userid="${username}"
+						  password="${password}"
+						  autocommit="yes"
+						  rdbms="${type.vendor}"
+						  onerror="continue"
+						  keepformat="yes"
+						  delimitertype="row"
+						  delimiter="${type.delimiter}"
+						  output="${basedir}/../build/database/schema/mssql/${name}.log"
+						  print="false"
+						  showheaders="false">
+
+						<fileset dir="${basedir}/../build/database/schema/mssql" casesensitive="no">
+							<include name="**/*.sql"/>
+						</fileset>
+						<classpath refid="class.path"/>
+						</sql>
+					</then>
+				</if>
+			</then>
+        </if>
+			</then>
+			<else>
+				<if>
+          <available file="${basedir}/../build/database/schema/oracle" type="dir" />
+          <then>
+            <if>
+          <!--check if any sql files exist in the schema directory and then run them -->
+          <resourcecount count="0" when="greater">
+              <fileset dir="${basedir}/../build/database/schema/oracle" casesensitive="no">
+                <include name="**/*.sql"/>
+              </fileset>
+          </resourcecount>
+					<then>
+						<sql driver="${driver}"
+						  url="${url}"
+						  userid="${username}"
+						  password="${password}"
+						  autocommit="yes"
+						  rdbms="${type.vendor}"
+						  onerror="continue"
+						  keepformat="yes"
+						  delimitertype="row"
+						  delimiter="${type.delimiter}"
+						  output="${basedir}/../build/database/schema/oracle/${name}.log"
+						  print="false"
+						  showheaders="false">
+
+						<fileset dir="${basedir}/../build/database/schema/oracle" casesensitive="no">
+							<include name="**/*.sql"/>
+						</fileset>
+						<classpath refid="class.path"/>
+						</sql>
+              </then>
+				    </if>
+					</then>
+				</if>
+			</else>
+		</if>
+		<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+	<!-- Create Quartz database objects, not built in the "schemaexport" task. -->
+	<target name="addquartzschema">
+	<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+		<echo message="Adding Quartz schema objects..."/>
+		<sql driver="${driver}"
+		  url="${url}"
+		  userid="${username}"
+		  password="${password}"
+		  autocommit="yes"
+		  rdbms="${type.vendor}"
+		  onerror="continue"
+		  keepformat="yes"
+		  delimitertype="row"
+		  delimiter="${type.delimiter}"
+		  output="${basedir}/../build/database/schema/${name}-quartz.log"
+		  print="false"
+		  showheaders="false">
+		  <transaction src="${build.root}/database/schema/${script.quartz.schema}"/>
+		  <classpath refid="class.path"/>
+		</sql>
+		<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+	</target>
+
+  <!-- Use DbUnit to import seed data from XML. -->
+  <target name="addseedxml">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+    <taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask" classpathref="class.path"/>
+    <dbunit
+      driver="${driver}"
+      url="${url}"
+      schema="${schema}"
+      userid="${username}"
+      password="${password}">
+      <operation type="${dbunit.optype.prefix}CLEAN_INSERT"
+        src="${basedir}/../build/database/data/seed/${script.data.seed}"
+        format="flat"/>
+      <classpath refid="class.path"/>
+    </dbunit>
+	<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <!-- Use DbUnit to generate a DTD from an existing schema. The url
+       property is used for locating the schema.
+  -->
+  <target name="generateDtd" description="Generates a DTD from an existing schema" depends="checkDeploy, init, preparesql">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+    <taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask" classpathref="class.path"/>
+    <dbunit
+      driver="${driver}"
+      url="${url}"
+      schema="${schema}"
+      userid="${username}"
+      password="${password}">
+      <export dest="${basedir}/../build/database/schema/${name}.dtd" format="dtd"/>
+      <classpath refid="class.path"/>
+    </dbunit>
+	<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <!-- Use DbUnit to import data from the defined XML file. This
+       task relies upon an up-to-date DTD. -->
+  <target name="importDb" description="Imports data into an existing database" depends="checkDeploy, init, preparesql">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+    <antcall target="loadXmlData"/>
+	<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <!-- Use DbUnit to export all data from the existing schema. This task
+       will result in failure if there are any tables with column names
+       containing an exclamation point (e.g. "XML_EMAIL_EXPORT_%" tables).
+  -->
+  <target name="exportDb" description="Exports data from an existing database" depends="checkDeploy, init, preparesql">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+    <taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask" classpathref="class.path"/>
+    <dbunit
+      driver="${driver}"
+      url="${url}"
+      schema="${schema}"
+      userid="${username}"
+      password="${password}">
+      <export
+        dest="${basedir}/../build/database/data/${name}-all.xml"
+        doctype="${basedir}/../build/database/schema/marketlive-5.0-schema.dtd">
+        <table name="ACCOUNT_HINT"/>
+        <table name="ACCOUNT_SET"/>
+        <table name="ADMIN_GROUP"/>
+        <table name="ADMIN_PAGE"/>
+        <table name="ADMIN_ROLE"/>
+        <table name="ADMIN_TAB"/>
+        <table name="ADMIN_USER"/>
+        <table name="ATTRIBUTE_CATEGORY"/>
+        <table name="ATTRIBUTE_SITE"/>
+        <table name="CAMPAIGN"/>
+        <table name="CATEGORY"/>
+        <table name="CGROUP"/>
+        <table name="COND_CLASSES"/>
+        <table name="CONTENT_TYPE"/>
+        <table name="CONTENT_TYPE_FIELD_TYPE"/>
+        <table name="COUNTRY"/>
+        <table name="DISPLAY_RULE_CATEGORY"/>
+        <table name="DISPLAY_TYPE"/>
+        <table name="EMAIL"/>
+        <table name="EXP_GROUP_CG_CATEGORY"/>
+        <table name="EXP_GROUP_EV_CATEGORY"/>
+        <table name="EXP_GROUP_TYPE"/>
+        <table name="EXPRESSION_DATE_TYPE"/>
+        <table name="EXPRESSION_FREQUENCY_TYPE"/>
+        <table name="EXPRESSION_ITEM_TYPE"/>
+        <table name="EXPRESSION_SUB_TYPE"/>
+        <table name="EXPRESSION_TYPE"/>
+        <table name="FAMILY"/>
+        <table name="GIFT_WRAP_TYPE"/>
+        <table name="INVENTORY_SET"/>
+        <table name="JOB_NOTIFICATION_TYPE"/>
+        <table name="JOB_STATUS_TYPE"/>
+        <table name="KGROUP"/>
+        <table name="LOCATION_TYPE"/>
+        <table name="OPTION_TYPE"/>
+        <table name="ORDER_AUDIT_TYPE"/>
+        <table name="ORDER_PAYMENT_TYPE"/>
+        <table name="PERSONALIZATION"/>
+        <table name="PRICELIST"/>
+        <table name="QRTZ_JOB_DETAILS"/>
+        <table name="REPORT_ACTIVE_STATUS_TYPE"/>
+        <table name="REPORT_CATEGORY"/>
+        <table name="REPORT_QUERY_ITEM_TYPE"/>
+        <table name="REPORT_REL_PROD_TYPE"/>
+        <table name="REPORT_SALE_STATUS_TYPE"/>
+        <table name="REPORT_SELECTION_TYPE"/>
+        <table name="RESULT_CLASSES"/>
+        <table name="RULES"/>
+        <table name="SCHEDULED_EVENT"/>
+        <table name="SEARCH_CRITERIA_TYPE"/>
+        <table name="SEARCH_USER_TYPE"/>
+        <table name="SHIPPING_SET"/>
+        <table name="SKU"/>
+        <table name="SKU_EMAIL_QUEUE"/>
+        <table name="SURVEY"/>
+        <table name="SURVEY_ANSWER"/>
+        <table name="SURVEY_QUESTION_TYPE"/>
+        <table name="TAX_SET"/>
+        <table name="TEMPLATE_TYPE"/>
+        <table name="TOKEN_TYPE"/>
+        <table name="ACCOUNT_CUSTOMER"/>
+        <table name="COND_RULE_INFO"/>
+        <table name="CONTENT"/>
+        <table name="CONTENT_TYPE_FIELD"/>
+        <table name="EXPRESSION"/>
+        <table name="JOB_DEFINITION"/>
+        <table name="OPTIONS"/>
+        <table name="PERSONALIZATION_ITEM"/>
+        <table name="PRODUCT"/>
+        <table name="QRTZ_TRIGGERS"/>
+        <table name="REPORT_TYPE"/>
+        <table name="RESULT_RULE_INFO"/>
+        <table name="SEARCH_GROUP"/>
+        <table name="SHIPPING_METHOD"/>
+        <table name="SITE"/>
+        <table name="SITE_HOME_SEO"/>
+        <table name="SKU_KIT"/>
+        <table name="STATE"/>
+        <table name="SURVEY_QUESTION"/>
+        <table name="TEMPLATE"/>
+        <table name="ACCOUNT_CONTACT"/>
+        <table name="BASKET"/>
+        <table name="DISCOUNT_DEFINITION"/>
+        <table name="EMAIL_SUBSCRIBER"/>
+        <table name="EMAIL_SUBSCRIPTION_TYPE"/>
+        <table name="EXP_GROUP"/>
+        <table name="GIFT_WRAP"/>
+        <table name="ORDER_BILL_SHIP_INFO"/>
+        <table name="PERSONALIZATION_ITEM_OPTION"/>
+        <query name="PRODUCT_INFO_PAGE"
+          sql="SELECT * FROM PRODUCT_INFO_PAGE
+                WHERE PRODUCT_ID IN (SELECT DISTINCT PRODUCT_ID
+                                       FROM PRODUCT)"/>
+        <table name="PRODUCT_OPTION_DATA_PAGE"/>
+        <table name="REPORT_QUERY"/>
+        <table name="SKU_KIT_ELEMENT"/>
+        <table name="SOURCE_CODE"/>
+        <table name="WISHLIST"/>
+        <table name="BASKET_SHIPMENT"/>
+        <table name="DISCOUNT_CONDITION"/>
+        <table name="DISCOUNT_RESULT"/>
+        <table name="KICKER"/>
+        <table name="ORDERS"/>
+        <table name="WISHLIST_ITEM"/>
+        <table name="BASKET_ITEM"/>
+        <table name="ORDER_PAYMENT"/>
+        <table name="ORDER_SHIPMENT"/>
+        <table name="ORDER_ITEM"/>
+        <table name="CAMPAIGN_CATEGORY"/>
+        <table name="CUSTOMER_GROUP_CATEGORY"/>
+        <table name="DISCOUNT_CATEGORY"/>
+        <table name="EMAIL_CATEGORY"/>
+        <table name="PRICELIST_CATEGORY"/>
+        <table name="SOURCE_CODE_CATEGORY"/>
+        <table name="SURVEY_CATEGORY"/>
+        <table name="ADMIN_SECTION"/>
+        <table name="LOCATION"/>
+        <table name="ACCOUNT_CUSTOMER_SITE_RECORD"/>
+        <table name="ACCOUNT_HINT_QUESTION"/>
+        <table name="ADMIN_ACCESS"/>
+        <table name="ADMIN_GROUP_PAGE_LINK"/>
+        <table name="ADMIN_GROUP_USER_LINK"/>
+        <table name="ADMIN_USER_PAGE_LINK"/>
+        <table name="ADMIN_USER_ROLE_LINK"/>
+        <table name="ATTRIBUTE_ASSIGNED"/>
+        <table name="ATTRIBUTE_ASSIGNED_LISTITEMS"/>
+        <table name="ATTRIBUTE_CATEGORY_LINK"/>
+        <table name="ATTRIBUTE_SITE_LISTITEMS"/>
+        <table name="BASKET_ITEM_PART"/>
+        <table name="BASKET_ITEM_PERSONALIZATION"/>
+        <table name="BASKET_SOURCE_CODE_LINK"/>
+        <table name="CAMPAIGN_CATEGORY_LINK"/>
+        <table name="CAMPAIGN_SOURCE_CODE_LINK"/>
+        <table name="CATALOG_ALIAS"/>
+        <table name="CATALOG_REQUEST"/>
+        <table name="CATEGORY_DESCRIPTION"/>
+        <table name="CATEGORY_DISPLAY"/>
+        <table name="CATEGORY_IMAGE"/>
+        <table name="CATEGORY_LINK"/>
+        <table name="CATEGORY_SEO"/>
+        <table name="CGROUP_CONTENT_LINK"/>
+        <table name="CGROUP_DESCRIPTION"/>
+        <table name="CGROUP_LINK"/>
+        <table name="COND_DATA"/>
+        <table name="CONTENT_FIELD"/>
+        <table name="COUNTRY_DESCRIPTION"/>
+        <table name="CUSTOMER_GROUP_CATEGORY_LINK"/>
+        <table name="CUSTOMER_GROUP_LINK"/>
+        <table name="DISCOUNT_CATEGORY_LINK"/>
+        <table name="DISCOUNT_COND_CATEGORY_LINK"/>
+        <table name="DISCOUNT_COND_CUST_GROUP_LINK"/>
+        <table name="DISCOUNT_COND_PRODUCT_LINK"/>
+        <table name="DISCOUNT_COND_SKU_LINK"/>
+        <table name="DISCOUNT_COND_SOURCECODE_LINK"/>
+        <table name="DISCOUNT_DEFN_DISPLAY"/>
+        <table name="DISCOUNT_EXCLUSION_LINK"/>
+        <table name="DISCOUNT_RESULT_CATEGORY_LINK"/>
+        <table name="DISCOUNT_RESULT_PRODUCT_LINK"/>
+        <table name="DISCOUNT_RESULT_SKU_LINK"/>
+        <table name="DISPLAY_RULE"/>
+        <table name="DISPLAY_RULE_CATEGORY_LINK"/>
+        <table name="EMAIL_CAMPAIGN_LINK"/>
+        <table name="EMAIL_CATEGORY_LINK"/>
+        <table name="EMAIL_CUSTOMER_GROUP_LINK"/>
+        <table name="EMAIL_FRIEND"/>
+        <table name="EMAIL_SENT_EXP_GRP"/>
+        <table name="EMAIL_SOURCE_CODE_LINK"/>
+        <table name="EMAIL_SUBSCRIPTION"/>
+        <table name="EMAIL_SUBSCRIPTION_TYPE_DESC"/>
+        <table name="EXP_GROUP_CG_CATEGORY_LINK"/>
+        <table name="EXP_GROUP_CUSTOMER_LINK"/>
+        <table name="EXP_GROUP_EMAIL_LINK"/>
+        <table name="EXP_GROUP_EV_CATEGORY_LINK"/>
+        <table name="EXP_GROUP_LINK"/>
+        <table name="EXPRESSION_ITEM"/>
+        <table name="EXPRESSION_TYPE_LINK"/>
+        <table name="FAMILY_DESCRIPTION"/>
+        <table name="FAMILY_IMAGE"/>
+        <table name="FAMILY_PRODUCT_LINK"/>
+        <table name="GIFT_CERTIFICATE"/>
+        <table name="GIFT_WRAP_DESCRIPTION"/>
+        <table name="INVENTORY"/>
+        <table name="JOB_LOG"/>
+        <table name="JOB_STEP"/>
+        <table name="KGROUP_KICKER_LINK"/>
+        <table name="KGROUP_LINK"/>
+        <table name="KGROUP_ROOT"/>
+        <table name="OPTION_DESCRIPTION"/>
+        <table name="OPTION_TYPE_DESCRIPTION"/>
+        <table name="OPTION_TYPE_DISPLAY"/>
+        <table name="ORDER_AUDIT"/>
+        <table name="ORDER_DISCOUNT"/>
+        <table name="ORDER_ITEM_PART"/>
+        <table name="ORDER_ITEM_PERSONALIZATION"/>
+        <table name="ORDER_PAYMENT_CHECK"/>
+        <table name="ORDER_PAYMENT_CREDIT_CARD"/>
+		<table name="ORDER_PAYMENT_CARD_TOKEN"/>
+        <table name="ORDER_PAYMENT_GIFT_CERTIFICATE"/>
+        <query name="ORDER_TRACKING"
+          sql="SELECT * FROM ORDER_TRACKING
+                WHERE ORDERS_ID IN (SELECT DISTINCT ORDERS_ID
+                                      FROM ORDERS)"/>
+        <table name="PERSONALIZATION_DESCRIPTION"/>
+        <table name="PERSONALIZATION_ITEM_DESC"/>
+        <table name="PERSONALIZATION_ITEM_OPT_DESC"/>
+        <table name="PRICELIST_CATEGORY_LINK"/>
+        <table name="PRICELIST_ITEM"/>
+        <table name="PRODUCT_CATEGORY_LINK"/>
+        <table name="PRODUCT_CONTENT_LINK"/>
+        <table name="PRODUCT_CROSSSELL_CUST_LINK"/>
+        <table name="PRODUCT_CROSSSELL_LINK"/>
+        <table name="PRODUCT_DESCRIPTION"/>
+        <table name="PRODUCT_IMAGE"/>
+        <query name="PRODUCT_INFO"
+          sql="SELECT * FROM PRODUCT_INFO
+                WHERE PRODUCT_INFO_PAGE_ID IN (SELECT DISTINCT a.PRODUCT_INFO_PAGE_ID
+                                                 FROM PRODUCT_INFO_PAGE a, PRODUCT b
+                                                WHERE a.PRODUCT_ID = b.PRODUCT_ID)"/>
+        <table name="PRODUCT_OPTION_DATA"/>
+        <table name="PRODUCT_OPTION_TYPE_LINK"/>
+        <table name="PRODUCT_PERSONALIZATION_LINK"/>
+        <table name="PRODUCT_RELPROD_CUST_LINK"/>
+        <table name="PRODUCT_RELPROD_LINK"/>
+        <table name="PRODUCT_SEO"/>
+        <table name="PRODUCT_SKU_LINK"/>
+        <table name="PRODUCT_UPSELL_CUST_LINK"/>
+        <table name="PRODUCT_UPSELL_LINK"/>
+        <table name="QRTZ_CRON_TRIGGERS"/>
+        <table name="QRTZ_JOB_LISTENERS"/>
+        <table name="QRTZ_SIMPLE_TRIGGERS"/>
+        <table name="QRTZ_TRIGGER_LISTENERS"/>
+        <table name="REPORT_QUERY_ITEM"/>
+        <table name="RESULT_DATA"/>
+        <table name="SCHEDULED_TRIGGER"/>
+        <table name="SEARCH_CRITERIA"/>
+        <table name="SHIPPING_COST"/>
+        <table name="SHIPPING_LOCATION"/>
+        <table name="SHIPPING_METHOD_DESCRIPTION"/>
+        <table name="SHIPPING_METHOD_RULE"/>
+        <table name="SHIPPING_METHOD_RULE_ITEM"/>
+        <table name="SHIPPING_WEIGHT"/>
+        <table name="SITE_CONTENT_LINK"/>
+        <table name="SITE_DOMAIN"/>
+        <table name="SITE_FEATURE"/>
+        <table name="SITE_LOCALE"/>
+        <table name="SITE_PRICELIST_LINK"/>
+        <table name="SITE_PRODUCT_LINK"/>
+        <table name="SKU_KIT_ELEMENT_DESCRIPTION"/>
+        <table name="SKU_KIT_ELEMENT_ITEM"/>
+        <table name="SKU_OPTION_LINK"/>
+        <table name="SKU_PRICE"/>
+        <table name="SLOT_INFO"/>
+        <table name="SOURCE_CODE_CATEGORY_LINK"/>
+        <table name="STATE_DESCRIPTION"/>
+        <table name="SURVEY_CATEGORY_LINK"/>
+        <table name="SURVEY_CUSTOMER_ANSWER"/>
+        <table name="SURVEY_QUESTION_ANSWER_LINK"/>
+        <table name="SURVEY_QUESTION_LINK"/>
+        <table name="TAX_LOCATION"/>
+        <table name="TAX_LOCATION_CHANGE"/>
+        <table name="TEMPLATE_TYPE_CONTENT_TYPE"/>
+        <table name="TEMPLATE_TYPE_DEFAULT_TEMPLATE"/>
+        <table name="TOKEN"/>
+        <table name="WISHLIST_ITEM_PART"/>
+        <table name="ACCOUNT_CREDIT_CARD_TYPE"/>
+        <table name="ADMIN_MENU"/>
+        <table name="CATEGORY_SORT_ORDER"/>
+        <table name="CATEGORY_TYPE"/>
+        <table name="CC_MONTH"/>
+        <table name="CC_YEAR"/>
+        <table name="CONFIG_MERCHANT"/>
+        <table name="COUPON_FORBIDDEN_WORDS"/>
+        <table name="COUPON_DEFINITION"/>
+        <table name="COUPON_BULK_CATEGORY"/>
+        <table name="COUPON_BULK_CATEGORY_LINK"/>
+        <table name="COUPON_GENERATE"/>
+        <table name="COUPON_IMPORT"/>
+        <table name="COUPON_CODE"/>
+        <table name="COUPON_CODE_REDEMPTION"/>
+        <table name="EVENT"/>
+        <table name="EVENT_CAMPAIGN_LINK"/>
+        <table name="EVENT_CATEGORY"/>
+        <table name="EVENT_CATEGORY_LINK"/>
+        <table name="EVENT_EMAIL_SEND_LIST"/>
+        <table name="EXP_GROUP_CONFIG"/>
+        <table name="EXP_GROUP_CUST_EVAL"/>
+        <table name="EXP_GROUP_EVAL"/>
+        <table name="EXP_GROUP_EVAL_PER_CUST"/>
+        <table name="EXPRESSION_TRIGGER_TYPE"/>
+        <table name="JOB_SCHEDULER"/>
+        <query name="LOAD_MONITOR"
+          sql="SELECT * FROM LOAD_MONITOR WHERE 0=1"/>
+        <table name="STORE"/>
+        <table name="STORE_DESCRIPTION"/>
+        <table name="STORE_FILTER"/>
+        <table name="STORE_FILTER_DESCRIPTION"/>
+        <table name="STORE_FILTER_LINK"/>
+        <table name="STORE_CATEGORY"/>
+        <table name="STORE_CATEGORY_LINK"/>
+        <table name="MAX_ID"/>
+        <table name="MONITOR_ACTIVATION"/>
+        <table name="ORDER_QUEUE"/>
+        <table name="PROCEDURE_LOG"/>
+        <table name="QRTZ_BLOB_TRIGGERS"/>
+        <table name="QRTZ_CALENDARS"/>
+        <table name="QRTZ_FIRED_TRIGGERS"/>
+        <table name="QRTZ_LOCKS"/>
+        <table name="QRTZ_PAUSED_TRIGGER_GRPS"/>
+        <table name="QRTZ_SCHEDULER_STATE"/>
+        <table name="REMINDER_EVENT"/>
+        <table name="REMINDER_EVENT_TYPE"/>
+        <table name="SEARCH_INDEX_HISTORY"/>
+        <table name="SKU_TYPE"/>
+        <table name="STATE_ZIP_LINK"/>
+        <table name="SYSTEM_CONFIG"/>
+        <table name="SYSTEM_KEYSTORE"/>
+        <table name="TAX_IMPORT_LOG"/>
+        <table name="TAX_LOCATION_TYPE"/>
+        <table name="TEMPLATE_TYPE_GROUP_LINK"/>
+        <table name="TIME_ZONE"/>
+      </export>
+      <classpath refid="class.path"/>
+    </dbunit>
+	<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <!-- Drop the database/schema space.-->
+  <target name="dropschemaspace">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+    <echo message="Removing ${name} database from ${host}..."/>
+    <sql driver="${driver}"
+      url="${sys.url}"
+      userid="${sys.username}"
+      password="${sys.password}"
+      autocommit="yes"
+      rdbms="${type.vendor}"
+      keepformat="yes"
+      delimiter="${type.delimiter}">
+      <transaction src="${basedir}/../build/database/system/${type}_schemaspace_drop.sql"/>
+      <classpath refid="class.path"/>
+    </sql>
+    <echo message="${name} database successfully removed from ${host}"/>
+	<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <!-- Refreshes the database by removing, creating and importing static data.
+  -->
+  <target name="refreshDb" description="Runs removeDb, createDb and importDb" depends="removeDb, createDb, importDb">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <!-- Execute the P_REFRESH_MAX_ID stored procedure for inserting and
+       updating values in the MAX_ID table.
+  -->
+  <target name="-refreshMaxId" description="Refreshes the IDs in the MAX_ID table" depends="checkDeploy, init, preparesql">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+    <echo message="Refreshing MAX_ID values in the ${name} database on ${host}..."/>
+    <sql driver="${driver}"
+      classpathref="class.path"
+      url="${url}"
+      userid="${username}"
+      password="${password}"
+      autocommit="yes"
+      rdbms="${type.vendor}"
+      delimiter="${type.delimiter}"
+      onerror="continue">
+      <transaction src="${basedir}/../build/database/system/${type}_refreshmaxid.sql"/>
+      <classpath refid="class.path"/>
+    </sql>
+    <echo message="MAX_ID values successfully refreshed."/>
+	<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <!-- Use DbUnit to import data from the defined XML component data files.
+       Note: This code uses a hack that takes advantage of the available
+       property not being set when a 0-length file is loaded  (this is an
+       undocumented feature ) - So this should be replaced once the version of
+       Ant is upgraded to 1.6.3 with the code below this
+  -->
+  <target name="loadXmlData" depends="preparesql">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+    <antcall target="loadBaseXmlData"/>
+    <antcall target="loadModuleData"/>
+    <antcall target="-refreshMaxId"/>
+	<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <target name="loadXmlDataLocalized" depends="preparesql">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+    <antcall target="loadBaseXmlData"/>
+	<antcall target="loadLocalizedXmlData"/>
+    <antcall target="loadModuleData"/>
+    <antcall target="-refreshMaxId"/>
+	<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+  <!--
+  Ammend the above code with the code below which contains a check of the actual property length when ant 1.6.3 or greater is used
+    <target name="loadXmlData" depends="preparesql">
+      <if>
+          <isset property="script.data.component.seed" />
+              <then>
+                  <length string="${script.data.component.seed}" trim="true" when="greater" length="0">
+                      <antcall target="loadSeedComponentData"/>
+                  </length>
+              </then>
+      </if>
+      <if>
+          <isset property="script.data.component.test" />
+              <then>
+                  <length string="${script.data.component.test}" trim="true" when="greater" length="0">
+                      <antcall target="loadTestComponentData"/>
+                  </length>
+              </then>
+      </if>
+      <if>
+          <isset property="script.data.component.client" />
+              <then>
+                  <length string="${script.data.component.client}" trim="true" when="greater" length="0">
+                      <antcall target="loadClientComponentData"/>
+                  </length>
+              </then>
+      </if>
+      <antcall target="-refreshMaxId"/>
+  </target>
+  -->
+
+  <!-- Use DbUnit to import data from the defined XML file. This
+       task relies upon an up-to-date DTD.
+  -->
+  <target name="loadTypeComponentData" depends="preparesql">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+    <taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask" classpathref="class.path"/>
+    <dbunit
+      driver="${driver}"
+      url="${url}"
+      schema="${schema}"
+      userid="${username}"
+      password="${password}">
+      <operation type="${dbunit.optype.prefix}INSERT"
+        src="${basedir}/../build/database/data/section/${script.data.component.type}"
+        format="flat"/>
+      <classpath refid="class.path"/>
+    </dbunit>
+	<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+<!-- Use DbUnit to import data from the defined XML file. This
+       task relies upon an up-to-date DTD.
+  -->
+  <target name="loadConfigurableComponentData" depends="preparesql">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+    <taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask" classpathref="class.path"/>
+    <dbunit
+      driver="${driver}"
+      url="${url}"
+      schema="${schema}"
+      userid="${username}"
+      password="${password}">
+      <operation type="${dbunit.optype.prefix}INSERT"
+        src="${basedir}/../build/database/data/section/${script.data.component.configurable}"
+        format="flat"/>
+      <classpath refid="class.path"/>
+    </dbunit>
+	<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <!-- Use DbUnit to import data from the defined XML file. This
+       task relies upon an up-to-date DTD.
+  -->
+  <target name="loadTestComponentData" depends="preparesql">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+    <taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask" classpathref="class.path"/>
+    <dbunit
+      driver="${driver}"
+      url="${url}"
+      schema="${schema}"
+      userid="${username}"
+      password="${password}">
+      <operation type="${dbunit.optype.prefix}INSERT"
+        src="${basedir}/../build/database/data/section/${script.data.component.test}"
+        format="flat"/>
+      <classpath refid="class.path"/>
+    </dbunit>
+	<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <!-- Use DbUnit to import data from the defined XML file. This
+       task relies upon an up-to-date DTD.
+  -->
+  <target name="loadClientComponentData" depends="preparesql">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+    <taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask" classpathref="class.path"/>
+    <dbunit
+      driver="${driver}"
+      url="${url}"
+      schema="${schema}"
+      userid="${username}"
+      password="${password}">
+      <operation type="${dbunit.optype.prefix}INSERT"
+        src="${basedir}/../build/database/data/section/${script.data.component.client}"
+        format="flat"/>
+      <classpath refid="class.path"/>
+    </dbunit>
+	<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <target name="loadModuleData">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+		<echo message="Loading module data"/>
+		<if>
+			<available file="${basedir}/../build/database/data/xml" type="dir"/>
+			<then>
+				<foreach target="loadModuleXMLData" param="file" inheritall="true">
+					<path>
+						<fileset dir="${basedir}/../build/database/data/xml" includes="*.xml"/>
+					</path>
+				</foreach>
+			</then>
+		</if>
+		<if>
+			<equals arg1="${type}" arg2="sqlserver" />
+			  <then>
+				  <if>
+          <available file="${basedir}/../build/database/data/mssql" type="dir" />
+          <then>
+            <if>
+            <!--check if any sql files exist in the data directory and then run them -->
+            <resourcecount count="0" when="greater">
+                <fileset dir="${basedir}/../build/database/data/mssql" casesensitive="no">
+									<include name="**/*.sql"/>
+								</fileset>
+            </resourcecount>
+						<then>
+							<sql driver="${driver}"
+								  url="${url}"
+								  userid="${username}"
+								  password="${password}"
+								  autocommit="yes"
+								  rdbms="${type.vendor}"
+								  onerror="continue"
+								  keepformat="yes"
+								  delimitertype="row"
+								  delimiter="${type.delimiter}"
+								  output="${basedir}/../build/database/data/mssql/${name}.log"
+								  print="false"
+								  showheaders="false">
+
+								<fileset dir="${basedir}/../build/database/data/mssql" casesensitive="no">
+									<include name="**/*.sql"/>
+								</fileset>
+								<classpath refid="class.path"/>
+							</sql>
+						</then>
+					</if>
+				</then>
+          </if>
+				</then>
+				<else>
+					<if>
+            <available file="${basedir}/../build/database/data/oracle" type="dir" />
+            <then>
+              <if>
+            <!--check if any sql files exist in the data directory and then run them -->
+            <resourcecount count="0" when="greater">
+                <fileset dir="${basedir}/../build/database/data/oracle" casesensitive="no">
+									<include name="**/*.sql"/>
+								</fileset>
+            </resourcecount>
+						<then>
+							<sql driver="${driver}"
+								  url="${url}"
+								  userid="${username}"
+								  password="${password}"
+								  autocommit="yes"
+								  rdbms="${type.vendor}"
+								  onerror="continue"
+								  keepformat="yes"
+								  delimitertype="row"
+								  delimiter="${type.delimiter}"
+								  output="${basedir}/../build/database/data/oracle/${name}.log"
+								  print="false"
+								  showheaders="false">
+
+								<fileset dir="${basedir}/../build/database/data/oracle" casesensitive="no">
+									<include name="**/*.sql"/>
+								</fileset>
+								<classpath refid="class.path"/>
+							</sql>
+						</then>
+					</if>
+            </then>
+          </if>
+			  </else>
+		</if>
+		<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <target name="loadModuleXMLData">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+		<taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask" classpathref="class.path"/>
+		<dbunit
+		  driver="${driver}"
+		  url="${url}"
+		  schema="${schema}"
+		  userid="${username}"
+		  password="${password}">
+		  <operation type="${dbunit.optype.prefix}INSERT"
+			src="${file}"
+			format="flat"/>
+		  <classpath refid="class.path"/>
+		</dbunit>
+		<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <!-- Use DbUnit to import data from the defined XML file. This
+         task relies upon an up-to-date DTD.
+    -->
+  <target name="importPerfUsers" depends="checkDeploy, init, preparesql">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+    <taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask" classpathref="class.path"/>
+    <dbunit
+      driver="${driver}"
+      url="${url}"
+      schema="${schema}"
+      userid="${username}"
+      password="${password}">
+      <operation type="${dbunit.optype.prefix}INSERT"
+        src="${basedir}/../build/database/data/section/${file.name}"
+        format="flat"/>
+      <classpath refid="class.path"/>
+    </dbunit>
+    <antcall target="-refreshMaxId"/>
+	<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <!-- Refreshes the database by removing, creating and importing static data, excluding
+  localized test data.
+    -->
+  <target name="refreshDbLocalized" description="Runs removeDb, createDb and importDbLocalized" depends="removeDb, createDb, importDbLocalized">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <target name="importDbLocalized" description="Imports data into an existing database, excluding localized test data" depends="checkDeploy, init, preparesql">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+    <antcall target="loadXmlDataLocalized"/>
+	<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <target name="loadBaseXmlData" depends="preparesql">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+      <if>
+          <isset property="script.data.component.type" />
+            <then>
+                <antcall target="loadTypeComponentData"/>
+            </then>
+      </if>
+      <if>
+          <isset property="script.data.component.configurable" />
+            <then>
+                <antcall target="loadConfigurableComponentData"/>
+            </then>
+      </if>
+      <if>
+          <isset property="script.data.component.test" />
+            <then>
+                <antcall target="loadTestComponentData"/>
+            </then>
+      </if>
+      <if>
+          <isset property="script.data.component.client" />
+            <then>
+                <antcall target="loadClientComponentData"/>
+            </then>
+      </if>
+	  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <target name="loadLocalizedXmlData" depends="preparesql">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+      <if>
+        <isset property="script.data.component.test.localized" />
+          <then>
+              <antcall target="loadLocalizedTestComponentData"/>
+          </then>
+      </if>
+	  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+  <!-- Use DbUnit to import data from the defined XML file. This
+       task relies upon an up-to-date DTD.
+  -->
+  <target name="loadLocalizedTestComponentData" depends="preparesql">
+  <antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+    <taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask" classpathref="class.path"/>
+    <dbunit
+      driver="${driver}"
+      url="${url}"
+      schema="${schema}"
+      userid="${username}"
+      password="${password}">
+      <operation type="${dbunit.optype.prefix}INSERT"
+        src="${basedir}/../build/database/data/section/${script.data.component.test.localized}"
+        format="flat"/>
+      <classpath refid="class.path"/>
+    </dbunit>
+	<antcall target="timestamp">
+    <param name="message" value="Time now" />
+  </antcall>
+  </target>
+
+</project>

@@ -1,0 +1,1045 @@
+/*! directory.less | (c) 2014 MarketLive, Inc. | All Rights Reserved */
+
+/** Gateway **/
+.navleftbg {
+	border-collapse: collapse;
+	border: none!important;
+	
+	td {
+		background: #B4B4B4;
+		color: #fff;
+		font-family: lato,'Source Sans Pro', sans-serif;
+		font-size: 16px;
+		font-weight: 600;
+		text-transform: uppercase;
+		line-height: 30px;
+		padding: 0 0 0 20px;
+	}
+	
+	.navLeft2Off, .navLeft2On {
+		
+		background: #fff;
+		margin: 0 0 0 -20px;
+		padding: 0 0 0 20px!important;
+		
+		a:link,a:active, a:visited {
+				color: #333;
+				font-size: 14px;
+				text-transform: none;
+		}
+	}
+	.navLeftSubsOn {
+		a {
+			font-weight: 600;
+			
+			:after{
+				content: "\f054";
+				display: inline-block;
+				font-family: FontAwesome;
+				font-style: normal;
+				font-weight: normal;
+				line-height: 1;
+				-webkit-font-smoothing: antialiased;
+				-moz-osx-font-smoothing: grayscale;
+				margin: 0 0 0 5px;
+			}
+		}
+	}
+	.navLeftSubsOff, .navLeftSubsOn {
+		background: #fff;
+		margin: 0 0 0 -20px;
+		padding: 0 0 0 40px!important;
+		
+		a:link,a:active, a:visited {
+				color: #333;
+				font-size: 14px;
+				text-transform: none;
+				line-height: 24px;
+
+		}
+	}
+	.navLeft1On {
+		background: #fff;
+		color: #000;
+		font-family: 'lato', cursive;
+		font-weight: 400;
+		font-size: 30px;
+		text-transform: none;
+		margin: 0 0 0 -20px;
+		padding: 0 0 0 20px!important;
+		border: none;
+		
+		a:link, a:active, a:visited {
+				display: block;
+				color: #000;
+				font-family: 'lato', cursive;
+				font-weight: 400;
+				font-size: 30px;
+				line-height: 44px;
+				margin: 0;
+				padding: 0;
+		}
+	}
+}
+
+
+/** Directory **/
+.facetedNavLeft {
+		.refineBy {
+			color: #000;
+			font-family: 'lato', cursive;
+			font-weight: 400;
+			font-size: 30px;
+			text-transform: none;
+		}
+
+
+	.header {
+		background: #B4B4B4;
+		color: #fff;
+		font-size: 14px;
+		font-weight: bold;
+		line-height: 30px;
+		text-transform: uppercase;
+		margin: 0;
+		padding: 0 0 0 10px;
+		
+		.clear {
+			color: #fff;
+			font-size: 12px;
+			font-weight: normal;
+			line-height: 30px;
+			text-decoration: underline;
+			cursor: pointer;
+			text-transform: none;
+			margin: 0;
+			padding: 0 10px 0 0;
+		}
+		.clear.disabled {
+			color: #aaa;
+			text-decoration: none;
+			cursor: auto;
+		}
+	}
+	
+	.listFilter {
+			.facetValue {
+				color: #333;
+				font-size: 14px;
+				font-weight: normal;
+				line-height: 22px;
+				padding: 0 0 0 5px;
+				cursor: pointer;
+				float: none;
+			}
+			.facetValue.selected {
+				color: #000;
+				font-weight: 700;
+			}
+	}
+	 
+	.textGridFilter{
+		 .facetValue {
+			background: none!important;
+			filter: none;
+			font-size: 14px;
+			color: #333;
+			text-align: center;
+			min-width: 20px;
+			line-height: 22px;
+			border: 1px solid #999!important;
+			-moz-border-radius: 4px;
+			-webkit-border-radius: 4px;
+			margin: 0 7px 5px 0;
+			padding: 0 6px;
+			border-radius: 4px;
+			cursor: pointer;
+			float: left;
+		}
+		.facetValue.selected {
+			background: #000!important;
+			color: #fff;
+			font-weight: 700;
+			border: 1px solid #000!important;
+		}
+		
+	}
+	.checkboxListFilter {
+		.facetValue {
+			.label {
+				color: #333;
+				font-size: 14px;
+				font-weight: normal;
+				line-height: 22px;
+				padding: 0;
+				-moz-user-select: none;
+				-khtml-user-select: none;
+				-webkit-user-select: none;
+				user-select: none;
+			}
+			.checkbox {
+				width: 10px;
+				height: 10px;
+				margin: 0;
+				border: 1px solid #999!important;
+				border-radius: 2px;
+				-moz-border-radius: 2px;
+				-webkit-border-radius: 2px;
+				margin: 5px 5px 0 0;
+				float: left;
+				overflow: hidden;
+			}
+		}
+		.facetValue.selected {
+			.label {
+				color: #000;
+				font-weight: 700;
+			}
+			.checkbox {
+				background: #000;
+				border: 1px solid #000!important;
+			}
+		}
+	}
+	
+	.noRefinements {
+			font-family: lato,'Source Sans Pro', sans-serif;
+			font-size: 12px;
+	}	
+}
+
+
+
+.directoryPaging {
+		display: inline;
+		color: #B4B4B4;
+		font-size: 14px;
+		line-height: 26px;
+		margin: 0;
+		padding: 0;
+		
+		table {
+			vertical-align: bottom;
+		}
+		
+		td.control-items {
+			color: #B4B4B4;
+			font-size: 14px;
+			line-height: 26px;
+			text-align: center;
+			
+			a {
+				color: #B4B4B4;
+			}
+			br {
+				display: none;
+			}
+		}
+		
+		td.control-paging {
+			color: #B4B4B4;
+			font-size: 14px;
+			line-height: 26px;
+			text-align: right;
+			width: 100px;
+			
+			 a {
+				color: #B4B4B4;
+			}
+		}
+		
+		.ml-paging-next {
+			img {
+				display: none;
+			}
+		}
+		a.ml-paging-next:after{
+			content: "\f054";
+			display: inline;
+			color: #B4B4B4;
+			font-family: FontAwesome;
+			font-style: normal;
+			font-weight: normal;
+			text-decoration: none!important;
+			font-size: 14px;
+			line-height: 26px;
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+			padding: 0 5px;
+			visibility: visible;
+		}
+	
+	.default,	.default a:link, .default a:visited,	.default a:active {
+			color: #B4B4B4;
+			font-size: 14px;
+			line-height: 26px;
+		}	
+}
+
+a.ml-paging-next:-webkit-any-link{
+		text-decoration: none!important;
+}
+	
+.directoryCategoryHeader {
+		float:left;
+		width: 100%;
+		margin: 0;
+		padding: 0;
+		
+		h1 {
+			color: #333 !important;
+			font: 20px "Lato" !important;
+			padding: 0 0 0;
+			margin: 0 0 0 0;
+			line-height: 2em;
+			font-weight: 600;
+			text-transform: uppercase;
+		}
+	}
+
+.directorySort {
+	width: 468px;
+	table {
+		float: right;
+	}
+}
+
+.gridListView {
+	padding: 4px 10px;
+}
+
+a#gridView {
+	color: #B4B4B4;
+	font-size: 14px;
+	line-height: 26px;
+	margin-bottom: 20px;
+	
+	img {
+		display: none;
+	}
+	
+	:after{
+		content: "\f00a";
+		display: inline;
+		font-family: FontAwesome;
+		font-style: normal;
+		font-weight: normal;
+		line-height: 1;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		padding: 0 5px;
+	}
+}
+
+a#listView {
+	color: #B4B4B4;
+	font-size: 14px;
+	line-height: 26px;
+	img {
+		display: none;
+	}
+	:after{
+		content: "\f00b";
+		display: inline;
+		font-family: FontAwesome;
+		font-style: normal;
+		font-weight: normal;
+		line-height: 1;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		padding: 0 5px;
+	}
+}
+
+.pqve_btn_thumb,
+.pqve_btn_thumb_on,
+.pqve_btn_thumb_off {
+	background: none;
+	background: #1b71a0;
+	top: 75px;
+	color: #fff;
+	width: 170px;
+	height: auto;
+	font-family: lato,'Source Sans Pro', sans-serif;
+	font-weight: 700;
+	font-size: 14px;
+	line-height: 24px;
+	text-align: center;
+	text-transform: uppercase;
+	margin: 0;
+	padding: 0;
+}
+
+#masonry-gallery-container
+ {
+   width: 103.125%; 
+   overflow: hidden;
+   margin-left: -1.562%; 
+   margin-bottom: -1.875em; 
+}
+
+.masonry-gallery-item {
+    border: 1px solid #dadbdc;
+    display: block;
+    height: auto;
+    padding: 4px;
+    float: left;
+    margin: 0 1.515% 1.875em;    
+	a {
+	    color: #646464;
+	    line-height: 1.2em;
+	    text-decoration: none;
+	    transition: all 0.4s ease-in 0s;
+		-webkit-transition: all .4s ease-in;
+		-moz-transition: all .4s ease-in;
+		-o-transition: all .4s ease-in;
+	}
+	a:hover{ 
+		color:#666; 
+	}
+}
+
+.directoryGridRow {
+	padding-top: 20px;
+	.directoryThumbWrapper {
+		float: left;
+		position: relative;
+		height:280px;
+		border-left: 1px solid #DADBDC;
+		border-top: 1px solid #DADBDC;
+		border-right: 2px solid #DADBDC;
+		border-bottom: 2px solid #DADBDC;
+		-moz-border-radius: 9px;
+		-webkit-border-radius: 9px;
+		border-radius: 9px;
+		-o-border-radius: 9px;
+		border-bottom-left-radius: 9px;
+		border-bottom-right-radius: 9px;
+		border-top-left-radius: 9px;
+		border-top-right-radius: 9px;
+		
+		.thumbInfo {
+			margin-top:30px;
+		}
+	}
+	.directoryThumbWrapper:hover {
+			border: 1px solid #5d5d5b;
+			border-right: 2px solid #5d5d5b;
+			border-bottom: 2px solid #5d5d5b;
+			}
+}
+
+
+ 
+.directoryListRow {
+	.directoryThumbWrapper{
+		float: left;
+		position: relative;
+		height:180px;
+		margin-bottom:5px;
+		border-left: 1px solid #DADBDC;
+		border-top: 1px solid #DADBDC;
+		border-right: 2px solid #DADBDC;
+		border-bottom: 2px solid #DADBDC;
+		-moz-border-radius: 9px;
+		-webkit-border-radius: 9px;
+		border-radius: 9px;
+		-o-border-radius: 9px;
+		border-bottom-left-radius: 9px;
+		border-bottom-right-radius: 9px;
+		border-top-left-radius: 9px;
+		border-top-right-radius: 9px;
+	}
+	.directoryThumbWrapper:hover {
+			border: 1px solid #5d5d5b;
+			border-right: 2px solid #5d5d5b;
+			border-bottom: 2px solid #5d5d5b;
+		}
+}
+
+
+.thumbdiv img {
+	background: #f2f2f2;
+	display: block;
+	color: #cccccc;
+	margin: 5px 2px;
+	-moz-border-radius: 9px;
+	-webkit-border-radius: 9px;
+	border-radius: 9px;
+	-o-border-radius: 9px;
+	border-bottom-left-radius: 9px;
+	border-bottom-right-radius: 9px;
+	border-top-left-radius: 9px;
+	border-top-right-radius: 9px;
+}
+.directoryThumbSpacer {
+	width: 5px;
+}
+
+
+.content-topics {
+	float:right;
+	a {
+		img {
+			width: 163px;padding: 5px;-moz-border-radius: 9px;
+			-webkit-border-radius: 9px;
+			border-radius: 9px;
+			-o-border-radius: 9px;
+			border-bottom-left-radius: 9px;
+			border-bottom-right-radius: 9px;
+			border-top-left-radius: 9px;
+			border-top-right-radius: 9px;
+		}
+	}
+}
+
+.tts-img-outerdiv{
+	padding-left:20px;
+	.promo{
+		font-size: 33px;
+		margin: 10px 0 0 0;	
+	}
+}
+.tts-img-div, .tts-img-div-center {
+	a {
+		text-decoration:none;
+	}
+}
+
+.tts-gateway-text{
+	z-index: 1; 
+	position: absolute; 
+	color: #fff; 
+	font: 500 23px/1.7em 'Josefin Slab', lato;  
+	top: 195px;
+	text-align: center;
+	background: #666;
+	width: 100%;
+	opacity:.7;
+}
+
+.tts-gateway-headertext{
+	font: 400 20px/1.2em lato;
+	color: #666;
+	text-transform: uppercase;
+	margin-top:20px;
+}
+
+.tts_gateway_right_overlay{
+	z-index:100;
+	position:absolute;
+	color:#000;
+	font: 500 24px/1em lato;
+	left:22px;
+	top:143px;
+}
+
+.gateway_leftnav_01-1 {
+	padding-right:0
+}
+.gateway_leftnav_01-slot-wrapper-1{
+	padding-left:0
+}
+ 
+.specificationContent {
+	.attrName {
+	    font-size: 14px;
+	    font-weight: 500;
+	    list-style-type: none;
+	    text-transform: uppercase;
+		color: #666;
+	}
+	.attrValue {
+ 	   list-style-type: none;
+    	margin-bottom: 10px;
+	}
+}
+
+
+div#tabContent {
+	height: 330px!important;
+}
+
+.infoTabOn, .infoTabOff{
+	text-transform:uppercase;
+	color: #111C24;
+	font-size: 12px;
+   font-weight: 600;
+ 	letter-spacing: .2px;
+}
+
+.infoTabOn {
+  border-spacing: 2px;
+  border-color: #e0ded8;
+  background-color: #e0ded8;
+  
+  div:first-child::after {
+	  content: url(/images/tileshop/en_us/local/localgraphics/icon-down-arrow.png);
+  }
+}
+.infoTabOff {
+  cursor: pointer;
+  background-color: #fff;
+  border: 1px solid #d6d6d6;
+  padding: 5px 12px;
+	div:first-child::after {
+	  content: url(/images/tileshop/en_us/local/localgraphics/icon-down-arrow.png);
+	}
+}
+
+body > table > tbody > tr:nth-child(2) > td:nth-child(2) > div.dl-body > table > tbody > tr:nth-child(3) > td:nth-child(1) > div.default {
+  max-height: 200px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border: solid 1px #e0ded8;
+  padding: 6px;
+}
+
+.infoTabContent {
+  background-color: #FFFFFF;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #d6d6d6;
+}
+.captionWrapper {
+	img{
+		border:0;
+	}
+	.caption {
+		position: absolute;
+		color: #2d2d2e;
+		font-family: 'lato', cursive;
+	}
+	.bgcaption {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		background: rgb(0, 0, 0);
+		background: rgba(255, 255, 255, 0.7);
+		font-size: 30px;
+		color: #fff;
+		text-align: center;
+		padding: 14px 0;
+		color: #2d2d2e;
+		font-family: 'lato', cursive;
+		text-transform: uppercase;
+		span {
+			font-family:"Josefin Slab";
+			font-size:24px;
+			text-transform:lowercase;
+		}
+	}
+	a{
+		text-decoration:none;
+		border:0;	
+	}		
+}
+.captionInner { 
+   position: relative;
+   width: 100%; /* for IE 6 */
+   a{
+ 	  text-decoration:none;
+	}
+}
+ 
+.captionWrapper.feature{
+	width:490px;
+	.caption{
+		top:0;
+		text-align:center;
+		margin:55px 0 0 0;
+		width:100%;
+		left:30px;
+		bottom:20px;	
+		color: #fff;
+		
+		 .title{
+			font-size: 24px;
+			text-align: center;
+			padding: 14px 0;
+			color: #fff;
+			font-family: 'lato', cursive;
+			text-transform: uppercase;
+			border:0;
+		}
+		.shop{
+			font-family:"Josefin Slab";
+			font-size:24px;
+			text-transform:lowercase;
+			padding-right:10px;
+		}		
+		.normal{
+			font-family:"Josefin Slab";
+			font-size:30px;
+			text-align:center;
+		}
+		.bold{
+			font-size: 26px;
+			text-align: center;
+			margin-top: 34px;
+		}
+	}
+	.inspiration {
+		.caption{
+			width: 100% !important;
+			text-align: center !important;
+			float:none !important;
+			left:0;
+		}
+		.ctitle{
+			font-size: 30px;
+			margin-bottom: 20px;
+			text-transform: uppercase;
+			font-weight: 300;
+			float: none;	
+		}
+	}	
+}
+.captionWrapper.left{
+	float:left;
+}
+.captionWrapper.right{
+	float:right;
+}
+.captionWrapper.banner{
+	position:relative;
+	margin-bottom:10px;
+	.ctitle {
+		position: absolute;
+		left: 80px;
+		top: 30px;
+		font-family: 'lato', cursive;
+		font-size: 33px;
+		line-height: 30px;
+		text-transform: uppercase;
+		color: #eee;
+		font-weight: 300;
+	}
+}
+
+.captionWrapper.banner.tright {
+	.ctitle{
+		left:auto !important;
+		right:50px;
+	}
+	.caption{
+		left:auto !important;
+		right:30px;
+	}
+}
+
+.captionWrapper.highlight.left{
+	margin-right:10px;	
+}
+.captionWrapper.highlight {
+	.caption{
+		color: #2d2d2e;
+		text-align: center;
+		width: 100%;
+		left: 0;
+		
+		.title{
+			color: #2d2d2e;
+		}
+	}
+}
+ 
+
+div.promo{
+	background: none;
+	text-align:center;
+	color: #333;
+	font-family:"Josefin Slab";
+	font-size:50px;
+	margin:10px 0;
+	a {
+		text-decoration:none;	
+		color: #333 !important; 
+		background:none; 
+		line-height:100px;
+		height:100px;
+		display:inline-block;
+		padding:0 20px;
+		.findmore{
+			font-family: 'lato', cursive;
+			font-size: 14px;
+			color: #333 !important;
+			margin-top: -23px;
+			text-align: right;
+			text-transform: uppercase;
+			line-height: 14px;
+			font-weight:bold;
+		}
+	}
+}
+ 
+ /* Category Layout Nordic Click 24-10-2014 */
+.tts-img-outerdiv div.promo a .findmore{
+	font-weight:300;
+	font-size:12px;	
+}
+
+.cat-head {
+	position:relative;
+	
+	.overlay{
+		position:absolute;
+		text-align:right;
+		left:0;
+		bottom:0;
+		width:100%;
+		color:#fff;
+		font-family:"Josefin Slab";
+		font-size:18px;
+		padding:0 0 20px 0;
+		
+		h1{
+			padding:0px 15px 3px 0;
+			font-weight:300;
+			font-size: 36px;
+			color:#fff;
+		}
+		p{	
+			font-family: 'lato', cursive;
+			font-size: 14px;
+			padding: 0 15px 0 0;
+			line-height: 18px;
+			font-weight: 300;
+		}
+	}
+}
+
+.cat-list-item {
+	padding:10px 0;
+	position:relative;
+	
+	img{
+		border:0;
+	}
+	.category{
+		width:453px;
+		height:150px;
+		float:right;
+	}
+	.overlay {
+		width:325px;
+		height:150px;
+		background: none;
+		text-align:center;
+		color:#333;
+		position:relative;
+		float:right;
+
+		h2{
+			font-family: "Lato"; 
+			font-size: 18px;
+			text-transform: uppercase;
+			font-weight: 300;
+			margin:7px 0 4px 0;
+		}
+		a{
+			position:absolute;
+			left:0;
+			bottom:5px;
+			display:block;
+			width:100%;
+			text-align:center;
+			color:#333;
+			text-decoration:none;
+			
+			span.shop{
+				font-family: Lato;
+				font-size: 13px;
+				text-transform: lowercase;
+				padding-right: 5px;
+				color: #333;
+			}
+			span.title{
+				font-size: 12px;
+				text-align: center;
+				font-family: 'lato', cursive;
+				text-transform: uppercase;
+				border: 0;
+				color:#333; 
+			}
+		}
+		p{
+			padding: 0 29px;
+			text-align: justify;
+			margin:0;
+			font-weight:300;
+		}
+	}
+}
+ 
+.overlay.dark h1{
+	color:#2d2d2e;	
+}
+
+.design-book {
+	.design-item{
+		margin-bottom:10px;	
+	}
+	.design-item.left{
+		float:left;
+	}
+	.design-item.right{
+		float:right;
+	}	
+}
+ 
+div[id*=contentGalleryId_]{
+		width:auto;
+}
+
+.masonry-gallery-container {
+		width: 100%;
+}
+
+.masonry-gallery-item.masonry-brick > div.dl-image-container {
+  text-align: center;
+}
+
+
+
+/*Careers Page Classes Start*/
+
+.careersredesign {
+	text-align: justify;
+	margin-top:20px;
+	font-size:14px; 
+	line-height:20px; 
+	font-family:Lato, Georgia, 'Times New Roman', Times, serif;
+}
+
+.careersimage {
+	float:right; 
+	margin-left:7%; 
+	margin-right:3%; 
+	margin-bottom:3%; 
+	width: 17% !important;
+	height:auto	
+}
+
+.car-cat-list-item{
+	padding:0 0;
+	margin:10px;
+	position:relative;
+	.careersoverlayR{
+		width:340px;
+		height:175px;
+		background: none;
+		text-align:center;
+		color:#333;
+		position:relative;
+		float:right;
+		h2{
+			font-family: "Lato";
+			font-size: 18px;
+			text-transform: capitalize;
+			font-weight: bold;
+			margin:7px 0 4px 0;
+		}
+		p{
+			font-family: "Lato";
+			font-size:14px;
+			padding: 0 29px;
+			text-align: center;
+			margin:0;
+			font-weight:bold;
+			line-height:16px;
+		}
+		a{
+			position:absolute;
+			left:0;
+			bottom:5px;
+			display:block;
+			width:100%;
+			text-align:center;
+			color:#333;
+			text-decoration:none;
+			span.shop{
+				font-family: "Lato";
+				font-size: 13px;
+				text-transform: lowercase;
+				padding-right: 5px;
+				color:#333;
+			}
+		}
+	}
+	.careersoverlayL{
+		width:340px;
+		height:175px;
+		background: none;
+		text-align:center;
+		color:#333;
+		position:relative;
+		float:left;
+		 h2{
+			font-family: "Lato";
+			font-size: 18px;
+			text-transform: capitalize;
+			font-weight: bold;
+			margin:7px 0 4px 0;
+			}
+		p{
+			font-family: "Lato";
+			font-size:14px;
+			padding: 0 29px;
+			text-align: center;
+			margin:0;
+			font-weight:bold;
+			line-height:16px;
+		}	
+		a{
+			position:absolute;
+			left:0;
+			bottom:5px;
+			display:block;
+			width:100%;
+			text-align:center;
+			color:#333;
+			text-decoration:none;
+			span.shop{
+				font-family: "Lato";
+				font-size: 13px;
+				text-transform: lowercase;
+				padding-right: 5px;
+				color:#333;
+			}			
+		}
+	}
+}
+
+.inverse .category{
+	float:left !important;
+}
+.noDesktop{
+	display:none;	
+}
+.desktopOnly{
+	display:block;	
+}
+
+#sticky-nav-container .dl-find-store-sticky-header {
+      display:none;
+}
+
+.tts-glass-div, .tts-stone-div, .tts-installation-tools-div {
+    width: 30%;
+    padding-bottom: 5%;
+}
+
+.tts-img-div-center{
+	margin:0 20px;
+}
+.tts-img-div, .tts-img-div-center {
+	padding-top:20px; 
+	float:left; 
+	position:relative;
+}
+
+.ml-ts-category-block .ts-main-title h1{
+	font: 500 45px/1.2em 'Lato';
+}

@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping  default-lazy="false" package="com.marketlive.entity.cart.order">
+  <!-- All unqualified class names are in the above package. -->
+  <class name="OrderPayment" table="ORDER_PAYMENT">
+
+    <!-- Primary key -->
+    <id name="pk" column="ORDER_PAYMENT_ID" type="com.marketlive.entity.cart.order.OrderPaymentPkHibernateType">
+      <generator class="com.marketlive.entity.generator.MaxIDIntegerPkGenerator">
+        <param name="MAX_ID_TABLE">MAX_ID</param>
+        <param name="KEY_NAME">ORDER_PAYMENT</param>
+        <param name="BATCH_SIZE">10</param>
+        <param name="ENTITY_TYPE">orderpayment</param>
+      </generator>
+    </id>
+
+    <!-- Version tracking -->
+    <version name="version" column="VERSION" type="integer"/>
+
+    <!-- Parent objects -->
+    <many-to-one name="order"
+      column="ORDERS_ID"
+      class="Order"
+      update="false"
+      outer-join="false"
+      not-null="true"
+      foreign-key="ORDER_PAYMENT_FK01"
+      index="ORDER_PAYMENT_IX01"/>
+
+    <!-- Uni-directional lookup -->
+    <many-to-one name="paymentType"
+      column="ORDER_PAYMENT_TYPE_ID"
+      class="OrderPaymentType"
+      cascade="none"
+      not-null="true"
+      foreign-key="ORDER_PAYMENT_FK02"
+      index="ORDER_PAYMENT_IX02"/>
+
+    <!-- Properties -->
+    <property name="code" column="CODE" type="string" length="50"/>
+    <property name="amount" type="com.marketlive.entity.AmountType" not-null="true">
+      <column name="AMOUNT" sql-type="NUMERIC(19,4)"/>
+    </property>
+    <property name="description" column="DESCRIPTION" type="string" length="500"/>
+    <property name="dateCreated" column="DATE_CREATED" type="timestamp" update="false"/>
+    <property name="dateModified" column="DATE_MODIFIED" type="timestamp"/>
+
+    <!-- Subclasses -->
+
+    <joined-subclass name="OrderPaymentCreditCard" table="ORDER_PAYMENT_CREDIT_CARD" lazy="true">
+      <key foreign-key="ORDER_PAYMENT_CREDIT_CARD_FK01">
+        <column name="ORDER_PAYMENT_ID" not-null="true"/>
+      </key>
+      <property name="type" column="TYPE" type="string" length="50" not-null="true"/>
+	  <property name="number" column="CC_NUMBER" type="string" length="500"/>
+      <property name="maskedNumber" column="MASKED_NUMBER" type="string" length="50"/>
+      <property name="expMonth" column="EXP_MONTH" type="string" length="2" not-null="true"/>
+      <property name="expYear" column="EXP_YEAR" type="string" length="4" not-null="true"/>
+      <property name="keyCode" column="KEY_CODE" type="string" length="50"/>
+      <property name="deleteFlag" column="DELETE_FLAG" type="boolean" length="1"/>    
+	</joined-subclass>
+
+    <joined-subclass name="OrderPaymentGiftCertificate" table="ORDER_PAYMENT_GIFT_CERTIFICATE" lazy="true">
+      <key foreign-key="ORDER_PAYMENT_GIFT_CERT_FK01">
+        <column name="ORDER_PAYMENT_ID" not-null="true"/>
+      </key>
+      <property name="giftCertificatePk" column="GIFT_CERTIFICATE_ID" type="com.marketlive.entity.giftcertificate.GiftCertificatePkHibernateType"/>
+      <property name="number" column="GC_NUMBER" type="string" length="50" not-null="true"/>
+      <property name="balance" type="com.marketlive.entity.AmountType" not-null="true">
+        <column name="BALANCE" sql-type="NUMERIC(19,4)"/>
+      </property>
+    </joined-subclass>
+
+    <joined-subclass name="OrderPaymentCheck" table="ORDER_PAYMENT_CHECK" lazy="true">
+      <key foreign-key="ORDER_PAYMENT_CHECK_FK01">
+        <column name="ORDER_PAYMENT_ID" not-null="true"/>
+      </key>
+      <property name="routingNumber" column="ROUTING_NUMBER" type="string" length="50" not-null="true"/>
+      <property name="accountNumber" column="ACCOUNT_NUMBER" type="string" length="50" not-null="true"/>
+    </joined-subclass>
+
+    <joined-subclass name="OrderPaymentPayPal" table="ORDER_PAYMENT_PAYPAL" lazy="true">
+      <key foreign-key="ORDER_PAYMENT_PAYPAL_FK01">
+        <column name="ORDER_PAYMENT_ID" not-null="true"/>
+      </key>
+      <property name="transactionId" column="TRANSACTION_ID" type="string" length="19"/>
+      <property name="correlationId" column="CORRELATION_ID" type="string" length="20" />
+      <property name="pendingReason" column="PENDING_REASON" type="string" length="20" />
+      <property name="paymentStatus" column="PAYMENT_STATUS" type="string" length="20" />
+<!--       <property name="authorizationTransactionId" column="AUTH_TRANSACTION_ID" type="string" length="19"/> -->
+<!--       <property name="authorizationCorrelationId" column="AUTH_CORRELATION_ID" type="string" length="20" /> -->
+<!--       <property name="authorizationPendingReason" column="AUTH_PENDING_REASON" type="string" length="20" /> -->
+<!--       <property name="authorizationPaymentStatus" column="AUTH_PAYMENT_STATUS" type="string" length="20" /> -->
+    </joined-subclass>
+
+    <joined-subclass name="OrderPaymentAmazon" table="ORDER_PAYMENT_AMAZON" lazy="true">
+      <key foreign-key="ORDER_PAYMENT_AMAZON_FK01">
+          <column name="ORDER_PAYMENT_ID" not-null="true"/>
+      </key>
+      <property name="orderReferenceId" column="ORDER_REFERENCE_ID" type="string" length="50" not-null="true"/>
+    </joined-subclass>
+
+    <joined-subclass name="com.deplabs.entity.cart.order.OrderPaymentAffirm" table="ORDER_PAYMENT_AFFIRM" lazy="true">
+      <key foreign-key="ORDER_PAYMENT_AFFIRM_FK01">
+          <column name="ORDER_PAYMENT_ID" not-null="true"/>
+      </key>
+    </joined-subclass>
+    
+  </class>
+</hibernate-mapping>

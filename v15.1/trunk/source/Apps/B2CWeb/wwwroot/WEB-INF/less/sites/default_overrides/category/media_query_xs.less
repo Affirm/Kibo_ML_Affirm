@@ -1,0 +1,241 @@
+/*! media_query_xs.less | (c) 2014 MarketLive, Inc. | All Rights Reserved */
+
+.dl-mq-xs-mixin-category (@a) when (@a = true), (@a = XS_screenWidth) {
+
+	.car-cat-list-item {
+		.careersoverlayL{
+			width: 100%;
+		}
+		.careersoverlayR{
+			width:100%;
+		}
+	}
+	
+	.ml-global-include {
+		background:#f1f1f2;
+	}
+	
+	/*Global Header Banner Close Functionality on XS*/
+	.ml-header-global-include-close{
+		visibility:hidden;
+	}
+	
+	#olapic_specific_widget {
+		display: block ;
+	}
+	
+	div#home_topnav_04-2 .mobile-hide {
+		display: none;
+	}
+
+	div#home_topnav_04-2 .mobile-hide .captionWrapper, div#home_topnav_04-2 .mobile-hide .clear, div#home_topnav_04-2 .mobile-hide .promo {
+		display: block ;
+	}
+	
+	.dl-alt-horiz-fillslot {
+		.tileshop_directory_leftnav_alt_horiz_slots-2, .tileshop_directory_leftnav_alt_horiz_slots-3 {
+			display:none;
+		}
+		.dl-alt-horiz-slot-image {
+			display:block;
+			width: 100%;
+		}
+	}
+	
+	.ml-slot-item.ml-slot-1.tileshop_directory_leftnav_alt_horiz_slots-1 {
+		display:none;
+	}		
+}
+
+@media only screen and (max-width:450px) {
+	.cat-list-item {
+		.category{
+			width:auto;
+			height:auto;
+		}
+		.overlay{
+			width:100%;
+			height:auto;
+			padding-bottom: 30px;
+			background-size:100% 100%;
+		}
+		div.promo a{
+			bottom:0;
+		}
+	}
+	
+	.tts-img-outerdiv .promo{
+		font-size:14px;	
+	}
+	.design-book div.promo{
+		font-size:20px;
+	}
+	.payment-calculator{
+		width:auto;
+		
+		.ptable div{
+			font-size:9px;	
+		}	
+	}
+	.creditcard {
+		.manage{
+			position:inherit;
+		}	
+		.main {
+			.mtitle{
+				font-size:13px;
+			}	
+		}
+		.room{
+			background:none;
+			height:auto;
+			width:50%;
+		}
+		.rooms {
+			.normal{
+				line-height:normal;	
+			}
+			.plans .large, .plan{
+				font-size:12px;
+				line-height:21px;
+			}
+		}
+	}
+	
+	.pro-network {
+		height:auto;
+		.ptitle{
+			bottom:auto;
+			width:auto;
+			.ptitle.visit{
+				bottom:0;
+				 a{
+					margin:0;
+				}
+			}
+			span{
+				font-size:19px;	
+			}
+		}
+		.yt-player{
+			width:100%;
+			height:auto;
+		}
+		.join-pro{
+			width:100%;
+			position:relative;
+		}
+	}
+
+	.cat-head {
+		.overlay {
+			h1{
+				font-size:17px;
+			}
+		}
+	}
+
+ 	.design-book div.promo{
+		font-size:17px;
+	}
+	.pro {
+		.button{
+			font-size:11px;	
+			float:none;
+			width:100%;
+			margin: 6px 0;
+		}
+		.column{
+			width:100%;
+			margin-bottom:10px;
+			.ptitle{
+				width:100%;
+				height:auto;	
+			}
+		}
+		iframe {
+			width:100%;
+		}
+		.community {
+			.left {
+		    	.left {
+		    		display:none;
+		    	}
+		    	float:none;
+			    width:auto;
+		  	}
+		  	.right {
+		  		float:none;
+				width:auto;
+		  	}
+		 }
+		 .visit, .visit a{
+			width:100%;	
+		  }
+		  .chat-now {
+		  	span{
+				float:none;
+				font-size:16px;
+				text-align:center;
+				margin:0;
+				padding:0
+				width:100%;
+			}
+		}
+	}
+	
+	.ml-ts-category-block .ts-block-content .overlay p{
+		font-size:13px;	
+	}
+	.tts-img-div, .tts-img-div-center{
+		margin:0 auto;
+		width:auto;	
+	}
+
+ 
+	.popup{
+		.inner{
+			padding:10px;
+			font-size:15px;	
+		}
+		.close{
+			margin-left:10px;	
+		}
+		width:100%;	
+	}
+
+	#fancybox-content{
+		background:#31394c;
+		padding-bottom:5px;	
+	}
+}
+@media only screen and (max-width:320px) {
+	.tts-gateway-text{
+		font-size:14px;
+		margin:0 0 13px 0;
+		top:auto;
+		bottom:0px;
+	}
+	
+	.tts-img-div, .tts-img-div-center{
+		margin:0 auto;
+		width:auto;	
+	}
+	.tts-img-div-center.tts-glass-div, .tts-img-div-center.tts-installation-tools-div, .tts-img-div-center.tts-stone-div{
+		margin:0 auto;
+	}
+	.design-item{
+		width:100%;	
+	}
+	.payment-calculator .ptable div{
+		font-size:9px;	
+	}
+
+}
+
+
+@media only screen and (max-width: 450px) {
+.tts-gateway-text {
+    font-size: 10px !important;
+ }
+}

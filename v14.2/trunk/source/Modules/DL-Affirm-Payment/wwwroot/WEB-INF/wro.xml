@@ -1,0 +1,4 @@
+<group name="P2P">
+	<!-- Affirm Monthly Payment Price -->
+	<js>/includes/MarketLive/P2P/Affirm.js</js>
+</group>
