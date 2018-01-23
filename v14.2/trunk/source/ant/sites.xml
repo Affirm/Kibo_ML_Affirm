@@ -1,0 +1,44 @@
+<!--
+     Each deploy section defines what is included in that deployment. Most ant targets require a deployment name
+     passed in using the -Ddeploy=[deploy name]. Example, ant make -Ddeploy=test-rel . This would build the
+     <deploy name="test-rel"> deployment.
+
+     Attributes:
+       type="[release/source]"
+         - release indicates the section will be built from a "released" version of that section.
+         - source indicates the section will be built from the section's source code.
+
+       package="path to section's base directory"
+         - For type "release" the package path is relative to the environment variable MARKETLIVE_RELEASE.
+         - For type "source" the package path is relative to the environment variable MARKETLIVE_HOME.
+
+       name="name of section" - The build process assumes this name will also be part of the directory path.
+         Example: The following section definition
+
+           <section type="release" package="Marketlive-14" name="Platform" version="14.2.0.38" />
+
+         would translate into
+
+           ${MARKETLIVE_RELEASE}/Marketlive-14/Platform-14.2.0.38
+
+       version="section's version number" - In the example above the "version" attribute is used to determine which
+         released version of that section to build with. Is also used to build version.properties.
+ -->
+<sites>
+  <deploy name="ylang">
+    <section type="release" package="Marketlive-14" name="Platform" version="14.2.0.38"/>
+    <section type="release" package="Marketlive-14" name="Integration/XMLBeans" version="14.2.0.38"/>
+    <section type="release" package="Marketlive-14" name="Integration/Core"     version="14.2.0.38"/>
+    <section type="release" package="Marketlive-14" name="Apps/AppCommon" version="14.2.0.38"/>
+    <section type="release" package="Marketlive-14" name="Apps/B2CWeb" version="14.2.0.38"/>
+    <section type="release" package="Marketlive-14" name="Apps/Admin" version="14.2.0.38"/>
+    <section type="release" package="Marketlive-14" name="Apps/IntegrationCLI" version="14.2.0.38"/>
+    <section type="release" package="Modules" name="DataDeploy" version="14.2.0.38"/>
+    
+    <section type="source" package="sites/affirm_kibo_module/v14.2/trunk/source/Modules" name="DL-Affirm-Payment" version="1.0.0" />
+    <section type="source" package="sites/affirm_kibo_module/v14.2/trunk/source" name="Apps/B2CWeb" version="14.2.0.38"/>
+    
+    <section type="release" package="Services" name="IntegrationWS/IntegrationWS-14" version="14.2.0.38" />
+  </deploy>
+
+</sites>

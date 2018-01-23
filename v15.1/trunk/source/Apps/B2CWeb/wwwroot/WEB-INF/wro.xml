@@ -1,0 +1,327 @@
+<groups xmlns="http://www.isdc.ro/wro">
+
+<group name="HEAD">
+    <js>/includes/MarketLive/base/globals.js</js>
+    <js>/includes/MarketLive/base/headerScripts.js</js>
+</group>
+
+<group name="SITE" site="true">
+    <css>/WEB-INF/css/imports/site.css</css>
+</group>
+
+<!-- This group is no Longer used -->
+<group name="HEAD-DEFAULT" site="true">
+    <css>/WEB-INF/css/imports/head_home.css</css>
+</group>
+
+<group name="HEAD-ACCOUNT" site="true">
+    <css>/WEB-INF/css/imports/head_account.css</css>
+</group>
+
+<group name="HEAD-CATEGORY" site="true">
+    <css>/WEB-INF/css/imports/head_category.css</css>
+</group>
+
+<group name="HEAD-HOME" site="true">
+    <css>/WEB-INF/css/imports/head_home.css</css>
+</group>
+
+<group name="HEAD-PRODUCT" site="true">
+    <css>/WEB-INF/css/imports/head_product.css</css>
+</group>
+
+<!-- This group is no Longer used -->
+<group name="HEAD-PRODUCT-DETAIL" site="true" />
+
+<group name="HEAD-BASKET" site="true">
+    <css>/WEB-INF/css/imports/head_basket.css</css>
+</group>
+
+<group name="HEAD-CHECKOUT" site="true">
+    <css>/WEB-INF/css/imports/head_checkout.css</css>
+</group>
+
+<group name="HEAD-SEARCH" site="true">
+    <css>/WEB-INF/css/imports/head_search.css</css>
+</group>
+
+<group name="HEAD-STORELOCATOR" site="true">
+    <css>/WEB-INF/css/imports/head_storelocator.css</css>
+</group>
+
+<group name="HEAD-ANCILLARY" site="true">
+    <css>/WEB-INF/css/imports/head_ancillary.css</css>
+</group>
+
+<group name="HEAD-ADMIN-KICKER-SUPPORT" site="true">
+    <css>/WEB-INF/css/imports/head_admin_kicker_support.css</css>
+</group>
+
+<group name="FOOTER">
+    <js minimize="false">/includes/jquery/jquery-1.11.1.min.js</js>
+    <js minimize="false">/includes/jquery/jquery.mobile.custom.min.js</js>
+    <js minimize="false">/includes/angular/angular.min.js</js>
+    <js>/includes/MarketLive/base/MarketLiveEvents.js</js>
+    <js>/includes/MarketLive/base/MediaQueryDetect.js</js>
+    <js>/includes/MarketLive/base/FlatMenus.js</js>
+    <js>/includes/MarketLive/base/SecondaryNav.js</js>
+    <js>/includes/MarketLive/Touch/jquery/jquery.izilla.touchMenuHover.js</js>
+    <js>/includes/MarketLive/Touch/jquery/jquery.swipe.paging.js</js>
+    <js minimize="false">/includes/bootstrap/bootstrap.min.js</js>
+    <js>/includes/MarketLive/base/NumericSpinner.js</js>
+    <js>/includes/bootstrap/holder.js</js>
+
+    <js minimize="false">/includes/jquery/plugins/slick-master/slick/slick.js</js>
+    <js>/includes/MarketLive/Carousel/ml-responsive-carousel.js</js>
+    <js>/includes/MarketLive/base/CarouselWidget.js</js>
+
+    <js>/includes/MarketLive/base/DynamicData.js</js>
+    <js>/includes/jquery/plugins/jquery.blockUI.js</js>
+    <js>/includes/MarketLive/base/common.js</js>
+    <js>/includes/MarketLive/base/MarketLive.blockUI.js</js>
+    <js>/includes/MarketLive/base/AddressForm.js</js>
+    <js>/includes/MarketLive/EnhancedProductQuickView/qve-InfoTab.js</js>
+    <js minimize="false">/includes/jquery/plugins/jquery.validate.min.js</js>
+    <js>/includes/jquery/plugins/jquery.sonar.js</js>
+    <js>/includes/MarketLive/ClientSideValidate/clientSideValidation.js</js>
+    <js minimize="false">/includes/jquery/plugins/jquery.hoverIntent.js</js>
+    <js>/includes/MarketLive/SocialLogin/SocialAnnexLogin.js</js>
+
+    <!-- Lite Registration -->
+    <js>/includes/MarketLive/P2P/LiteRegistration.js</js>
+    <js>/includes/jquery/plugins/placeholder_polyfill.jquery.js</js>
+    <js>/includes/MarketLive/LiteLogin/LiteLoginApp.js</js>
+    <js>/includes/MarketLive/LiteLogin/LiteLoginController.js</js>
+
+    <js>/includes/MarketLive/base/cookieCheck.js</js>
+    <js>/includes/MarketLive/base/footerScripts.js</js>
+    <js>/includes/MarketLive/Nav/Nav.js</js>
+
+    <!-- jQuery plugins -->
+    <js>/includes/jquery/plugins/jquery.autocomplete.js</js>
+
+    <!-- Global Cart -->
+    <js>/includes/MarketLive/GlobalCart/jquery.popDown.js</js>
+    <js>/includes/MarketLive/GlobalCart/GlobalCart.js</js>
+
+    <!-- Recommendations -->
+    <js>/includes/MarketLive/P2P/Recommendations.js</js>
+
+    <!-- Wish List -->
+    <js>/includes/MarketLive/Wishlist/wishlist.js</js>
+
+    <!-- Amazon -->
+    <js>/includes/MarketLive/thirdparty/amazon/payments/login/Login.js</js>
+
+	<!-- Visa Checkout -->
+    <js>/includes/MarketLive/thirdparty/visacheckout/Checkout.js</js>
+    <!-- reporting -->
+    <js>/includes/MarketLive/Reporting/parseGoogleAnalyticsJSON.js</js>
+<!--
+    TODO: Currently Not Support : Require MCORGID
+    <js minimize="false">/includes/MarketLive/Reporting/VistorAPI.js</js>
+-->
+    <js minimize="false">/includes/MarketLive/Reporting/AppMeasurement.js</js>
+    <js>/includes/MarketLive/Reporting/parseOmnitureJSON.js</js>
+    <js>/includes/MarketLive/Reporting/reporting.js</js>
+</group>
+
+<group name="FOOTER-ADMIN-KICKER-SUPPORT">
+    <js minimize="false">/includes/jquery/jquery-1.11.1.min.js</js>
+    <js minimize="false">/includes/jquery/jquery.mobile.custom.min.js</js>
+    <js>/includes/MarketLive/base/MarketLiveEvents.js</js>
+    <js>/includes/MarketLive/base/MediaQueryDetect.js</js>
+    <js>/includes/MarketLive/base/DynamicData.js</js>
+</group>
+
+<group name="P2P">
+    <!-- p2p common -->
+    <js>/includes/MarketLive/EnhancedProductQuickView/qve.js</js>
+    <js>/includes/MarketLive/EnhancedProductQuickView/qve_popup_jqueryui.js</js>
+    <js>/includes/MarketLive/P2P/thumbnailImageSwatches.js</js>
+
+    <!-- category, content -->
+    <js>/includes/MarketLive/P2P/CategoryDropDown.js</js>
+    <js>/includes/MarketLive/P2P/Directory.js</js>
+    <js>/includes/MarketLive/P2P/SearchResults.js</js>
+    <js>/includes/MarketLive/P2P/optionClasses.js</js>
+    <js>/includes/MarketLive/P2P/options.js</js>
+    <js>/includes/MarketLive/P2P/dependentOptionMenus.js</js>
+    <js>/includes/MarketLive/P2P/enhancedDependentOptionMenus.js</js>
+    <js>/includes/MarketLive/P2P/common.js</js>
+    <js>/includes/MarketLive/P2P/EmailWhenBackInStock.js</js>
+    <js>/includes/MarketLive/P2P/detailImageSwatches.js</js>
+    <js>/includes/MarketLive/P2P/EnhancedDetailImageSwatches.js</js>
+    <js>/includes/MarketLive/P2P/EnhancedDetailAlternateImages.js</js>
+    <js>/includes/MarketLive/P2P/EnhancedDetailNameAndSocialButtons.js</js>
+    <js>/includes/MarketLive/P2P/ProductDetail.js</js>
+    <js>/includes/MarketLive/P2P/kits.js</js>
+    <js>/includes/MarketLive/P2P/ItemKitTableRow.js</js>
+
+    <!-- product detail -->
+    <js>/includes/MarketLive/P2P/InfoTabs.js</js>
+    <js>/includes/MarketLive/P2P/validateProductSelection.js</js>
+
+    <!-- category -->
+    <js>/includes/jquery/plugins/jquery.expandCollapseList.js</js>
+    <js>/includes/MarketLive/Nav/FacetedNav.js</js>
+
+    <!-- basket -->
+    <js>/includes/MarketLive/P2P/Basket.js</js>
+    <js>/includes/MarketLive/P2P/ItemTable.js</js>
+
+    <!-- customer review -->
+    <js>/includes/MarketLive/P2P/ReviewView.js</js>
+
+    <!-- Stock Availability-->
+    <js>/includes/MarketLive/P2P/StockAvailability.js</js>
+
+    <!-- personalization -->
+    <js>/includes/MarketLive/P2P/Personalization.js</js>
+
+    <!-- store locator -->
+    <js>/includes/MarketLive/StoreLocator/StoreLocator.js</js>
+
+    <!-- catalog quick shop -->
+    <js>/includes/MarketLive/P2P/CatalogQuickShopReview.js</js>
+
+
+    <!-- Intelligent Imaging -->
+    <js>/includes/MarketLive/IntelligentImaging/detailImageSwatchView.js</js>
+    <js minimize="false">/includes/MarketLive/IntelligentImaging/cloudzoom/cloudzoom.js</js>
+
+    <!-- common -->
+
+	<!-- Affirm Monthly Payment Price -->
+	<js>/includes/MarketLive/P2P/Affirm.js</js>
+	
+</group>
+
+<group name="CHECKOUT">
+    <!-- Angular -->
+    <js minimize="false">/includes/angular/ui-bootstrap-tpls-0.11.0.min.js</js>
+
+    <js>/includes/MarketLive/Checkout/checkout.js</js>
+
+    <!-- Accordion Checkout -->
+    <js>/includes/MarketLive/Checkout/accordion/accordion.js</js>
+    <js>/includes/MarketLive/Checkout/accordion/services.js</js>
+    <js>/includes/MarketLive/Checkout/accordion/directives.js</js>
+    <js>/includes/MarketLive/Checkout/accordion/controllers.js</js>
+
+    <!-- Amazon -->
+    <js>/includes/MarketLive/thirdparty/amazon/payments/checkout/Checkout.js</js>
+	<!-- Visa Checkout -->
+    <js>/includes/MarketLive/thirdparty/visacheckout/Checkout.js</js>
+</group>
+
+<group name="PQV">
+    <js>/includes/prototype/prototype.js</js>
+    <js>/includes/scriptaculous/effects.js</js>
+    <js>/includes/MarketLive/ProductQuickView/window.js</js>
+    <js>/includes/MarketLive/ProductQuickView/pqv.js</js>
+</group>
+
+
+<group name="MOBILE-HEAD" site="true">
+    <js minimize="false">/includes/jquery/jquery-1.8.2.min.js</js>
+    <js>/includes/jquery/plugins/jquery.mobile-1.2.0/jquery.mobile-1.2.0.js</js>
+    <js>/includes/MarketLive/Base/headerScripts.js</js>
+    <css>/includes/jquery/plugins/jquery.mobile-1.2.0/custom-jquery.mobile-1.2.0.css</css>
+    <!--<cssmlfeature>MOBILECSSFILE</cssmlfeature>-->
+  </group>
+
+<group name="TESTING-HEAD" >
+    <css>/WEB-INF/css/imports/head_tests.css</css>
+    <css>/WEB-INF/views/test/includes/jquery.tocify.css</css>
+</group>
+
+<group name="TESTING-FOOTER" >
+    <js minimize="false">/WEB-INF/views/test/includes/jquery-1.11.1.min.js</js>
+    <js minimize="false">/WEB-INF/views/test/includes/jquery-ui-1.10.3.custom.min.js</js>
+    <js minimize="false">/includes/bootstrap/bootstrap.min.js</js>
+    <js>/includes/MarketLive/base/FlatMenus.js</js>
+    <js>/WEB-INF/views/test/includes/nav.js</js>
+    <js>/WEB-INF/views/test/includes/jquery.tocify.min.js</js>
+    <js>/includes/MarketLive/base/SecondaryNav.js</js>
+    <js>/includes/MarketLive/Touch/jquery/jquery.izilla.touchMenuHover.js</js>
+    <js>/includes/MarketLive/Touch/jquery/jquery.swipe.paging.js</js>
+    <js minimize="false">/includes/bootstrap/bootstrap.min.js</js>
+    <js>/includes/MarketLive/base/NumericSpinner.js</js>
+    <js>/includes/bootstrap/holder.js</js>
+    <js>/includes/MarketLive/base/DynamicData.js</js>
+    <js>/includes/jquery/plugins/jquery.blockUI.js</js>
+    <js>/includes/MarketLive/base/common.js</js>
+    <js>/includes/MarketLive/base/MarketLive.blockUI.js</js>
+    <js>/includes/MarketLive/base/AddressForm.js</js>
+    <js>/includes/MarketLive/EnhancedProductQuickView/qve-InfoTab.js</js>
+    <js minimize="false">/includes/jquery/plugins/jquery.validate.min.js</js>
+    <js>/includes/jquery/plugins/jquery.sonar.js</js>
+    <js>/includes/MarketLive/ClientSideValidate/clientSideValidation.js</js>
+    <js minimize="false">/includes/jquery/plugins/jquery.hoverIntent.js</js>
+    <js>/includes/MarketLive/SocialLogin/SocialAnnexLogin.js</js>
+
+    <!--<js>/includes/jquery/plugins/jquery.jcarousellite.js</js>-->
+    <js minimize="false">/includes/jquery/plugins/jquery.jcarousel.min.js</js>
+    <js>/includes/jquery/plugins/jquery.cycle2.min.js</js>
+    <js>/includes/jquery/plugins/jquery.cycle2.carousel.min.js</js>
+    <js>/includes/jquery/plugins/jquery.cycle2.scrollVert.min.js</js>
+    <js>/includes/jquery/plugins/jquery.cycle2.swipe.min.js</js>
+
+    <js>/includes/MarketLive/Carousel/ml-responsive-carousel.js</js>
+    <!--<js>/includes/MarketLive/Carousel/carousel.js</js>-->
+    <!--<js>/includes/jquery/plugins/jquery.cycle2.center.js"</js>-->
+
+    <!-- common -->
+    <js>/includes/MarketLive/base/cookieCheck.js</js>
+    <js>/includes/MarketLive/base/footerScripts.js</js>
+    <js>/includes/MarketLive/Nav/Nav.js</js>
+
+    <!-- jQuery plugins -->
+    <js>/includes/jquery/plugins/jquery.autocomplete.js</js>
+</group>
+
+<!--
+  ********************************************************************************
+  * End - Mobile - Java Script and CSS groups on the header.                     *
+  ********************************************************************************
+  -->
+
+
+<!--
+  ********************************************************************************
+  * Begin - Mobile - Java Script groups on the footer.                           *
+  ********************************************************************************
+  -->
+  <group name="MOBILE-FOOTER">
+    <js>/includes/MarketLive/Base/AddressForm.js</js>
+    <js>/includes/MarketLive/P2P/common.js</js>
+    <js>/includes/MarketLive/P2P/EmailWhenBackInStock.js</js>
+
+    <!-- Recommendations -->
+    <js>/includes/MarketLive/P2P/Recommendations.js</js>
+
+    <js>/includes/MarketLive/Mobile/swipe.js</js>
+    <js>/includes/MarketLive/Mobile/mobile.js</js>
+    <js>/includes/MarketLive/Mobile/thumbnailImageSwatches.js</js>
+
+    <js>/includes/MarketLive/P2P/options.js</js>
+    <js>/includes/MarketLive/P2P/optionClasses.js</js>
+    <js>/includes/MarketLive/P2P/dependentOptionMenus.js</js>
+    <js>/includes/MarketLive/P2P/detailImageSwatches.js</js>
+    <js>/includes/MarketLive/P2P/InfoTabs.js</js>
+    <js>/includes/MarketLive/P2P/ReviewView.js</js>
+
+    <!-- ESL -->
+    <js>/includes/MarketLive/EnhancedStoreLocator/EnhancedStoreLocator.js</js>
+    <js>/includes/MarketLive/Mobile/EnhancedStoreLocator.js</js>
+    <js>/includes/MarketLive/Reporting/parseGoogleAnalyticsJSON.js</js>
+    <js>/includes/MarketLive/Reporting/mobileReporting.js</js>
+  </group>
+
+ <!--
+  ********************************************************************************
+  * End - Mobile - Java Script groups on the footer.                             *
+  ********************************************************************************
+  -->
+</groups>

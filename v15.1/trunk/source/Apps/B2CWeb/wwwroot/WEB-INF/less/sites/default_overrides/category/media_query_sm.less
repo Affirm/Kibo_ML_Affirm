@@ -1,0 +1,63 @@
+.dl-mq-sm-mixin-category (@a) when (@a = true), (@a = SM_screenWidth) {
+
+	.car-cat-list-item {
+		.careersoverlayL {
+			height: auto !important;
+			width: 50% !important;
+			a {
+				margin: 10px 0 0;
+				position: static !important;
+			}
+		}
+		.careersoverlayR {
+			height: auto !important;
+			width: 50% !important;
+			clear:both;
+			a {
+				margin: 10px 0 0;
+				position: static !important;
+			}
+		}
+	}
+	
+	.ml-footer{
+		border:none;
+	}	
+	
+	/*Global leftnav template Styling Changes*/
+	.ml-navleft-body-wrapper div.col-md-12{
+			padding-left: 0px !important;
+	}
+	
+	.ml-navleft-cats-inactive{
+		padding-left: 0px;
+	}
+	
+	#olapic_specific_widget {
+		display: block;
+	}
+	.dl-alt-horiz-fillslot{
+		.tileshop_directory_leftnav_alt_horiz_slots-2, .tileshop_directory_leftnav_alt_horiz_slots-3 {
+			display:block;
+		}
+		.dl-alt-horiz-slot-image {
+			display:none;
+		}
+	}	
+	
+	.ml-slot-item.ml-slot-1.tileshop_directory_leftnav_alt_horiz_slots-1 {
+		display:block;
+	}
+	
+	div#home_topnav_04-2 .mobile-hide .captionWrapper, div#home_topnav_04-2 .mobile-hide .clear, div#home_topnav_04-2 .mobile-hide .promo {
+		display: block ;
+	}	
+}
+
+@media only screen and (max-width: 768px) {
+.tts-gateway-text {
+    font-size: 12px !important;
+    top: auto !important;
+    bottom: 0px !important;
+}
+}

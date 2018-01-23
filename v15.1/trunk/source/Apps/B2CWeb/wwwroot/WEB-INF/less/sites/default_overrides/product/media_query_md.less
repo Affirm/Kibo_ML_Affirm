@@ -1,0 +1,112 @@
+.dl-mq-md-mixin-product (@a) when (@a = true), (@a = MD_screenWidth) {
+
+.calculator-form {
+	 	width: 28%;
+		 float: left;
+		 -webkit-box-sizing: border-box;
+		 -moz-box-sizing: border-box;
+		 box-sizing: border-box;
+		input#areaLength, input#areaWidth {
+		  width: 100px;
+		  color: #8B8178;
+		  font-size: 13px;
+		  -webkit-box-shadow: inset 10px 10px 11px 6px rgba(139,129,120,0.31);
+		  -moz-box-shadow: inset 10px 10px 11px 6px rgba(139,129,120,0.31);
+		  box-shadow: inset 2px 2px 3px 0px rgba(139,129,120,0.35);
+		  padding-left: 5px;
+		}
+	}
+}
+#calculatorCoverageArea {
+  float: left;
+  margin: 0 0 0;
+  
+  input[type=text] {
+		display: inline-block;
+		background: none;
+		width: 90px;
+		height: 28px;
+		color: #8B8178;
+		font-size: 13px;
+		font-weight: 400;
+		text-align: left;
+		padding: 0;
+		padding-left: 5px;
+		outline: none;
+		-webkit-appearance: none;
+		-moz-appearance:    none;
+		appearance:         none;
+	    -webkit-box-shadow: inset 10px 10px 11px 6px rgba(139,129,120,0.31);
+	    -moz-box-shadow: inset 10px 10px 11px 6px rgba(139,129,120,0.31);
+	    box-shadow: inset 2px 2px 3px 0px rgba(139,129,120,0.35);
+	}
+}
+
+
+	
+	/*div#calculatorCoverageArea:before {
+	  content: "=";
+	  margin-right: 40px;
+	  font-size: 16px;
+	  font-weight: 800;
+	  float: left;
+	  margin-left: -5px;
+	  padding-top: 4px;
+	}*/
+
+	.calculator .errors {
+		height: 20px;
+		}
+		
+	div#calculatorTileNeeded:before {
+	  display: inline-block;
+	  content: "YOU WILL NEED";
+	  margin-left: -30px;
+	  margin-right: 70px;
+	  font-size: 18px;
+	  font-family: lato;
+	  font-weight: 300;
+	  letter-spacing: .2px;
+	}
+
+	#calculatorTileNeeded , #calculatorCoverageArea  {
+		span{
+		  display: inline-block;
+		  text-transform: uppercase;
+		  font-size: 18px;
+		  font-family: lato;
+		  font-weight: 300;
+		}
+		
+	.calculator .errors {
+		height: 20px;
+		}
+		
+	#calculatorTileNeeded input[type=text] {
+	  display: inline-block;
+	  background: none;
+	  color: #646464;
+	  font-size: 24px;
+	  font-weight: 400;
+	  text-align: center;
+	  padding: 0;
+	  border: none;
+	  outline: none;
+	  -webkit-appearance: none;
+	  -moz-appearance: none;
+	  appearance: none;
+	  font-weight: 300;
+	}
+
+	#calculatorCoverageArea {
+	  font-weight: 400;
+	  width: 200px;
+	  span {
+		  display: none; /*inline-block;*/
+		  text-transform: uppercase;
+		  font-size: 18px;
+		  font-family: lato;
+		  font-weight: 300;
+		}
+	}
+}

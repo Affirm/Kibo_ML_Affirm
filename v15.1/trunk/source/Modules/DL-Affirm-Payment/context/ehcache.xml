@@ -1,0 +1,14 @@
+<!-- insert module cache configurations below -->
+
+<ehcache>
+
+<!-- Example 
+  <cache name="abc"
+         maxElementsInMemory="500"
+         eternal="false"
+         timeToIdleSeconds="300"
+         timeToLiveSeconds="600"
+         overflowToDisk="false"/>
+-->
+
+</ehcache>

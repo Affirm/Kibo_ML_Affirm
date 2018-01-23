@@ -1,0 +1,67 @@
+.dl-mq-lg-mixin-category (@a) when (@a = true), (@a = LG_screenWidth) {
+	#olapic_specific_widget {
+		display:block;
+	}
+}
+@media only screen and (max-width:1000px) {
+	.design-item{
+		width:49% !important;	
+	}
+	.design-book div.promo{
+		font-size:20px !important;
+	}
+	.creditcard {
+		.rooms{
+			padding:0;
+			margin-left:-10px;
+		}
+		.room{
+			background:none !important;
+			width:25% !important;
+			height:auto !important;
+			margin:0 !important;
+		}
+		.header{
+			height:auto !important;	
+		}
+	}
+	
+	.pro-network {
+		height:auto;	
+		.yt-player{
+			width:56% !important;
+		}
+		.join-pro{
+			width:42% !important;
+			position:relative;
+		}
+		.visit, .visit a{
+			width:100%;	
+		}
+		.ptitle span{
+			font-size:20px;	
+		}
+	}
+
+	.pro{
+		 .button{
+			font-size:20px;	
+		 }
+		 .column {
+		 	.ptitle{
+				font-size:24px;	
+			}
+		}
+		.chat-now span{
+			font-size:17px;	
+		}
+	}
+	
+	
+	.noDesktop{
+		display:block;	
+	}
+	.desktopOnly{
+		display:none;	
+	}
+}

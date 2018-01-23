@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!-- Insert module form beans and action mappings below -->
+
+<struts-config>
+
+	<form-beans>
+
+		<form-bean name="deplabsLoggerForm"
+			type="com.deplabs.app.service.logger.DeplabsLoggerForm"></form-bean>
+		
+		<form-bean name="deplabsTriggerForm"
+			type="com.deplabs.app.service.trigger.DeplabsTriggerForm"></form-bean>
+
+		<!-- form-bean name="deplabsQueryForm"
+			type="com.deplabs.app.service.query.DeplabsQueryForm"></form-bean -->
+
+		<form-bean name="storeDetailsForm" type="com.deplabs.mod.enhancedstorelocator.admin.ExtendedStoreDetailsForm"></form-bean>
+	</form-beans>
+
+	<action-mappings>
+
+
+        <action input="/mod/logger/deplabslogger.jsp" name="deplabsLoggerForm"
+			parameter="action" path="/deplabslogger" scope="session"
+			type="com.deplabs.app.service.logger.DeplabsLoggerAction" validate="false">
+		</action>
+		
+		<action input="/mod/trigger/deplabstrigger.jsp" name="deplabsTriggerForm"
+			parameter="action" path="/deplabstrigger" scope="session"
+			type="com.deplabs.app.service.trigger.DeplabsTriggerAction" validate="false">
+		</action>
+		
+		<!-- action input="/mod/query/deplabsquery.jsp" name="deplabsQueryForm"
+			parameter="action" path="/deplabsquery" scope="session"
+			type="com.deplabs.app.service.query.DeplabsQueryAction" validate="false">
+		</action  -->
+		
+	</action-mappings>
+
+</struts-config>

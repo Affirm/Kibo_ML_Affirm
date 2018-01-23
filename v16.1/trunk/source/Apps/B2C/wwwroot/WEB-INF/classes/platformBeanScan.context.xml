@@ -1,0 +1,42 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+
+    <context:component-scan base-package="com.marketlive" use-default-filters="false">
+        <context:include-filter type="annotation" expression="com.marketlive.system.annotation.BootstrapComponent"/>
+    </context:component-scan>
+
+    <context:component-scan base-package="com.marketlive, com.mmlive" use-default-filters="false">
+        <context:include-filter type="annotation" expression="com.marketlive.system.annotation.SystemConfiguration"/>
+        <context:include-filter type="annotation" expression="com.marketlive.system.annotation.SystemComponent"/>
+    </context:component-scan>
+
+    <context:component-scan base-package="com.marketlive,com.deplabs.entity.cart.order" use-default-filters="false">
+        <context:include-filter type="annotation" expression="com.marketlive.system.annotation.RepositoryConfiguration"/>
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+        <context:include-filter type="annotation" expression="com.marketlive.system.annotation.RepositoryComponent"/>
+        
+    </context:component-scan>  
+
+    <context:component-scan base-package="com.marketlive, com.mmlive, com.deplabs.biz" use-default-filters="false">
+        <context:include-filter type="annotation" expression="com.marketlive.system.annotation.PlatformConfiguration"/>
+        <context:include-filter type="annotation" expression="com.marketlive.system.annotation.PlatformComponent"/>
+        <context:include-filter type="annotation" expression="com.marketlive.system.annotation.PlatformService"/>    
+        <context:exclude-filter type="regex" expression="com.marketlive.biz.checkout.OrderConfirmationEmailCheck"/>
+    </context:component-scan>
+    
+
+    <context:component-scan base-package="com.marketlive.integration, com.deplabs.affirm.integration.cart.order">
+            <context:exclude-filter type="regex" expression="com.marketlive.integration.cart.order.OrderProxy"/>
+	</context:component-scan> 
+
+      
+</beans>

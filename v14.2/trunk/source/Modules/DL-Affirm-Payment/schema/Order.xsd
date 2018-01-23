@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://marketlive.com/integration/xmlbean" xmlns:ml="http://marketlive.com/integration/xmlbean" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+
+  <xsd:include schemaLocation="Common.xsd" />
+  <xsd:include schemaLocation="Entity.xsd" />
+  <xsd:include schemaLocation="OrderBillShipInfo.xsd" />
+  <xsd:include schemaLocation="OrderPayment.xsd" />
+  <xsd:include schemaLocation="OrderPaymentType.xsd" />
+  <xsd:include schemaLocation="OrderShipment.xsd" />
+  <xsd:include schemaLocation="OrderPaymentCreditCard.xsd" />
+  <xsd:include schemaLocation="OrderPaymentGiftCertificate.xsd" />
+  <xsd:include schemaLocation="OrderPaymentCheck.xsd" />
+  <xsd:include schemaLocation="OrderPaymentPayPal.xsd" />
+  <xsd:include schemaLocation="OrderPaymentAffirm.xsd"/>
+  <xsd:include schemaLocation="OrderTracking.xsd" />
+
+
+  <xsd:element name="order" type="ml:order" />
+
+  <xsd:element name="orders" type="ml:orders" />
+
+  <xsd:complexType name="orders">
+    <xsd:sequence>
+      <xsd:element name="order" type="ml:order" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="order">
+    <xsd:complexContent>
+      <xsd:extension base="ml:entity">
+        <xsd:sequence>
+          <xsd:element name="siteCode" type="xsd:string" />
+          <xsd:element name="locale" type="ml:string10" minOccurs="0" />
+          <!--  Reference to customer (use code)-->
+          <xsd:element name="customerCode" type="xsd:string" minOccurs="1" />
+          <xsd:element name="status" type="xsd:string" minOccurs="0" />
+          <xsd:element name="subTotal" type="ml:amountType" minOccurs="0" />
+          <xsd:element name="taxTotal" type="ml:amountType" minOccurs="0" />
+          <xsd:element name="shippingTotal" type="ml:amountType" minOccurs="0" />
+          <xsd:element name="shippingCostTotal" type="ml:amountType" minOccurs="0" />
+          <xsd:element name="shippingMethodTotal" type="ml:amountType" minOccurs="0" />
+          <xsd:element name="shippingWeightTotal" type="ml:amountType" minOccurs="0" />
+          <xsd:element name="shippingLocationTotal" type="ml:amountType" minOccurs="0" />
+          <xsd:element name="shippingStateTotal" type="ml:amountType" minOccurs="0" />
+          <xsd:element name="giftWrapTotal" type="ml:amountType" minOccurs="0" />
+          <xsd:element name="additionalAddressTotal" type="ml:amountType" minOccurs="0" />
+          <xsd:element name="additionalChargesTotal" type="ml:amountType" minOccurs="0" />
+          <xsd:element name="weightSurchargeTotal" type="ml:amountType" minOccurs="0" />
+          <xsd:element name="total" type="ml:amountType" minOccurs="0" />
+          <xsd:element name="merchandiseTotal" type="ml:amountType" minOccurs="0" />
+          <xsd:element name="invoiceNumber" type="ml:string30" minOccurs="0" />
+          <xsd:element name="comment1" type="ml:string500" minOccurs="0" />
+          <xsd:element name="comment2" type="ml:string500" minOccurs="0" />
+          <xsd:element name="deferred" type="xsd:boolean" minOccurs="0" />
+          <xsd:element name="multipleAddresses" type="xsd:boolean" minOccurs="0" />
+          <xsd:element name="singleUseCouponsAsString" type="ml:string500" minOccurs="0" />
+          <xsd:element name="sourceCodesAsString" type="ml:string300" minOccurs="0" />
+          <xsd:element name="campaignSourceCode" type="ml:string100" minOccurs="0" />
+          <xsd:element name="deleted" type="xsd:boolean" minOccurs="0" />
+          <xsd:element name="dateOrdered" type="xsd:dateTime" minOccurs="0" />
+          <xsd:element name="dateDeleted" type="xsd:dateTime" minOccurs="0" />
+
+          <xsd:element name="billToInfo" type="ml:orderBillShipInfo" minOccurs="0" />
+
+          <xsd:element name="shipments" minOccurs="0">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="orderShipment" type="ml:orderShipment" maxOccurs="unbounded" />
+              </xsd:sequence>
+              <xsd:attribute name="overwrite" type="xsd:boolean" default="false" />
+            </xsd:complexType>
+          </xsd:element>
+
+          <xsd:element name="payments" minOccurs="0">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="payment" maxOccurs="unbounded">
+                  <xsd:complexType>
+                    <xsd:choice>
+                      <xsd:element name="orderPaymentCreditCard" type="ml:orderPaymentCreditCard" />
+                      <xsd:element name="orderPaymentGiftCertificate" type="ml:orderPaymentGiftCertificate" />
+                      <xsd:element name="orderPaymentCheck" type="ml:orderPaymentCheck" />
+                      <xsd:element name="orderPaymentPayPal" type="ml:orderPaymentPayPal" />
+                      <xsd:element name="orderPaymentAffirm" type="ml:orderPaymentAffirm" />
+                    </xsd:choice>
+                  </xsd:complexType>
+                </xsd:element>
+              </xsd:sequence>
+            </xsd:complexType>
+          </xsd:element>
+
+	  <xsd:element name="authorizationsRequests" minOccurs="0">
+            <xsd:complexType>
+              <xsd:sequence>
+              	<xsd:element name="authorizationsRequest" type="xsd:anyType" minOccurs="0" maxOccurs="1" />
+              </xsd:sequence>
+            </xsd:complexType>
+          </xsd:element>
+          
+          <xsd:element name="trackings" minOccurs="0">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="orderTracking" type="ml:orderTracking" maxOccurs="unbounded" />
+              </xsd:sequence>
+              <xsd:attribute name="overwrite" type="xsd:boolean" default="false" />
+            </xsd:complexType>
+          </xsd:element>
+
+          <xsd:element name="discounts" minOccurs="0">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="discount" type="ml:orderDiscount" maxOccurs="unbounded" />
+              </xsd:sequence>
+              <xsd:attribute name="overwrite" type="xsd:boolean" default="false" />
+            </xsd:complexType>
+          </xsd:element>
+
+		  <xsd:element name="orderProviderType" type="ml:string50" minOccurs="0" />
+		  <xsd:element name="borderFreeOrderFlag" type="ml:positiveInt" minOccurs="0" />
+		  <xsd:element name="dateBorderFreeOrderConfirmation" type="xsd:dateTime" minOccurs="0" />
+		  <xsd:element name="borderFreeOrderConfAttempt" type="ml:positiveInt" minOccurs="0" />
+          <xsd:element name="refund" type="xsd:boolean" minOccurs="0"/>
+          <xsd:element name="refundAmount" type="ml:amountType" minOccurs="0"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+
+  </xsd:complexType>
+
+
+</xsd:schema>

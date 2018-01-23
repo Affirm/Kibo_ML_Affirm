@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://marketlive.com/integration/xmlbean"
+	xmlns:ml="http://marketlive.com/integration/xmlbean"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	elementFormDefault="qualified">
+
+  <xsd:include schemaLocation="Common.xsd" />
+  <xsd:include schemaLocation="OrderPayment.xsd" />
+
+  <xsd:complexType name="orderPaymentAffirm">
+  	<xsd:sequence>
+  		<xsd:element name="orderPayment" type="ml:orderPayment" minOccurs="1" />
+  	</xsd:sequence>
+  	<xsd:attribute name="pk" type="xsd:int" />
+  </xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+        "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+        "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+
+<tiles-definitions>
+
+    <definition name=".tile.thirdparty.affirm.payments.common.affirmJavaScriptSDK" template="/WEB-INF/views/thridparty/affirm/payments/common/JavaScriptSDK.jsp" preparer="affirmJavaScriptSDKPreparer"/>
+    
+    <definition name=".tile.checkout.AccordionCheckout" template="/WEB-INF/views/checkout/accordion/Accordion.jsp"
+                preparer="accordionCheckoutPreparer">
+        <put-attribute name="serviceURL" type="string" value="/checkout/accordion.do" />
+        <put-attribute name="fillslots" type="definition" value=".tile.checkout.AccordionCheckout.fillslots"/>
+        <put-attribute name="steps" type="definition" value=".tile.checkout.AccordionCheckout.steps"/>
+        <put-attribute name="basket" type="definition" value=".tile.checkout.AccordionCheckout.basket"/>
+        <put-attribute name="summary" type="definition" value=".tile.checkout.AccordionCheckout.summary"/>
+        <put-attribute name="borderfreeErrorMessage" type="definition" value=".tile.intlshipping.processor.borderfree.errorMessageView"/>
+        <!-- Affirm Payment Method-->
+        <put-attribute name="affirmPaymentsJavascriptSDK" type="definition" value=".tile.thirdparty.affirm.payments.common.affirmJavaScriptSDK"/>
+    </definition>
+    
+    <definition name=".tile.checkout.payment.AccordionPaymentAffirmCheckout" template="/WEB-INF/views/checkout/accordion/PaymentAffirmCheckout.jsp"/>
+    
+    <definition name=".common.OrderDetail" template="/WEB-INF/views/common/AffirmOrderDetail.jsp" preparer="extendedOrderDetailPreparer">
+        <put-attribute name="orderShipment" value=".common.OrderShipment"/>
+    </definition>
+    
+    <definition name=".tile.account.OrderHistoryItemTable" template="/WEB-INF/views/account/OrderHistoryItemTable.jsp" preparer="orderHistoryTablePreparer">
+        <put-attribute name="orderHistoryItemRow" type="template" value="/WEB-INF/views/account/AffirmOrderHistoryItemRow.jsp"/>
+    </definition>
+    
+    <!-- Start: Product Detail -->
+    <definition name=".tile.p2p.productDetail"
+                template="/WEB-INF/views/p2p/detail/ProductDetail.jsp"
+                preparer="productDetailPreparer">
+        <put-attribute name="productnavigation" type="definition" value=".tile.siteFeature" />
+        <put-attribute name="productsetbacknext" type="definition" value=".p2p.detail.productsetbacknext.tile" />
+    	<put-attribute name="itemtable" type="definition" value=".tile.p2p.detail.itemtable" />
+        <put-attribute name="configurationPath" type="string" value="app.b2c.p2p.ProductDetail" />
+        <put-attribute name="detailImageSwatches" type="definition" value=".tile.p2p.enhancedDetailVideoImageSwatches" />
+        <put-attribute name="detailImageSwatchViews" type="definition" value=".tile.p2p.detailImageSwatchViews" />
+        <put-attribute name="detailAdditionalViews" type="definition" value=".tile.p2p.detail.daviews" />
+		<put-attribute name="infoTabs" type="definition" value=".tile.p2p.detail.InfoTabs" />
+        <put-attribute name="crossSellsCarousel" type="definition" value=".tile.p2p.crossSellsCarousel" />
+        <put-attribute name="recentlyViewedCarousel" type="definition" value=".tile.p2p.recentlyViewedCarousel" />
+		<put-attribute name="socialButtons" type="definition" value=".tile.p2p.detail.socialButtons" />
+        <put-attribute name="customerReviews" type="definition" value=".tile.p2p.customerReview.customerReviews" />
+        <put-attribute name="rating" type="definition" value=".tile.p2p.rating" />
+        <put-attribute name="borderfreerestrictioncheck" type="definition" value=".tile.intlshipping.processor.borderfree.restrictionCheck" />
+        <!-- Affirm Payment Monthly Payment Price -->
+        <put-attribute name="affirmMonthlyPaymentPriceMessage" type="definition" value=".tile.p2p.AffirmMonthlyPaymentPriceMessage" />
+        <put-attribute name="affirmMonthlyPaymentPrice" type="definition" value=".tile.p2p.AffirmMonthlyPaymentPrice" />
+    </definition>
+    <!-- End: Product Detail -->
+    
+   <definition name=".tile.p2p.AffirmMonthlyPaymentPrice" template="/WEB-INF/views/p2p/AffirmProductMonthlyPaymentPrice.jsp" preparer="affirmProductMonthlyPaymentPricePreparer"/>
+    <definition name=".tile.p2p.AffirmMonthlyPaymentPriceMessage" template="/WEB-INF/views/p2p/AffirmProductMonthlyPaymentPriceMessage.jsp"/>
+    <definition name=".tile.p2p.AffirmMonthlyPaymentPriceBasketGlobalCartCartSummaryMessage" template="/WEB-INF/views/p2p/AffirmProductMonthlyPaymentPriceBasketGlobalCCartSummMessage.jsp"/>
+    
+        <definition name=".tile.p2p.basket.item.table"
+                template="/WEB-INF/views/p2p/basket/ItemTable.jsp"
+                preparer="basketTablePreparer">
+        <put-attribute name="basketItemTableRow" type="definition" value=".tile.p2p.basket.item.table.row" />
+        <put-attribute name="esttaxshipinput" value=".tile.p2p.basket.esttaxshipinput" />
+        <put-attribute name="esttaxshiptotals" value=".tile.p2p.basket.esttaxshiptotals" />
+        <put-attribute name="discountThresholdMessaging" type="definition" value=".tile.common.discountThresholdMessaging"/>
+    		<!-- Affirm Payment Monthly Payment Price -->
+        <put-attribute name="affirmMonthlyPaymentPriceBasketGlobalCartCartSummaryMessage" type="definition" value=".tile.p2p.AffirmMonthlyPaymentPriceBasketGlobalCartCartSummaryMessage" />
+        <put-attribute name="affirmMonthlyPaymentPrice" type="definition" value=".tile.p2p.AffirmMonthlyPaymentPrice" />        
+    </definition>
+    
+    <definition name=".tile.nav.GlobalCart" template="/WEB-INF/views/mod/globalcart/GlobalCart.jsp" preparer="globalCartPreparer">
+        <put-attribute name="productthumbnail" type="definition" value=".tile.p2p.productthumbnail.def" />
+        <put-attribute name="globalcartCarousel" type="definition" value=".tile.p2p.globalcartCarousel"/>
+        <put-attribute name="borderfreerestrictioncheck" type="definition" value=".tile.intlshipping.processor.borderfree.restrictionCheck"/>
+        <put-attribute name="discountThresholdMessaging" type="definition" value=".tile.common.discountThresholdMessaging"/>
+        	<!-- Affirm Payment Monthly Payment Price -->
+        <put-attribute name="affirmMonthlyPaymentPriceBasketGlobalCartCartSummaryMessage" type="definition" value=".tile.p2p.AffirmMonthlyPaymentPriceBasketGlobalCartCartSummaryMessage" />
+        <put-attribute name="affirmMonthlyPaymentPrice" type="definition" value=".tile.p2p.AffirmMonthlyPaymentPrice" />
+    </definition>
+    
+    <definition name=".tile.checkout.AccordionCheckout.summary" template="/WEB-INF/views/checkout/accordion/Summary.jsp">
+     		<!-- Affirm Payment Monthly Payment Price -->
+        <put-attribute name="affirmMonthlyPaymentPriceBasketGlobalCartCartSummaryMessage" type="definition" value=".tile.p2p.AffirmMonthlyPaymentPriceBasketGlobalCartCartSummaryMessage" />
+        <put-attribute name="affirmMonthlyPaymentPrice" type="definition" value=".tile.p2p.AffirmMonthlyPaymentPrice" />
+    </definition>
+    
+    <definition name=".tile.p2p.productthumbnail.def"
+                template="/WEB-INF/views/p2p/ProductThumbnail.jsp"
+                preparer="thumbnailPreparer">
+        <put-attribute name="pricing" type="definition" value=".tile.p2p.pricing"/>
+        <put-attribute name="rating" type="definition" value=".tile.p2p.rating"/>
+        <put-attribute name="swatches" type="definition" value=".tile.p2p.thumbnailSwatches"/>
+        <!-- Affirm Payment Monthly Payment Price -->
+        <put-attribute name="affirmMonthlyPaymentPriceMessage" type="definition" value=".tile.p2p.AffirmMonthlyPaymentPriceMessage" />
+        <put-attribute name="affirmMonthlyPaymentPrice" type="definition" value=".tile.p2p.AffirmMonthlyPaymentPrice" />
+    </definition>
+    
+        <definition name=".tile.p2p.directory"
+                template="/WEB-INF/views/p2p/directory/Directory.jsp"
+                preparer="productDirectoryPreparer">
+        <put-attribute name="categorydropdown" type="definition" value=".tile.p2p.CategoryDropDown"/>
+        <put-attribute name="sort" type="definition" value=".common.sort.tile"/>
+        <put-attribute name="productsetpaging" type="definition" value=".productsetpaging"/>
+        <put-attribute name="categoryItemthumbnail" type="definition" value=".tile.p2p.categoryItemthumbnail"/>
+        <put-attribute name="secondaryCategoryNav" type="definition" value=".tile.nav.SecondaryCategoryNav"/>
+		<put-attribute name="myBuysPageParam" value=".tile.myBuys.myBuysPageParam"/>
+		<put-attribute name="myBuysPageParamCategory" value=".tile.myBuys.myBuysPageParamCategory"/>
+		<put-attribute name="myBuysRecZone" value=".tile.myBuys.myBuysRecZone"/>
+		 <!-- Affirm Payment Monthly Payment Price -->
+        <put-attribute name="affirmMonthlyPaymentPriceMessage" type="definition" value=".tile.p2p.AffirmMonthlyPaymentPriceMessage" />
+        <put-attribute name="affirmMonthlyPaymentPrice" type="definition" value=".tile.p2p.AffirmMonthlyPaymentPrice" />
+		
+	</definition> 
+    
+    
+    <definition name=".layout" template="/WEB-INF/views/layout/Main.jsp">
+        <put-attribute name="resourceBundle" type="definition" value=".tile.siteFeature"/>
+        <put-attribute name="htmlhead" type="definition" value=".tile.common.HtmlHead"/>
+        <put-attribute name="styleSheet" type="definition" value=".tile.siteFeature"/>
+        <put-attribute name="header" type="definition" value=".tile.nav.TopNav"/>
+        <!--<put-attribute name="categorynav" value=".tile.nav.CategoryNav"/>-->
+        <put-attribute name="categorynav" type="definition" value=".tile.nav.CategoryNav.text"/>
+        <put-attribute name="breadcrumb" type="template" value="/WEB-INF/views/Default.jsp"/>
+        <put-attribute name="leftNav" type="definition" value=".tile.siteFeature"/>
+        <put-attribute name="body" type="template" value="/WEB-INF/views/Default.jsp"/>
+        <put-attribute name="footer" type="definition" value=".tile.nav.Footer"/>
+        <put-attribute name="reporting" type="definition" value=".tile.reporting"/>
+        <put-attribute name="secondaryCategoryNav" type="template" value="/WEB-INF/views/Default.jsp"/>
+        <put-attribute name="useLeftNav" value="false" type="string"/>
+        <put-attribute name="applyBodyPadding" value="true" type="string"/>
+        <put-attribute name="layoutSection" value="DEFAULT" type="string"/>
+        <!-- Affirm Monthly Payment Price -->
+        <put-attribute name="affirmPaymentsJavascriptSDK" type="definition" value=".tile.thirdparty.affirm.payments.common.affirmJavaScriptSDK"/>
+    </definition>
+    
+</tiles-definitions>

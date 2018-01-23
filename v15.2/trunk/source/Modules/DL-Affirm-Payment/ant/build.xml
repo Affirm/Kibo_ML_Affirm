@@ -1,0 +1,283 @@
+<?xml version="1.0"?>
+
+<project name="modules-yourzoom-14.2.0.12" basedir=".." default="usage">
+  <property name="name" value="marketlive-yourzoom-14.2.0.12-50"/>
+  <property name="path" value="@path@"/>
+  <property name="section" value="yourzoom-14.2.0.12"/>
+  <property name="hbm-name" value="marketlive-yourzoom-14.2.0.12-hbm-50"/>
+  <property name="name.schema" value="marketlive-yourzoom-14.2.0.12-schema-50"/>
+
+  <!-- standard section tasks -->
+  <import file="${basedir}/ant/include-tasks.xml" />
+  <!-- import the dependency lists -->
+  <import file="${basedir}/ant/dependencies.xml"/>
+	<!-- import the module config lists -->
+	<import file="${basedir}/ant/module.config.xml"/>
+   <target name="usage">
+    <echo>
+      MarketLive Module build file
+      -----------------------------------
+      Parameters:
+        -Dversion=[package release version number]
+        -Dversion.section=[section release version number]
+
+        NOTE: version numbers should be in the form of Major.minor.patch.build (M.m.p.b)
+
+      Example:
+        The following command:
+             ant release -Dversion=5.3 -Dversion.section=5.3.0.2
+        would create {MARKETLIVE_RELEASE}/Modules/{MODULE_NAME}-5.3/{MODULE_NAME}-5.3.0.2
+        where {MODULE_NAME} is the name of the module
+
+      Available targets are:
+        cleanBuild    --> Deletes the build directory
+        release       --> Cleans, compiles, and creates a release of the module with javadoc
+                          REQUIRES: -Dversion= and -Dversion.section= parameters
+		cleanJavadoc  --> Deletes the Javadoc release directory
+                      REQUIRES: -Dversion= paramater
+		javadoc       --> Creates the javadocs relative to module release.
+                      REQUIRES: -Dversion= and -Dversion.section= parameters				  
+    </echo>
+  </target>
+
+  <target name="init">
+    <!-- make sure we're building with Java6. -->
+	<if>
+	  <not>
+	    <contains string="${java.version}" substring="1.6." />
+	  </not>
+	  <then>
+	    <fail message="Java must be version 1.6 or higher. Check your JAVA_HOME setting." />
+	  </then>
+	</if>
+  </target>
+
+  <target name="cleanBuild" description="Deletes the target section from the build directory">
+    <delete dir="${basedir}/../build"/>
+  </target>
+
+  <target name="cleanRelease" description="Deletes the target section from the release directory">
+    <delete dir="${release.package}/${section}${version.delimiter}${version.section}"/>
+  </target>
+
+  <target name="cleanJavadoc" description="Deletes the Javadoc directory">
+	    <delete dir="${basedir}/../build/javadoc"/>
+	    <delete dir="${javadoc.loc}"/>
+  </target>
+  
+  <target name="release" description="Cleans, compiles, jars and creates a release."
+          depends="init, checkVersion, cleanBuild, cleanRelease, compile, compileTest, jarTest, createReleaseManifest">
+
+	  <!-- ant files -->
+    <mkdir dir="${release.package}/${section}${version.delimiter}${version.section}/ant" />
+    <copy todir="${release.package}/${section}${version.delimiter}${version.section}/ant" preservelastmodified="true">
+      <fileset file="${basedir}/ant/dependencies.xml" />
+      <fileset file="${basedir}/ant/assemble.xml" />
+    </copy>
+		<!-- Copy Module Source to Release-->
+		<copy todir="${release.package}/${section}${version.delimiter}${version.section}/java" preservelastmodified="true">
+			<fileset refid="ModuleJavaSourceRelease.file"/>
+		</copy>
+		<!-- Copy resource bundle property file -->
+       <native2ascii encoding="UTF-8" src="${basedir}/java/com/marketlive"
+         dest="${release.package}/${section}${version.delimiter}${version.section}/java/com/marketlive"
+         includes="*.properties">
+       </native2ascii>
+
+		<!-- docs -->
+		<if>
+		<available file="${basedir}/docs" type="dir" />
+		<then>
+			<mkdir dir="${release.package}/${section}${version.delimiter}${version.section}/docs" />
+				<copy todir="${release.package}/${section}${version.delimiter}${version.section}/docs" preservelastmodified="true">
+					<fileset dir="${basedir}/docs" defaultexcludes="yes" excludes="**/*.doc,**/*.rp" />
+				</copy>
+				<copy todir="${release.package}/${section}${version.delimiter}${version.section}/docs" preservelastmodified="true">
+	     		<fileset dir="${basedir}/docs">
+					<include name="*.doc"/>
+					</fileset>
+	     		<mapper type="glob" from="*.doc" to="*${version.delimiter}${version.section}.doc"/>
+	   		</copy>
+				<copy todir="${release.package}/${section}${version.delimiter}${version.section}/docs" preservelastmodified="true">
+	     		<fileset dir="${basedir}/docs">
+					<include name="*.rp"/>
+					</fileset>
+	     		<mapper type="glob" from="*.rp" to="*${version.delimiter}${version.section}.rp"/>
+	   		</copy>
+		</then>
+		</if>
+	  <!-- bin -->
+    <if>
+      <available file="${basedir}/bin" type="dir" />
+      <then>
+          <mkdir dir="${release.package}/${section}${version.delimiter}${version.section}/bin" />
+              <copy todir="${release.package}/${section}${version.delimiter}${version.section}/bin" preservelastmodified="true">
+                  <fileset dir="${basedir}/bin"/>
+              </copy>
+      </then>
+	  </if>
+
+    <!-- context -->
+	  <if>
+      <available file="${basedir}/context" type="dir" />
+      <then>
+		    <mkdir dir="${release.package}/${section}${version.delimiter}${version.section}/context" />
+		    <copy todir="${release.package}/${section}${version.delimiter}${version.section}/context" preservelastmodified="true">
+			      <fileset dir="${basedir}/context"/>
+		    </copy>
+	    </then>
+	  </if>
+
+	  <!-- conf files -->
+    <mkdir dir="${release.package}/${section}${version.delimiter}${version.section}/conf" />
+    <copy todir="${release.package}/${section}${version.delimiter}${version.section}/conf" preservelastmodified="true">
+      <fileset dir="${basedir}/conf"/>
+    </copy>
+
+    <!-- database files -->
+    <mkdir dir="${release.package}/${section}${version.delimiter}${version.section}/database" />
+    <copy todir="${release.package}/${section}${version.delimiter}${version.section}/database" preservelastmodified="true">
+      <fileset dir="${basedir}/database"/>
+    </copy>
+
+    <!--
+      <if>
+        <available file="${basedir}/database/hbm" type="dir" />
+        <then>
+        <mkdir dir="${release.package}/${section}${version.delimiter}${version.section}/wwwroot/WEB-INF/classes" />
+            <copy todir="${release.package}/${section}${version.delimiter}${version.section}/wwwroot/WEB-INF/classes" preservelastmodified="true">
+              <fileset dir="${basedir}/database/hbm"/>
+            </copy>
+        </then>
+      </if>
+    -->
+      <!-- include all B2C source
+      <copy todir="${release.package}/${section}${version.delimiter}${version.section}/java" preservelastmodified="true">
+        <fileset dir="${basedir}/${section}/java" includes="**/*.*" />
+      </copy>
+      -->
+
+    <!-- compiled classes -->
+    <if>
+        <available file="${basedir}/../build/classes" type="dir" />
+        <then>
+        <mkdir dir="${release.package}/${section}${version.delimiter}${version.section}/wwwroot/WEB-INF/classes" />
+          <copy todir="${release.package}/${section}${version.delimiter}${version.section}/wwwroot/WEB-INF/classes" preservelastmodified="true">
+              <fileset dir="${basedir}/../build/classes"/>
+          </copy>
+      </then>
+    </if>
+
+    <!-- libs -->
+	  <if>
+      <available file="${basedir}/../build/lib/marketlive" type="dir" />
+      <then>
+		      <mkdir dir="${release.package}/${section}${version.delimiter}${version.section}/lib/marketlive" />
+		      <copy todir="${release.package}/${section}${version.delimiter}${version.section}/lib/marketlive" preservelastmodified="true">
+			      <fileset dir="${basedir}/../build/lib/marketlive"/>
+		      </copy>
+	    </then>
+	  </if>
+
+    <!-- schemas -->
+	  <if>
+      <available file="${basedir}/schema" type="dir" />
+      <then>
+		      <mkdir dir="${release.package}/${section}${version.delimiter}${version.section}/schema" />
+		      <copy todir="${release.package}/${section}${version.delimiter}${version.section}/schema" preservelastmodified="true">
+			      <fileset dir="${basedir}/schema"/>
+		      </copy>
+	    </then>
+	  </if>
+
+    <!-- Convert the ApplicationResources files back to ascii and put in release directory -->
+    <native2ascii encoding="UTF-8" src="${basedir}/wwwroot"
+      dest="${release.package}/${section}${version.delimiter}${version.section}/wwwroot"
+      includes="**/ApplicationResources*.properties">
+    </native2ascii>
+
+    <!-- Now copy everything else in the wwwroot except the ApplicationResources because we just converted and copied
+         over in the previous step -->
+    <mkdir dir="${release.package}/${section}${version.delimiter}${version.section}/wwwroot" />
+    <copy todir="${release.package}/${section}${version.delimiter}${version.section}/wwwroot" preservelastmodified="true">
+      <fileset dir="${basedir}/wwwroot" excludes="**/ApplicationResources*.properties"/>
+    </copy>
+	<if>
+      	<available file="${basedir}/java/**/*.java" type="file" />
+		<then>
+		<!-- Make Javadocs -->
+		<echo>Creating JavaDocs</echo>
+	    <antcall target="releaseJavadoc" inheritAll="true" />
+		</then>
+	</if>	
+  </target>
+ 
+ <target name="javadoc" description="Creates the javadocs" depends="releaseJavadoc"/>
+
+ <target name="releaseJavadoc" depends="init, cleanJavadoc">
+    <property name="javadoc.loc" value="${release.package}/${section}${version.delimiter}${version.section}/docs/JavaDoc${version.delimiter}${version.section}" />	
+	<echo level="info">Generating JavaDocs in ${javadoc.loc}</echo>
+	<echo level="info">basedir is ${basedir}</echo>
+	<javadoc destdir="${basedir}/../build/javadoc" useexternalfile="yes" author="false" version="true" use="true" windowtitle="MarketLive ${version.section} API">
+	   <fileset dir="${basedir}/java" defaultexcludes="yes">
+	      <include name="**/*.java" />
+	   </fileset>
+	   <classpath refid="build-classpath"/>
+	   <doctitle><![CDATA[<h1>MarketLive ${section}${version.delimiter}${version.section}</h1>]]></doctitle>
+	   <bottom><![CDATA[<i>Copyright &#169; 2007 MarketLive. All Rights Reserved.</i>]]></bottom>
+	   <!--  <tag name="todo" scope="all" description="To do:" /> -->
+	   <group title="Platform Classes (proprietary implementation)" packages="com.marketlive.biz,com.marketlive.biz.*,com.marketlive.entity,com.marketlive.entity.*" />
+	   <group title="B2C Application Classes (proprietary implementation)" packages="com.marketlive.app.b2c.*,com.marketlive.app.b2c" />
+	   <group title="Module Application Classes (proprietary implementation)" packages="com.marketlive.mod.*,com.marketlive.mod" />
+	   <link offline="true" href="http://java.sun.com/j2se/1.5.0/docs/api/" packagelistLoc="${MARKETLIVE_LIBRARIES}/jdk-1_5_0/docs/api" />
+	   <link offline="true" href="http://www.hibernate.org/hib_docs/v3/api/" packagelistLoc="${MARKETLIVE_LIBRARIES}/hibernate-3.1/doc/api" />
+	   <link offline="true" href="http://aopalliance.sourceforge.net/doc/" packagelistLoc="${MARKETLIVE_LIBRARIES}/aopalliance-1.0/javadoc" />
+	   <link offline="true" href="http://www.bouncycastle.org/docs/docs1.5/" packagelistLoc="${MARKETLIVE_LIBRARIES}/bcprov-jdk16-143/docs" />
+	   <link offline="true" href="http://jakarta.apache.org/commons/beanutils/commons-beanutils-1.7.0/docs/api/" packagelistLoc="${MARKETLIVE_LIBRARIES}/commons-beanutils-1.7.0/docs/api" />
+	   <link offline="true" href="http://jakarta.apache.org/commons/codec/api-release" packagelistLoc="${MARKETLIVE_LIBRARIES}/commons-codec-1.3/docs/api" />
+	   <link offline="true" href="http://jakarta.apache.org/commons/collections/apidocs-COLLECTIONS_3_2/" packagelistLoc="${MARKETLIVE_LIBRARIES}/commons-collections-3.2/docs/apidocs" />
+	   <link offline="true" href="http://jakarta.apache.org/commons/digester/commons-digester-1.6/docs/api/" packagelistLoc="${MARKETLIVE_LIBRARIES}/commons-digester-1.6/docs/api" />
+	   <link offline="true" href="http://jakarta.apache.org/commons/lang/api-2.1/index.html" packagelistLoc="${MARKETLIVE_LIBRARIES}/commons-lang-2.2/docs/api" />
+	   <link offline="true" href="http://jakarta.apache.org/commons/logging/commons-logging-1.1/docs/apidocs/" packagelistLoc="${MARKETLIVE_LIBRARIES}/commons-logging-1.1/docs/apidocs" />
+	   <link offline="true" href="http://jakarta.apache.org/commons/net/apidocs/" packagelistLoc="${MARKETLIVE_LIBRARIES}/commons-net-1.4.0/docs/apidocs" />
+	   <link offline="true" href="http://jakarta.apache.org/commons/pool/apidocs/" packagelistLoc="${MARKETLIVE_LIBRARIES}/commons-pool-1.6/apidocs" />
+	   <link offline="true" href="http://jakarta.apache.org/oro/api/" packagelistLoc="${MARKETLIVE_LIBRARIES}/jakarta-oro-2.0.8/docs/api" />
+	   <link offline="true" href="http://struts.apache.org/1.2.4/api/" packagelistLoc="${MARKETLIVE_LIBRARIES}/jakarta-struts-1.2.4/doc/api" />
+	   <link offline="true" href="" packagelistLoc="${MARKETLIVE_LIBRARIES}/javamail-1.3.2/docs/javadocs" />
+	   <link offline="true" href="http://static.springframework.org/spring/docs/1.2.x/api/" packagelistLoc="${MARKETLIVE_LIBRARIES}/spring-framework-1.2.5/docs/api" />
+	   <link offline="true" href="http://jakarta.apache.org/velocity/docs/api/" packagelistLoc="${MARKETLIVE_LIBRARIES}/velocity-1.4/docs/api" />
+	</javadoc>
+
+	<!-- javadoc ant task doesn't like the \\ in a network drive such as \\titania but the copy task does -->
+	<mkdir dir="${javadoc.loc}" />
+	<copy todir="${javadoc.loc}" preservelastmodified="true">
+	   <fileset dir="${basedir}/../build/javadoc">
+	   </fileset>
+	</copy>
+  </target>
+  
+  <!-- Create a Release Manifest file for the WAR -->
+  <target name="createReleaseManifest">
+  
+  <mkdir dir="${release.manifest.dir}" />
+  
+  <manifest mode="replace" file="${release.manifest.dir}/${release.manifest.file}">
+        <attribute name="Extension-Name" 
+                 value="com.marketlive.service" />
+        <attribute name="Specification-Vendor" 
+           value="MarketLive, Inc." />
+        <attribute name="Specification-Title" 
+            value="${name}" />
+        <attribute name="Specification-Version" 
+          value="${section}${version.delimiter}${version.section}" />
+        <attribute name="Platform-Version" 
+               value="${platform.version}" />
+        <attribute name="X-Compile-Source-JDK" 
+           value="${java.version}" />
+        <attribute name="X-Compile-Target-JDK" 
+           value="${java.version}" />
+     </manifest>
+  </target>
+
+  
+</project>

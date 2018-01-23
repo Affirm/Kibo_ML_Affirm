@@ -1,0 +1,1323 @@
+<?xml version="1.0"?>
+
+<!--  Called by the client build process to include this section into a distribution -->
+<project name="Merge Files" basedir="..">
+  <property name="struts.config.file" value="struts-config.xml"/>
+  <property name="merge.source.dir" value="${basedir}"/>
+
+  <xmlcatalog id="allcatalogs">
+      <dtd
+      publicId="-//SPRING//DTD BEAN 3.1//EN"
+      location="http://www.springframework.org/schema/beans/spring-beans-3.1.xsd" />
+      <dtd
+      publicId="-//SPRING//DTD BEAN 2.0//EN"
+      location="${MARKETLIVE_LIBRARIES}/spring-framework-2.0.2/dist/resources/spring-beans-2.0.dtd" />
+      <dtd
+      publicId="-//Apache Software Foundation//DTD Commons Validator Rules Configuration 1.1.3//EN"
+      location="${MARKETLIVE_LIBRARIES}/commons-validator-1.1.4/validator_1_1_3.dtd" />
+      <dtd
+      publicId="-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+      location="${MARKETLIVE_LIBRARIES}/hibernate-3.2.2.ga/src/org/hibernate/hibernate-configuration-3.0.dtd" />
+      <dtd
+      publicId="-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+      location="${MARKETLIVE_LIBRARIES}/hibernate-3.2.2.ga/src/org/hibernate/hibernate-mapping-3.0.dtd" />
+      <dtd
+      publicId="-//Apache Software Foundation//DTD Struts Configuration 1.2//EN"
+      location="${MARKETLIVE_LIBRARIES}/jakarta-struts-1.2.4/lib/struts-config_1_2.dtd" />
+      <dtd
+      publicId="-//Apache Software Foundation//DTD Tiles Configuration 1.1//EN"
+      location="${MARKETLIVE_LIBRARIES}/jakarta-struts-1.2.4/lib/tiles-config_1_1.dtd" />
+  </xmlcatalog>
+    
+    <target name="sleep" description="Sleep for 5 seconds when unix.timestamp.buffer=true">
+        <echo message="Sleeping for 5 seconds" />
+        <if>
+            <equals arg1="${unix.timestamp.buffer}" arg2="true"/>
+            <then>
+                <sleep seconds="5" />
+            </then>
+        </if>
+    </target>
+    
+  <target name="convertAppResources">
+    <if>
+      <available file="${merge.source.dir}/wwwroot/WEB-INF/classes/com/marketlive" type="dir" />
+      <then>
+        <mkdir dir="${deploy.root}/wwwroot/WEB-INF/classes/com/marketlive"/>
+        <!-- native2ascii's dest file cannot exist or the task will fail, so temporarily place them here and we'll
+         move them when we concat the ApplicationResources.properties and move the i18n versions -->
+        <native2ascii encoding="UTF-8"
+                  src="${merge.source.dir}/wwwroot/WEB-INF/classes/com/marketlive"
+                  dest="${deploy.root}/wwwroot/WEB-INF/classes/com"
+                  includes="ApplicationResources*.properties"/>
+        <for param="file">
+            <path>
+          <fileset dir="${deploy.root}/wwwroot/WEB-INF/classes/com">
+            <include name="ApplicationResources*.properties"/>
+          </fileset>
+            </path>
+          <sequential>
+          <propertyregex override="yes"
+                property="slashFile"  input="@{file}"
+                regexp="\\" replace="/" defaultValue="@{file}"/>
+            <propertyregex override="yes"
+                property="toFile"  input="${slashFile}"
+                regexp="classes/com" replace="classes/com/marketlive"/>
+            <concat destfile="${toFile}" append="true" force="yes">
+                <fileset file="@{file}"/>
+            </concat>
+            <delete file="@{file}"/>
+          </sequential>
+        </for>
+      </then>
+    </if>
+  </target>
+
+  <target name="convertAdminAppResources">
+    <if>
+      <available file="${merge.source.dir}/wwwroot/WEB-INF/classes/com/marketlive" type="dir" />
+      <then>
+        <mkdir dir="${deploy.root}/wwwroot/WEB-INF/classes/com/marketlive"/>
+        <!-- native2ascii's dest file cannot exist or the task will fail, so temporarily place them here and we'll
+         move them when we concat the AdminResources.properties and move the i18n versions -->
+        <native2ascii encoding="UTF-8"
+                  src="${merge.source.dir}/wwwroot/WEB-INF/classes/com/marketlive"
+                  dest="${deploy.root}/wwwroot/WEB-INF/classes/com"
+                  includes="AdminResources.properties"/>
+        <for param="file">
+            <path>
+          <fileset dir="${deploy.root}/wwwroot/WEB-INF/classes/com">
+            <include name="AdminResources.properties"/>
+          </fileset>
+            </path>
+          <sequential>
+          <propertyregex override="yes"
+                property="slashFile"  input="@{file}"
+                regexp="\\" replace="/" defaultValue="@{file}"/>
+            <propertyregex override="yes"
+                property="toFile"  input="${slashFile}"
+                regexp="classes/com" replace="classes/com/marketlive"/>
+            <concat destfile="${toFile}" append="true" force="yes">
+                <fileset file="@{file}"/>
+            </concat>
+            <delete file="@{file}"/>
+          </sequential>
+        </for>
+      </then>
+    </if>
+  </target>
+
+  <target name="convertLocalizedResources">
+    <if>
+      <available file="${merge.source.dir}/java/com/marketlive" type="dir" />
+      <then>
+        <mkdir dir="${deploy.root}/wwwroot/WEB-INF/classes/com/marketlive"/>
+        <!-- native2ascii's dest file cannot exist or the task will fail, so temporarily place them here and we'll
+             move them when we concat the ApplicationResources.properties and move the i18n versions -->
+        <native2ascii encoding="UTF-8"
+                  src="${merge.source.dir}/java/com/marketlive"
+                  dest="${deploy.root}/wwwroot/WEB-INF/classes/com"
+                  includes="LocalizedResources*.properties"/>
+        <for param="file">
+            <path>
+          <fileset dir="${deploy.root}/wwwroot/WEB-INF/classes/com">
+            <include name="LocalizedResources*.properties"/>
+          </fileset>
+            </path>
+          <sequential>
+          <propertyregex override="yes"
+                property="slashFile"  input="@{file}"
+                regexp="\\" replace="/" defaultValue="@{file}"/>
+            <propertyregex override="yes"
+                property="toFile"  input="${slashFile}"
+                regexp="classes/com" replace="classes/com/marketlive"/>
+            <concat destfile="${toFile}" append="true" force="yes">
+                <fileset file="@{file}"/>
+            </concat>
+            <delete file="@{file}"/>
+          </sequential>
+        </for>
+      </then>
+    </if>
+  </target>
+
+<!--
+    <target name="mergeFiles" depends="convertAppResources, convertAdminAppResources, convertLocalizedResources,
+  mergeWebXml, mergeActionServlet, mergeAppContext, mergeTilesDef, mergeValidation,
+  mergeValidatorRules, mergeSiteContextXml, mergeBizContextXml, mergeIntegrationContextXml,
+  mergeEntityContextXml, mergeSystemContextXml, mergeSystemB2CContextXml, mergePlatformScanContextXml,
+  mergeHibCfgXml, mergeEhCacheXml, mergeStrutsConfig, mergeHbmFiles, mergeWroXml"/>
+-->
+  <target name="mergeFiles" depends="convertAppResources, convertAdminAppResources, convertLocalizedResources,
+  mergeWebXml, mergeTilesDef, mergeValidation, mergeValidatorRules,
+  mergeHibCfgXml, mergeEhCacheXml, mergeStrutsConfig, mergeHbmFiles, mergeWroXml"/>
+
+  <target name="mergeWebXml">
+    <if>
+      <available file="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" type="file" />
+      <then>
+      </then>
+      <else>
+        <xmltask dest="${deploy.root}/wwwroot/WEB-INF/merge-web.xml">
+          <insert path="/">
+            <![CDATA[
+            <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+  version="3.0">
+            <!-- ${deploy.name}-${filter} -->
+            <context-param id="remove"/>
+            <filter id="remove"/>
+            <filter-mapping id="remove"/>
+            <listener id="remove"/>
+            <servlet id="remove"/>
+            <servlet-mapping id="remove"/>
+            <session-config id="remove"/>
+            <mime-mapping id="remove"/>
+            <welcome-file-list id="remove"/>
+            <error-page id="remove"/>
+            <jsp-config>
+            <taglib id="remove"/>
+            <jsp-property-group id="remove"/>
+            </jsp-config>
+            <resource-ref id="remove"/>
+            <security-constraint id="remove"/>
+            <login-config id="remove"/>
+            <security-role id="remove"/>
+            <env-entry id="remove"/>
+            </web-app>
+            ]]>
+          </insert>
+        </xmltask>
+      </else>
+    </if>
+
+    <if>
+      <available file="${merge.source.dir}/wwwroot/WEB-INF/web.xml" type="file" />
+      <then>
+        <echo message="Merging file: web.xml" />
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/web.xml" clearbuffers="buf" outputter="simple:2">
+          <copy path="//*[name()='display-name']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" dest="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" outputter="simple:2" preservetype="true">
+          <insert path="/web-app/context-param[last()]" position="before" buffer="buf" />
+        </xmltask>
+
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/web.xml" clearbuffers="buf" outputter="simple:2">
+          <copy path="//*[name()='context-param']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" dest="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" outputter="simple:2" preservetype="true">
+          <insert path="/web-app/context-param[last()]" position="after" buffer="buf" />
+        </xmltask>
+
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/web.xml" clearbuffers="buf" outputter="simple:2">
+          <copy path="//*[name()='filter']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" dest="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" outputter="simple:2" preservetype="true">
+          <insert path="/web-app/filter[last()]" position="after" buffer="buf" />
+        </xmltask>
+
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/web.xml" clearbuffers="buf" outputter="simple:2">
+          <copy path="//*[name()='filter-mapping']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" dest="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" outputter="simple:2" preservetype="true">
+          <insert path="/web-app/filter-mapping[last()]" position="after" buffer="buf" />
+        </xmltask>
+
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/web.xml" clearbuffers="buf" outputter="simple:2">
+          <copy path="//*[name()='listener']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" dest="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" outputter="simple:2" preservetype="true">
+          <insert path="/web-app/listener[last()]" position="after" buffer="buf" />
+        </xmltask>
+
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/web.xml" clearbuffers="buf" outputter="simple:2">
+          <copy path="//*[name()='servlet']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" dest="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" outputter="simple:2" preservetype="true">
+          <insert path="/web-app/servlet[last()]" position="after" buffer="buf" />
+        </xmltask>
+
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/web.xml" clearbuffers="buf" outputter="simple:2">
+          <copy path="//*[name()='servlet-mapping']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" dest="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" outputter="simple:2" preservetype="true">
+          <insert path="/web-app/servlet-mapping[last()]" position="after" buffer="buf" />
+        </xmltask>
+
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/web.xml" clearbuffers="buf" outputter="simple:2">
+          <copy path="//*[name()='session-config']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" dest="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" outputter="simple:2" preservetype="true">
+          <insert path="/web-app/session-config[last()]" position="after" buffer="buf" />
+        </xmltask>
+
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/web.xml" clearbuffers="buf" outputter="simple:2">
+          <copy path="//*[name()='mime-mapping']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" dest="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" outputter="simple:2" preservetype="true">
+          <insert path="/web-app/mime-mapping[last()]" position="after" buffer="buf" />
+        </xmltask>
+
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/web.xml" clearbuffers="buf" outputter="simple:2">
+          <copy path="//*[name()='welcome-file-list']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" dest="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" outputter="simple:2" preservetype="true">
+          <insert path="/web-app/welcome-file-list[last()]" position="after" buffer="buf" />
+        </xmltask>
+
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/web.xml" clearbuffers="buf" outputter="simple:2">
+          <copy path="//*[name()='error-page']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" dest="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" outputter="simple:2" preservetype="true">
+          <insert path="/web-app/error-page[last()]" position="after" buffer="buf" />
+        </xmltask>
+
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/web.xml" clearbuffers="buf" outputter="simple:2">
+          <copy path="//*[name()='taglib']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" dest="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" outputter="simple:2" preservetype="true">
+          <insert path="/web-app/jsp-config/taglib[last()]" position="after" buffer="buf" />
+        </xmltask>
+
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/web.xml" clearbuffers="buf" outputter="simple:2">
+          <copy path="//*[name()='jsp-property-group']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" dest="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" outputter="simple:2" preservetype="true">
+          <insert path="/web-app/jsp-config/jsp-property-group[last()]" position="after" buffer="buf" />
+        </xmltask>
+
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/web.xml" clearbuffers="buf" outputter="simple:2">
+          <copy path="//*[name()='resource-ref']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" dest="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" outputter="simple:2" preservetype="true">
+          <insert path="/web-app/resource-ref[last()]" position="after" buffer="buf" />
+        </xmltask>
+
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/web.xml" clearbuffers="buf" outputter="simple:2">
+          <copy path="//*[name()='security-constraint']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" dest="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" outputter="simple:2" preservetype="true">
+          <insert path="/web-app/security-constraint[last()]" position="after" buffer="buf" />
+        </xmltask>
+
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/web.xml" clearbuffers="buf" outputter="simple:2">
+          <copy path="//*[name()='login-config']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" dest="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" outputter="simple:2" preservetype="true">
+          <insert path="/web-app/login-config[last()]" position="after" buffer="buf" />
+        </xmltask>
+
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/web.xml" clearbuffers="buf" outputter="simple:2">
+          <copy path="//*[name()='security-role']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" dest="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" outputter="simple:2" preservetype="true">
+          <insert path="/web-app/security-role[last()]" position="after" buffer="buf" />
+        </xmltask>
+
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/web.xml" clearbuffers="buf" outputter="simple:2">
+          <copy path="//*[name()='env-entry']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" dest="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" outputter="simple:2" preservetype="true">
+          <insert path="/web-app/env-entry[last()]" position="after" buffer="buf" />
+        </xmltask>
+      </then>
+    </if>
+  </target>
+
+  <!-- Merge beans in applicationContext.xml -->
+  <target name="mergeAppContext">
+    <if>
+      <available file="${deploy.root}/wwwroot/WEB-INF/applicationContext.xml" type="file" />
+      <then>
+        <if>
+          <available file="${merge.source.dir}/wwwroot/WEB-INF/applicationContext.xml" type="file" />
+          <then>
+            <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/applicationContext.xml" clearBuffers="buf" outputter="simple:2">
+              <xmlcatalog refid="allcatalogs"/>
+              <call path="/beans/bean" buffer="buf" target="mergeApplicationContextXmlBean">
+                  <param name="beanid" path="@id" />
+              </call>
+            </xmltask>
+             <antcall target="sleep"/>
+            <touch file="${deploy.root}/wwwroot/WEB-INF/applicationContext.xml" />
+          </then>
+        </if>
+      </then>
+    </if>
+  </target>
+  <!-- this target is called once for each bean in the {merge.source.dir}'s applicationContext.xml file
+  to merge this bean with the deployed version of the applicationContext.xml file -->
+  <target name="mergeApplicationContextXmlBean">
+      <xmltask source="${deploy.root}/wwwroot/WEB-INF/applicationContext.xml" dest="${deploy.root}/wwwroot/WEB-INF/applicationContext.xml" outputter="simple:2" preservetype="true">
+        <xmlcatalog refid="allcatalogs"/>
+        <remove path="/beans/bean[@id='${beanid}']"/>
+        <insert path="/beans" position="under" buffer="buf" />
+      </xmltask>
+  </target>
+
+  <target name="mergeTilesDef">
+    <if>
+      <available file="${deploy.root}/wwwroot/WEB-INF/tiles" type="dir" />
+       <then>
+      </then>
+      <else>
+        <mkdir dir="${deploy.root}/wwwroot/WEB-INF/tiles" />
+      </else>
+    </if>
+    <if>
+      <available file="${deploy.root}/wwwroot/WEB-INF/tiles/tiles-def.xml" type="file" />
+      <then>
+      </then>
+      <else>
+        <!-- generate struts configuration template that requires DOCTYPE validation -->
+        <xmltask dest="${deploy.root}/wwwroot/WEB-INF/tiles/tiles-def.xml"
+                 public="-//Apache Software Foundation//DTD Tiles Configuration 1.1//EN"
+                 system="http://struts.apache.org/dtds/tiles-config_1_1.dtd"
+                 preservetype="true">
+          <xmlcatalog refid="allcatalogs"/>
+          <insert path="/">
+            <![CDATA[
+            <tiles-definitions>
+            <!-- ${deploy.name}-${filter} -->
+            </tiles-definitions>
+            ]]>
+          </insert>
+        </xmltask>
+        <!-- force inclusion of DOCTYPE since xmltask does not generate it for template -->
+        <concat destfile="${deploy.root}/wwwroot/WEB-INF/tiles/tiles-def.xml.doctype">
+          <header filtering="no" trimleading="yes"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+            <!DOCTYPE tiles-definitions PUBLIC
+                      "-//Apache Software Foundation//DTD Tiles Configuration 1.1//EN"
+                      "http://struts.apache.org/dtds/tiles-config_1_1.dtd">
+            ]]>
+          </header>
+          <path path="${deploy.root}/wwwroot/WEB-INF/tiles/tiles-def.xml"/>
+          <filterchain>
+            <headfilter lines="-1" skip="1"/>
+          </filterchain>
+        </concat>
+        <move file="${deploy.root}/wwwroot/WEB-INF/tiles/tiles-def.xml.doctype" tofile="${deploy.root}/wwwroot/WEB-INF/tiles/tiles-def.xml"/>
+      </else>
+    </if>
+    <if>
+      <available file="${merge.source.dir}/wwwroot/WEB-INF/tiles/tiles-def.xml" type="file" />
+      <then>
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/tiles/tiles-def.xml" clearBuffers="buf" outputter="simple:2">
+          <xmlcatalog refid="allcatalogs"/>
+          <copy path="//*[name()='definition']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/tiles/tiles-def.xml" dest="${deploy.root}/wwwroot/WEB-INF/tiles/tiles-def.xml" outputter="simple:2" preservetype="true">
+          <xmlcatalog refid="allcatalogs"/>
+          <insert path="/tiles-definitions" buffer="buf" />
+        </xmltask>
+      </then>
+    </if>
+  </target>
+
+  <!-- Merge beans in biz.context.xml and entity.mgrs.biz.context.xml -->
+  <target name="mergeBizContextXml">
+    <if>
+      <available file="${deploy.root}/wwwroot/WEB-INF/classes/biz.context.xml" type="file" />
+      <then>
+        <if>
+          <available file="${merge.source.dir}/context/biz.context.xml" type="file" />
+          <then>
+            <xmltask source="${merge.source.dir}/context/biz.context.xml" clearBuffers="buf" outputter="simple:2">
+              <xmlcatalog refid="allcatalogs"/>
+              <call path="/beans/bean" buffer="buf" target="mergeBizContextXmlBean">
+                  <param name="beanid" path="@id" />
+              </call>
+            </xmltask>
+            <antcall target="sleep"/>
+            <touch file="${deploy.root}/wwwroot/WEB-INF/classes/biz.context.xml" />
+          </then>
+        </if>
+      </then>
+    </if>
+    <if>
+      <available file="${deploy.root}/wwwroot/WEB-INF/classes/entity.mgrs.biz.context.xml" type="file" />
+      <then>
+        <if>
+          <available file="${merge.source.dir}/context/entity.mgrs.biz.context.xml" type="file" />
+          <then>
+            <xmltask source="${merge.source.dir}/context/entity.mgrs.biz.context.xml" clearBuffers="buf" outputter="simple:2">
+              <xmlcatalog refid="allcatalogs"/>
+              <call path="/beans/bean" buffer="buf" target="mergeEntityMgrsBizContextXmlBean">
+                  <param name="beanid" path="@id" />
+              </call>
+            </xmltask>
+              <antcall target="sleep"/>
+            <touch file="${deploy.root}/wwwroot/WEB-INF/classes/entity.mgrs.biz.context.xml" />
+          </then>
+        </if>
+      </then>
+    </if>
+  </target>
+  <!-- this target is called once for each bean in the {merge.source.dir}'s biz.context.xml file
+  to merge this bean with the deployed version of the biz.context.xml file -->
+  <target name="mergeBizContextXmlBean">
+      <xmltask source="${deploy.root}/wwwroot/WEB-INF/classes/biz.context.xml" dest="${deploy.root}/wwwroot/WEB-INF/classes/biz.context.xml" outputter="simple:2" preservetype="true">
+        <xmlcatalog refid="allcatalogs"/>
+        <remove path="/beans/bean[@id='${beanid}']"/>
+        <insert path="/beans/bean[last()]" position="after" buffer="buf" />
+      </xmltask>
+  </target>
+  <!-- this target is called once for each bean in the {merge.source.dir}'s entity.mgrs.biz.context.xml
+  file to merge this bean with the deployed version of the entity.mgrs.biz.context.xml file -->
+  <target name="mergeEntityMgrsBizContextXmlBean">
+      <xmltask source="${deploy.root}/wwwroot/WEB-INF/classes/entity.mgrs.biz.context.xml" dest="${deploy.root}/wwwroot/WEB-INF/classes/entity.mgrs.biz.context.xml" outputter="simple:2" preservetype="true">
+        <xmlcatalog refid="allcatalogs"/>
+        <remove path="/beans/bean[@id='${beanid}']"/>
+        <insert path="/beans/bean[last()]" position="after" buffer="buf" />
+      </xmltask>
+  </target>
+
+  <!-- Merge beans in integration.context.xml -->
+  <target name="mergeIntegrationContextXml">
+    <if>
+      <available file="${deploy.root}/wwwroot/WEB-INF/classes/integration.context.xml" type="file" />
+      <then>
+        <if>
+          <available file="${merge.source.dir}/context/integration.context.xml" type="file" />
+          <then>
+            <xmltask source="${merge.source.dir}/context/integration.context.xml" clearBuffers="buf" outputter="simple:2">
+              <xmlcatalog refid="allcatalogs"/>
+              <call path="/beans/bean" buffer="buf" target="mergeIntegrationContextXmlBean">
+                <param name="beanid" path="@id" />
+              </call>
+            </xmltask>
+              <antcall target="sleep"/>
+            <touch file="${deploy.root}/wwwroot/WEB-INF/classes/integration.context.xml" />
+          </then>
+        </if>
+      </then>
+    </if>
+  </target>
+  <!-- this target is called once for each bean in the {merge.source.dir}'s integration.context.xml file
+  to merge this bean with the deployed version of the integration.context.xml file -->
+  <target name="mergeIntegrationContextXmlBean">
+      <xmltask source="${deploy.root}/wwwroot/WEB-INF/classes/integration.context.xml" dest="${deploy.root}/wwwroot/WEB-INF/classes/integration.context.xml" outputter="simple:2" preservetype="true">
+        <xmlcatalog refid="allcatalogs"/>
+        <remove path="/beans/bean[@id='${beanid}']"/>
+        <insert path="/beans/bean[last()]" position="after" buffer="buf" />
+      </xmltask>
+  </target>
+
+  <!-- Merge beans in entity.context.xml -->
+  <target name="mergeEntityContextXml">
+    <if>
+      <available file="${deploy.root}/wwwroot/WEB-INF/classes/entity.context.xml" type="file" />
+      <then>
+        <if>
+          <available file="${merge.source.dir}/context/entity.context.xml" type="file" />
+          <then>
+            <xmltask source="${merge.source.dir}/context/entity.context.xml" clearBuffers="buf" outputter="simple:2">
+              <xmlcatalog refid="allcatalogs"/>
+              <call path="/beans/bean" buffer="buf" target="mergeEntityContextXmlBean">
+                  <param name="beanid" path="@id" />
+              </call>
+            </xmltask>
+              <antcall target="sleep"/>
+            <touch file="${deploy.root}/wwwroot/WEB-INF/classes/entity.context.xml" />
+          </then>
+        </if>
+      </then>
+    </if>
+  </target>
+  <!-- this target is called once for each bean in the {merge.source.dir}'s entity.context.xml file
+  to merge this bean with the deployed version of the entity.context.xml file -->
+  <target name="mergeEntityContextXmlBean">
+    <xmltask source="${deploy.root}/wwwroot/WEB-INF/classes/entity.context.xml" dest="${deploy.root}/wwwroot/WEB-INF/classes/entity.context.xml" outputter="simple:2" preservetype="true">
+      <xmlcatalog refid="allcatalogs"/>
+      <remove path="/beans/bean[@id='${beanid}']"/>
+      <insert path="/beans/bean[last()]" position="after" buffer="buf" />
+    </xmltask>
+  </target>
+
+  <!-- Merge beans in system.context.xml -->
+  <target name="mergeSystemContextXml">
+    <if>
+      <available file="${deploy.root}/wwwroot/WEB-INF/classes/system.context.xml" type="file" />
+      <then>
+        <if>
+          <available file="${merge.source.dir}/context/system.context.xml" type="file" />
+          <then>
+            <xmltask source="${merge.source.dir}/context/system.context.xml" clearBuffers="buf" outputter="simple:2">
+              <xmlcatalog refid="allcatalogs"/>
+              <call path="/beans/bean" buffer="buf" target="mergeSystemContextXmlBean">
+                  <param name="beanid" path="@id" />
+              </call>
+            </xmltask>
+              <antcall target="sleep"/>
+            <touch file="${deploy.root}/wwwroot/WEB-INF/classes/system.context.xml" />
+          </then>
+        </if>
+      </then>
+    </if>
+  </target>
+  <!-- this target is called once for each bean in the {merge.source.dir}'s system.context.xml file
+  to merge this bean with the deployed version of the system.context.xml file -->
+  <target name="mergeSystemContextXmlBean">
+    <xmltask source="${deploy.root}/wwwroot/WEB-INF/classes/system.context.xml" dest="${deploy.root}/wwwroot/WEB-INF/classes/system.context.xml" outputter="simple:2" preservetype="true">
+      <xmlcatalog refid="allcatalogs"/>
+      <remove path="/beans/bean[@id='${beanid}']"/>
+      <insert path="/beans/bean[last()]" position="after" buffer="buf" />
+    </xmltask>
+  </target>
+
+  <!--Merge beans in system.b2c.context.xml -->
+  <target name="mergeSystemB2CContextXml">
+    <!--<if>-->
+      <!--<available file="${deploy.root}/wwwroot/WEB-INF/classes/system.b2c.context.xml" type="file" />-->
+      <!--<then>-->
+        <!--<if>-->
+          <!--<available file="${merge.source.dir}/context/system.b2c.context.xml" type="file" />-->
+          <!--<then>-->
+            <!--<xmltask source="${merge.source.dir}/context/system.b2c.context.xml" clearBuffers="buf" outputter="simple:2">-->
+                <!--<xmlcatalog refid="allcatalogs"/>-->
+                <!--<call path="/beans/bean" buffer="buf" target="mergeSystemB2CContextXmlBean">-->
+                    <!--<param name="beanid" path="@id" />-->
+                <!--</call>-->
+            <!--</xmltask>-->
+              <!--<antcall target="sleep"/>-->
+            <!--<touch file="${deploy.root}/wwwroot/WEB-INF/classes/system.b2c.context.xml" />-->
+          <!--</then>-->
+        <!--</if>-->
+      <!--</then>-->
+    <!--</if>-->
+  </target>
+  <!-- this target is called once for each bean in the {merge.source.dir}'s system.b2c.context.xml file
+  to merge this bean with the deployed version of the system.b2c.context.xml file -->
+  <target name="mergeSystemB2CContextXmlBean">
+    <xmltask source="${deploy.root}/wwwroot/WEB-INF/classes/system.b2c.context.xml" dest="${deploy.root}/wwwroot/WEB-INF/classes/system.b2c.context.xml" outputter="simple:2" preservetype="true">
+      <xmlcatalog refid="allcatalogs"/>
+      <remove path="/beans/bean[@id='${beanid}']"/>
+      <insert path="/beans/bean[last()]" position="after" buffer="buf" />
+    </xmltask>
+  </target>
+
+    <!--Merge beans in platform.scan.context.xml -->
+    <target name="mergePlatformScanContextXml">
+        <if>
+            <available file="${deploy.root}/wwwroot/WEB-INF/classes/platform.scan.context.xml" type="file" />
+            <then>
+                <if>
+                    <available file="${merge.source.dir}/context/platform.scan.context.xml" type="file" />
+                    <then>
+                        <xmltask source="${merge.source.dir}/context/platform.scan.context.xml" clearBuffers="buf" outputter="simple:2">
+                            <xmlcatalog refid="allcatalogs"/>
+                            <call path="/beans/bean" buffer="buf" target="mergePlatformScanContextXmlBean">
+                                <param name="beanid" path="@id" />
+                            </call>
+                        </xmltask>
+                        <antcall target="sleep"/>
+                        <touch file="${deploy.root}/wwwroot/WEB-INF/classes/platform.scan.context.xml" />
+                    </then>
+                </if>
+            </then>
+        </if>
+    </target>
+    <!-- this target is called once for each bean in the {merge.source.dir}'s platform.scan.context.xml file
+         to merge this bean with the deployed version of the platform.scan.context.xml file -->
+    <target name="mergePlatformScanContextXmlBean">
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/classes/platform.scan.context.xml" dest="${deploy.root}/wwwroot/WEB-INF/classes/platform.scan.context.xml" outputter="simple:2" preservetype="true">
+            <xmlcatalog refid="allcatalogs"/>
+            <remove path="/beans/bean[@id='${beanid}']"/>
+            <insert path="/beans/bean[last()]" position="after" buffer="buf" />
+        </xmltask>
+    </target>
+
+  <!-- Merge beans in site.context.xml -->
+  <target name="mergeSiteContextXml">
+    <if>
+      <available file="${deploy.root}/wwwroot/WEB-INF/classes/site.context.xml" type="file" />
+      <then>
+        <if>
+          <available file="${merge.source.dir}/context/site.context.xml" type="file" />
+          <then>
+            <xmltask source="${merge.source.dir}/context/site.context.xml">
+              <xmlcatalog refid="allcatalogs"/>
+              <call path="/beans/bean" buffer="buf" target="mergeSiteContextXmlBean">
+                  <param name="beanid" path="@id" />
+              </call>
+            </xmltask>
+              <antcall target="sleep"/>
+            <touch file="${deploy.root}/wwwroot/WEB-INF/classes/site.context.xml" />
+          </then>
+        </if>
+      </then>
+      <else>
+        <if>
+          <available file="${merge.source.dir}/context/site.context.xml" type="file" />
+          <then>
+              <copy file="${merge.source.dir}/context/site.context.xml" toDir="${deploy.root}/wwwroot/WEB-INF/classes" flatten="true" preservelastmodified="true" />
+          </then>
+        </if>
+      </else>
+    </if>
+  </target>
+  <!-- this target is called once for each bean in the {merge.source.dir}'s site.context.xml file
+  to merge this bean with the deployed version of the site.context.xml file -->
+  <target name="mergeSiteContextXmlBean">
+    <xmltask source="${deploy.root}/wwwroot/WEB-INF/classes/site.context.xml" dest="${deploy.root}/wwwroot/WEB-INF/classes/site.context.xml" outputter="simple:2" preservetype="true">
+      <xmlcatalog refid="allcatalogs"/>
+      <remove path="/beans/bean[@id='${beanid}']"/>
+      <insert path="/beans/bean[last()]" position="after" buffer="buf" />
+    </xmltask>
+  </target>
+
+  <!-- Merge mappings in hibernate.cfg.xml -->
+  <target name="mergeHibCfgXml">
+    <if>
+      <available file="${merge.source.dir}/context/hibernate.cfg.xml" type="file" />
+      <then>
+        <xmltask source="${merge.source.dir}/context/hibernate.cfg.xml">
+          <xmlcatalog refid="allcatalogs"/>
+          <call path="/hibernate-configuration/session-factory/mapping" buffer="buf" target="mergeMapping">
+            <param name="resourcefile" path="@resource" />
+          </call>
+        </xmltask>
+        <xmltask source="${merge.source.dir}/context/hibernate.cfg.xml">
+          <xmlcatalog refid="allcatalogs"/>
+          <call path="/hibernate-configuration/session-factory/class-cache" buffer="buf" target="mergeClassCache">
+            <param name="classcachefile" path="@class" />
+          </call>
+        </xmltask>
+        <xmltask source="${merge.source.dir}/context/hibernate.cfg.xml">
+          <xmlcatalog refid="allcatalogs"/>
+          <call path="/hibernate-configuration/session-factory/collection-cache" buffer="buf" target="mergeCollectionCache">
+            <param name="collectioncachefile" path="@collection" />
+          </call>
+        </xmltask>
+	    <!-- Copy hibernate.cfg.xml files to IntegrationCLI -->
+	    <copy toDir="${deploy.root}/IntegrationCLI/classes" overwrite="true">
+	        <fileset file="${deploy.root}/wwwroot/WEB-INF/classes/hibernate.cfg.xml" />
+	    </copy>
+      </then>
+    </if>
+  </target>
+  <!-- this target is called once for each <mapping> element in the {merge.source.dir}'s
+  hibernate.cfg.xml file to merge this mapping element with the deployed version of
+  the hibernate.cfg.xml file -->
+  <target name="mergeMapping">
+      <xmltask source="${deploy.root}/wwwroot/WEB-INF/classes/hibernate.cfg.xml" dest="${deploy.root}/wwwroot/WEB-INF/classes/hibernate.cfg.xml" outputter="simple:2" preservetype="true">
+        <xmlcatalog refid="allcatalogs"/>
+        <remove path="/hibernate-configuration/session-factory/mapping[@resource='${resourcefile}']"/>
+        <insert path="/hibernate-configuration/session-factory/mapping[last()]" position="after" buffer="buf" />
+      </xmltask>
+  </target>
+
+  <!-- this target is called once for each <class-cache> element in the {merge.source.dir}'s
+  hibernate.cfg.xml file to merge this mapping element with the deployed version of
+  the hibernate.cfg.xml file -->
+  <target name="mergeClassCache">
+      <xmltask source="${deploy.root}/wwwroot/WEB-INF/classes/hibernate.cfg.xml" dest="${deploy.root}/wwwroot/WEB-INF/classes/hibernate.cfg.xml" outputter="simple:2" preservetype="true">
+        <xmlcatalog refid="allcatalogs"/>
+        <remove path="/hibernate-configuration/session-factory/class-cache[@class='${classcachefile}']"/>
+        <insert path="/hibernate-configuration/session-factory/class-cache[last()]" position="after" buffer="buf" />
+      </xmltask>
+  </target>
+
+  <!-- this target is called once for each <collection-cache> element in the {merge.source.dir}'s
+  hibernate.cfg.xml file to merge this mapping element with the deployed version of
+  the hibernate.cfg.xml file -->
+  <target name="mergeCollectionCache">
+      <xmltask source="${deploy.root}/wwwroot/WEB-INF/classes/hibernate.cfg.xml" dest="${deploy.root}/wwwroot/WEB-INF/classes/hibernate.cfg.xml" outputter="simple:2" preservetype="true">
+        <xmlcatalog refid="allcatalogs"/>
+        <remove path="/hibernate-configuration/session-factory/collection-cache[@collection='${collectioncachefile}']"/>
+        <insert path="/hibernate-configuration/session-factory/collection-cache[last()]" position="after" buffer="buf" />
+      </xmltask>
+  </target>
+
+  <target name="mergeEhCacheXml">
+  <!--Merging ehcache.xml -->
+    <if>
+      <available file="${merge.source.dir}/context/ehcache.xml" type="file" />
+      <then>
+        <xmltask source="${merge.source.dir}/context/ehcache.xml">
+          <call path="/ehcache/cache" buffer="buf" target="mergeCache">
+            <param name="cachefile" path="@name" />
+          </call>
+        </xmltask>
+      </then>
+    </if>
+  </target>
+
+  <!-- this target is called once for each <cache> element in the {merge.source.dir}'s
+  ehcache.xml file to merge this mapping element with the deployed version of
+  the ehcache.xml file -->
+  <target name="mergeCache">
+      <xmltask source="${deploy.root}/wwwroot/WEB-INF/classes/ehcache.xml" dest="${deploy.root}/wwwroot/WEB-INF/classes/ehcache.xml" outputter="simple:2" preservetype="true">
+        <remove path="/ehcache/cache[@name='${cachefile}']"/>
+        <insert path="/ehcache/cache[last()]" position="after" buffer="buf" />
+      </xmltask>
+  </target>
+
+  <!-- Merge *.hbm.xml files -->
+  <target name="mergeHbmFiles">
+    <if>
+      <available file="${merge.source.dir}/database/hbm" type="dir" />
+      <then>
+        <if>
+          <!-- Check if a db related ant target is being executed -->
+          <equals arg1="${database}" arg2="Database" />
+          <then>
+            <foreach target="mergeHbmFile" param="file">
+              <param name="root" value="${build.root}/database/hbm" />
+              <path>
+                <fileset dir="${merge.source.dir}/database/hbm" includes="*.hbm.xml"/>
+              </path>
+            </foreach>
+          </then>
+          <else>
+              <foreach target="mergeHbmFile" param="file">
+                  <param name="root" value="${deploy.root}/wwwroot/WEB-INF/classes" />
+                  <path>
+                      <fileset dir="${merge.source.dir}/database/hbm" includes="*.hbm.xml"/>
+                  </path>
+              </foreach>
+              <foreach target="mergeHbmFile" param="file">
+                  <param name="root" value="${deploy.root}/IntegrationCLI/classes" />
+                  <path>
+                      <fileset dir="${merge.source.dir}/database/hbm" includes="*.hbm.xml"/>
+                  </path>
+              </foreach>
+          </else>
+            </if>
+        </then>
+        </if>
+  </target>
+
+  <!-- this target is called once for each hbm.xml file in the {merge.source.dir}, to merge this
+  file with the deployed version of the hbm.xml of the same name, if one exists-->
+  <target name="mergeHbmFile">
+    <basename property="relativefilename" file="${file}"/>
+    <if>
+      <available file="${root}/${relativefilename}" type="file" />
+      <then>
+        <!-- Localized attribute pages -->
+        <!-- merge components defined within dynamic-component = localizedAttributePages -->
+        <xmltask source="${merge.source.dir}/database/hbm/${relativefilename}">
+          <xmlcatalog refid="allcatalogs"/>
+          <copy path="count(//hibernate-mapping/class/dynamic-component[@name='localizedAttributePages'])" property="count" />
+        </xmltask>
+        <if>
+          <equals arg1="${count}" arg2="1" />
+          <then>
+            <xmltask source="${root}/${relativefilename}">
+              <xmlcatalog refid="allcatalogs"/>
+              <copy path="count(//hibernate-mapping/class/dynamic-component[@name='localizedAttributePages'])" property="count1" />
+            </xmltask>
+            <if>
+              <equals arg1="${count1}" arg2="1" />
+              <then>
+                <xmltask source="${merge.source.dir}/database/hbm/${relativefilename}" clearbuffers="buf" outputter="simple:2">
+                  <xmlcatalog refid="allcatalogs"/>
+                  <copy path="//hibernate-mapping/class/dynamic-component[@name='localizedAttributePages']/*[name()='component']" buffer="buf" append="true" />
+                </xmltask>
+                <xmltask source="${root}/${relativefilename}" dest="${root}/${relativefilename}" outputter="simple:2" preservetype="true">
+                  <xmlcatalog refid="allcatalogs"/>
+                  <insert path="/hibernate-mapping/class/dynamic-component[@name='localizedAttributePages']" position="under" buffer="buf" />
+                </xmltask>
+                <xmltask source="${merge.source.dir}/database/hbm/${relativefilename}" clearbuffers="buf" outputter="simple:2">
+                  <xmlcatalog refid="allcatalogs"/>
+                  <copy path="//hibernate-mapping/class/joined-subclass" buffer="buf" append="true" />
+                </xmltask>
+                <xmltask source="${root}/${relativefilename}" dest="${root}/${relativefilename}" outputter="simple:2" preservetype="true">
+                  <xmlcatalog refid="allcatalogs"/>
+                  <insert path="/hibernate-mapping/class/joined-subclass" position="after" buffer="buf" />
+                </xmltask>
+              </then>
+              <else>
+                <xmltask source="${root}/${relativefilename}">
+                  <xmlcatalog refid="allcatalogs"/>
+                  <copy path="count(//hibernate-mapping/class/joined-subclass)" property="count2" />
+                </xmltask>
+                <if>
+                  <equals arg1="${count2}" arg2="0" />
+                  <then>
+                    <xmltask source="${merge.source.dir}/database/hbm/${relativefilename}" clearbuffers="buf" outputter="simple:2">
+                      <xmlcatalog refid="allcatalogs"/>
+                      <copy path="//hibernate-mapping/class/dynamic-component[@name='localizedAttributePages']" buffer="buf" append="true" />
+                    </xmltask>
+                    <xmltask source="${root}/${relativefilename}" dest="${root}/${relativefilename}" outputter="simple:2" preservetype="true">
+                      <xmlcatalog refid="allcatalogs"/>
+                      <insert path="/hibernate-mapping/class[last()]" position="under" buffer="buf" />
+                    </xmltask>
+                  </then>
+                  <else>
+                    <!-- insert the dynamic-component element before any joined-subclass elements -->
+                    <xmltask source="${merge.source.dir}/database/hbm/${relativefilename}" clearbuffers="buf" outputter="simple:2">
+                      <xmlcatalog refid="allcatalogs"/>
+                      <copy path="//hibernate-mapping/class/dynamic-component[@name='localizedAttributePages']" buffer="buf" append="true" />
+                    </xmltask>
+                    <xmltask source="${root}/${relativefilename}" dest="${root}/${relativefilename}" outputter="simple:2" preservetype="true">
+                      <xmlcatalog refid="allcatalogs"/>
+                      <insert path="/hibernate-mapping/class/joined-subclass" position="before" buffer="buf" />
+                    </xmltask>
+                  </else>
+                </if>
+              </else>
+            </if>
+          </then>
+        </if>
+        <!-- Non-localized attribute pages -->
+        <!-- merge components defined within dynamic-component = attributePages -->
+        <xmltask source="${merge.source.dir}/database/hbm/${relativefilename}">
+          <xmlcatalog refid="allcatalogs"/>
+          <copy path="count(//hibernate-mapping/class/dynamic-component[@name='attributePages'])" property="count3" />
+        </xmltask>
+        <if>
+          <equals arg1="${count3}" arg2="1" />
+          <then>
+            <xmltask source="${root}/${relativefilename}">
+              <xmlcatalog refid="allcatalogs"/>
+              <copy path="count(//hibernate-mapping/class/dynamic-component[@name='attributePages'])" property="count4" />
+            </xmltask>
+            <if>
+              <equals arg1="${count4}" arg2="1" />
+              <then>
+                <xmltask source="${merge.source.dir}/database/hbm/${relativefilename}" clearbuffers="buf" outputter="simple:2">
+                  <xmlcatalog refid="allcatalogs"/>
+                  <copy path="//hibernate-mapping/class/dynamic-component[@name='attributePages']/*[name()='component']" buffer="buf" append="true" />
+                </xmltask>
+                <xmltask source="${root}/${relativefilename}" dest="${root}/${relativefilename}" outputter="simple:2" preservetype="true">
+                  <xmlcatalog refid="allcatalogs"/>
+                  <insert path="/hibernate-mapping/class/dynamic-component[@name='attributePages']" position="under" buffer="buf" />
+                </xmltask>
+                <xmltask source="${merge.source.dir}/database/hbm/${relativefilename}" clearbuffers="buf" outputter="simple:2">
+                  <xmlcatalog refid="allcatalogs"/>
+                  <copy path="//hibernate-mapping/class/joined-subclass" buffer="buf" append="true" />
+                </xmltask>
+                <xmltask source="${root}/${relativefilename}" dest="${root}/${relativefilename}" outputter="simple:2" preservetype="true">
+                  <xmlcatalog refid="allcatalogs"/>
+                  <insert path="/hibernate-mapping/class/joined-subclass" position="after" buffer="buf" />
+                </xmltask>
+              </then>
+              <else>
+                <xmltask source="${root}/${relativefilename}">
+                  <xmlcatalog refid="allcatalogs"/>
+                  <copy path="count(//hibernate-mapping/class/joined-subclass)" property="count5" />
+                </xmltask>
+                <if>
+                  <equals arg1="${count5}" arg2="0" />
+                  <then>
+                    <xmltask source="${merge.source.dir}/database/hbm/${relativefilename}" clearbuffers="buf" outputter="simple:2">
+                      <xmlcatalog refid="allcatalogs"/>
+                      <copy path="//hibernate-mapping/class/dynamic-component[@name='attributePages']" buffer="buf" append="true" />
+                    </xmltask>
+                    <xmltask source="${root}/${relativefilename}" dest="${root}/${relativefilename}" outputter="simple:2" preservetype="true">
+                      <xmlcatalog refid="allcatalogs"/>
+                      <insert path="/hibernate-mapping/class[last()]" position="under" buffer="buf" />
+                    </xmltask>
+                  </then>
+                  <else>
+                    <!-- insert the dynamic-component element before any joined-subclass elements -->
+                    <xmltask source="${merge.source.dir}/database/hbm/${relativefilename}" clearbuffers="buf" outputter="simple:2">
+                      <xmlcatalog refid="allcatalogs"/>
+                      <copy path="//hibernate-mapping/class/dynamic-component[@name='attributePages']" buffer="buf" append="true" />
+                    </xmltask>
+                    <xmltask source="${root}/${relativefilename}" dest="${root}/${relativefilename}" outputter="simple:2" preservetype="true">
+                      <xmlcatalog refid="allcatalogs"/>
+                      <insert path="/hibernate-mapping/class/joined-subclass" position="before" buffer="buf" />
+                    </xmltask>
+                  </else>
+                </if>
+              </else>
+            </if>
+          </then>
+        </if>
+      </then>
+    </if>
+  </target>
+
+  <!-- Merge action-servlet.xml beans -->
+  <target name="mergeActionServlet">
+    <!--<if>-->
+      <!--<available file="${deploy.root}/wwwroot/WEB-INF/action-servlet.xml" type="file" />-->
+      <!--<then>-->
+        <!--<if>-->
+          <!--<available file="${merge.source.dir}/wwwroot/WEB-INF/action-servlet.xml" type="file" />-->
+          <!--<then>-->
+            <!--<xmltask source="${merge.source.dir}/wwwroot/WEB-INF/action-servlet.xml" clearBuffers="buf" outputter="simple:2">-->
+                <!--<xmlcatalog refid="allcatalogs"/>-->
+                <!--<call path="/beans/bean" buffer="buf" target="mergeActionServletXmlBean">-->
+                    <!--<param name="beanname" path="@name" />-->
+                <!--</call>-->
+            <!--</xmltask>-->
+              <!--<antcall target="sleep"/>-->
+            <!--<touch file="${deploy.root}/wwwroot/WEB-INF/action-servlet.xml" />-->
+          <!--</then>-->
+        <!--</if>-->
+      <!--</then>-->
+    <!--</if>-->
+  </target>
+  <!-- this target is called once for each bean in the {merge.source.dir}'s action-servlet.xml file
+  to merge this bean with the deployed version of the action-servlet.xml file -->
+  <target name="mergeActionServletXmlBean">
+    <xmltask source="${deploy.root}/wwwroot/WEB-INF/action-servlet.xml" dest="${deploy.root}/wwwroot/WEB-INF/action-servlet.xml" outputter="simple:2" preservetype="true">
+        <xmlcatalog refid="allcatalogs"/>
+        <remove path="/beans/bean[@name='${beanname}']"/>
+        <insert path="/beans" position="under" buffer="buf" />
+    </xmltask>
+  </target>
+
+  <target name="mergeValidation">
+    <if>
+      <available file="${deploy.root}/wwwroot/WEB-INF/validation.xml" type="file" />
+      <then>
+      </then>
+      <else>
+        <xmltask dest="${deploy.root}/wwwroot/WEB-INF/validation.xml"
+          public="-//Apache Software Foundation//DTD Commons Validator Rules Configuration 1.1.3//EN"
+          system="${MARKETLIVE_LIBRARIES}/commons-validator-1.1.4/validator_1_1_3.dtd" >
+          <insert path="/">
+            <![CDATA[
+            <form-validation>
+            <!-- ${deploy.name}-${filter} -->
+            <global/>
+            <formset/>
+            </form-validation>
+            ]]>
+          </insert>
+        </xmltask>
+      </else>
+    </if>
+
+    <if>
+      <available file="${merge.source.dir}/wwwroot/WEB-INF/validation.xml" type="file" />
+      <then>
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/validation.xml" clearBuffers="buf" outputter="simple:2">
+          <xmlcatalog refid="allcatalogs"/>
+          <copy path="//form-validation/global/*[name()='validator']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/validation.xml" dest="${deploy.root}/wwwroot/WEB-INF/validation.xml" outputter="simple:2" preservetype="true">
+          <xmlcatalog refid="allcatalogs"/>
+          <insert path="/form-validation/global[last()]" position="under" buffer="buf" />
+        </xmltask>
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/validation.xml" clearBuffers="buf" outputter="simple:2">
+          <xmlcatalog refid="allcatalogs"/>
+          <copy path="//form-validation/global/*[name()='constant']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/validation.xml" dest="${deploy.root}/wwwroot/WEB-INF/validation.xml" outputter="simple:2" preservetype="true">
+          <xmlcatalog refid="allcatalogs"/>
+          <insert path="/form-validation/global[last()]" position="under" buffer="buf" />
+        </xmltask>
+
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/validation.xml" clearBuffers="buf" outputter="simple:2">
+          <xmlcatalog refid="allcatalogs"/>
+          <copy path="//form-validation/formset/*[name()='constant']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/validation.xml" dest="${deploy.root}/wwwroot/WEB-INF/validation.xml" outputter="simple:2" preservetype="true">
+          <xmlcatalog refid="allcatalogs"/>
+          <insert path="/form-validation/formset[last()]" position="under" buffer="buf" />
+        </xmltask>
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/validation.xml" clearBuffers="buf" outputter="simple:2">
+          <xmlcatalog refid="allcatalogs"/>
+          <copy path="//form-validation/formset/*[name()='form']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/validation.xml" dest="${deploy.root}/wwwroot/WEB-INF/validation.xml" outputter="simple:2" preservetype="true">
+          <xmlcatalog refid="allcatalogs"/>
+          <insert path="/form-validation/formset[last()]" position="under" buffer="buf" />
+        </xmltask>
+      </then>
+    </if>
+  </target>
+
+  <target name="mergeValidatorRules">
+    <if>
+      <available file="${deploy.root}/wwwroot/WEB-INF/validator-rules.xml" type="file" />
+      <then>
+      </then>
+      <else>
+        <xmltask dest="${deploy.root}/wwwroot/WEB-INF/validator-rules.xml"
+          public="-//Apache Software Foundation//DTD Commons Validator Rules Configuration 1.1.3//EN"
+          system="${MARKETLIVE_LIBRARIES}/commons-validator-1.1.4/validator_1_1_3.dtd">
+            <insert path="/">
+              <![CDATA[
+              <form-validation>
+              <!-- ${deploy.name}-${filter} -->
+              <global/>
+              </form-validation>
+              ]]>
+            </insert>
+        </xmltask>
+      </else>
+    </if>
+    <if>
+      <available file="${merge.source.dir}/wwwroot/WEB-INF/validator-rules.xml" type="file" />
+      <then>
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/validator-rules.xml" clearBuffers="buf" outputter="simple:2">
+          <xmlcatalog refid="allcatalogs"/>
+          <copy path="//form-validation/global/*[name()='validator']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/validator-rules.xml" dest="${deploy.root}/wwwroot/WEB-INF/validator-rules.xml" outputter="simple:2" preservetype="true">
+          <xmlcatalog refid="allcatalogs"/>
+          <insert path="/form-validation/global[last()]" position="under" buffer="buf" />
+        </xmltask>
+      </then>
+    </if>
+  </target>
+
+  <target name="mergeStrutsConfig">
+    <antcall target="mergeStrutsConfigFiles" />
+    <var name="struts.config.file" unset="true"/>
+    <property name="struts.config.file" value="struts-admin-config.xml"/>
+    <antcall target="mergeStrutsConfigFiles" />
+  </target>
+
+  <target name="mergeStrutsConfigFiles">
+    <echo message="Merging file: ${struts.config.file}" />
+    <if>
+      <available file="${deploy.root}/wwwroot/WEB-INF/${struts.config.file}" type="file" />
+      <then>
+      </then>
+      <else>
+        <!-- generate struts configuration template that requires DOCTYPE validation -->
+        <xmltask dest="${deploy.root}/wwwroot/WEB-INF/${struts.config.file}"
+                 public="-//Apache Software Foundation//DTD Struts Configuration 1.2//EN"
+                 system="http://struts.apache.org/dtds/struts-config_1_2.dtd"
+                 preservetype="true">
+          <xmlcatalog refid="allcatalogs"/>
+          <insert path="/">
+            <![CDATA[
+            <struts-config>
+            <!-- ${deploy.name}-${filter} -->
+            <form-beans/>
+            <global-exceptions/>
+            <global-forwards/>
+            <action-mappings/>
+            <controller id="remove"/>
+            <message-resources id="remove"/>
+            <plug-in id="remove"/>
+            </struts-config>
+            ]]>
+          </insert>
+        </xmltask>
+        <!-- force inclusion of DOCTYPE since xmltask does not generate it for template -->
+        <concat destfile="${deploy.root}/wwwroot/WEB-INF/${struts.config.file}.doctype">
+          <header filtering="no" trimleading="yes"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+            <!DOCTYPE struts-config PUBLIC
+                      "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN"
+                      "http://struts.apache.org/dtds/struts-config_1_2.dtd">
+            ]]>
+          </header>
+          <path path="${deploy.root}/wwwroot/WEB-INF/${struts.config.file}"/>
+          <filterchain>
+            <headfilter lines="-1" skip="1"/>
+          </filterchain>
+        </concat>
+        <move file="${deploy.root}/wwwroot/WEB-INF/${struts.config.file}.doctype" tofile="${deploy.root}/wwwroot/WEB-INF/${struts.config.file}"/>
+      </else>
+    </if>
+    <if>
+      <available file="${merge.source.dir}/wwwroot/WEB-INF/${struts.config.file}" type="file" />
+      <then>
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/${struts.config.file}" clearbuffers="buf" outputter="simple:2">
+          <xmlcatalog refid="allcatalogs"/>
+          <copy path="//struts-config/form-beans/*[name()='form-bean']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/${struts.config.file}" dest="${deploy.root}/wwwroot/WEB-INF/${struts.config.file}" outputter="simple:2" preservetype="true">
+          <xmlcatalog refid="allcatalogs"/>
+          <insert path="/struts-config/form-beans[last()]" position="under" buffer="buf" />
+        </xmltask>
+
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/${struts.config.file}" clearbuffers="buf" outputter="simple:2">
+          <xmlcatalog refid="allcatalogs"/>
+          <copy path="//struts-config/global-exceptions/*[name()='exception']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/${struts.config.file}" dest="${deploy.root}/wwwroot/WEB-INF/${struts.config.file}" outputter="simple:2" preservetype="true">
+          <xmlcatalog refid="allcatalogs"/>
+          <insert path="/struts-config/global-exceptions[last()]" position="under" buffer="buf" />
+        </xmltask>
+
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/${struts.config.file}" clearbuffers="buf" outputter="simple:2">
+          <xmlcatalog refid="allcatalogs"/>
+          <copy path="//struts-config/global-forwards/*[name()='forward']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/${struts.config.file}" dest="${deploy.root}/wwwroot/WEB-INF/${struts.config.file}" outputter="simple:2" preservetype="true">
+          <xmlcatalog refid="allcatalogs"/>
+          <insert path="/struts-config/global-forwards[last()]" position="under" buffer="buf" />
+        </xmltask>
+
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/${struts.config.file}" clearbuffers="buf" outputter="simple:2">
+          <xmlcatalog refid="allcatalogs"/>
+          <copy path="//struts-config/action-mappings/*[name()='action']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/${struts.config.file}" dest="${deploy.root}/wwwroot/WEB-INF/${struts.config.file}" outputter="simple:2" preservetype="true">
+          <xmlcatalog refid="allcatalogs"/>
+          <insert path="/struts-config/action-mappings[last()]" position="under" buffer="buf" />
+        </xmltask>
+
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/${struts.config.file}" clearbuffers="buf" outputter="simple:2">
+          <xmlcatalog refid="allcatalogs"/>
+          <copy path="//struts-config/*[name()='controller']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/${struts.config.file}" dest="${deploy.root}/wwwroot/WEB-INF/${struts.config.file}" outputter="simple:2" preservetype="true">
+          <xmlcatalog refid="allcatalogs"/>
+          <insert path="/struts-config/controller[last()]" position="after" buffer="buf" />
+        </xmltask>
+
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/${struts.config.file}" clearbuffers="buf" outputter="simple:2">
+          <xmlcatalog refid="allcatalogs"/>
+          <copy path="//struts-config/*[name()='message-resources']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/${struts.config.file}" dest="${deploy.root}/wwwroot/WEB-INF/${struts.config.file}" outputter="simple:2" preservetype="true">
+          <xmlcatalog refid="allcatalogs"/>
+          <insert path="/struts-config/message-resources[last()]" position="after" buffer="buf" />
+        </xmltask>
+
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/${struts.config.file}" clearbuffers="buf" outputter="simple:2">
+          <xmlcatalog refid="allcatalogs"/>
+          <copy path="//struts-config/*[name()='plug-in']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/${struts.config.file}" dest="${deploy.root}/wwwroot/WEB-INF/${struts.config.file}" outputter="simple:2" preservetype="true">
+          <xmlcatalog refid="allcatalogs"/>
+          <insert path="/struts-config/plug-in[last()]" position="after" buffer="buf" />
+        </xmltask>
+      </then>
+    </if>
+  </target>
+
+  <target name="mergeWroXml">
+    <!--Merging wro.xml -->
+    <if>
+      <available file="${deploy.root}/wwwroot/WEB-INF/wro.xml" type="file" />
+      <then>
+        <if>
+          <available file="${merge.source.dir}/wwwroot/WEB-INF/wro.xml" type="file" />
+          <then>
+            <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/wro.xml">
+              <call path="/*[name()='groups']/*[name()='group']" target="mergeWroXmlGroup">
+                <param name="groupname" path="@name" />
+              </call>
+            </xmltask>
+              <antcall target="sleep"/>
+            <touch file="${deploy.root}/wwwroot/WEB-INF/wro.xml" />
+          </then>
+        </if>
+      </then>
+      <else>
+        <if>
+          <available file="${merge.source.dir}/wwwroot/WEB-INF/wro.xml" type="file" />
+          <then>
+            <copy file="${merge.source.dir}/wwwroot/WEB-INF/wro.xml" toDir="${deploy.root}/wwwroot/WEB-INF/" flatten="true" preservelastmodified="true" />
+          </then>
+        </if>
+      </else>
+    </if>
+  </target>
+
+  <target name="mergeWroXmlGroup">
+    <xmltask source="${deploy.root}/wwwroot/WEB-INF/wro.xml">
+      <copy path="count(/*[name()='groups']/*[name()='group' and @name='${groupname}'])" property="count" />
+    </xmltask>
+    <if>
+      <equals arg1="${count}" arg2="1" />
+      <then>
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/wro.xml" clearBuffers="buf">
+          <copy path="/*[name()='groups']/*[name()='group' and @name='${groupname}']/*" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/wro.xml" dest="${deploy.root}/wwwroot/WEB-INF/wro.xml">
+          <insert path="/*[name()='groups']/*[name()='group' and @name='${groupname}']/*[last()]" position="after" buffer="buf" />
+        </xmltask>
+      </then>
+      <else>
+        <xmltask source="${merge.source.dir}/wwwroot/WEB-INF/wro.xml" clearBuffers="buf">
+          <copy path="/*[name()='groups']/*[name()='group' and @name='${groupname}']" buffer="buf" append="true" />
+        </xmltask>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/wro.xml" dest="${deploy.root}/wwwroot/WEB-INF/wro.xml">
+          <insert path="/*[name()='groups']" position="under" buffer="buf" />
+        </xmltask>
+      </else>
+    </if>
+  </target>
+
+  <target name="postMerge">
+    <if>
+      <available file="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" type="file" />
+      <then>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" dest="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" outputter="simple:2">
+          <remove path="/web-app/context-param[@id='remove']" />
+          <remove path="/web-app/filter[@id='remove']" />
+          <remove path="/web-app/filter-mapping[@id='remove']" />
+          <remove path="/web-app/listener[@id='remove']" />
+          <remove path="/web-app/servlet[@id='remove']" />
+          <remove path="/web-app/servlet-mapping[@id='remove']" />
+          <remove path="/web-app/session-config[@id='remove']" />
+          <remove path="/web-app/mime-mapping[@id='remove']" />
+          <remove path="/web-app/welcome-file-list[@id='remove']" />
+          <remove path="/web-app/error-page[@id='remove']" />
+          <remove path="/web-app/jsp-config/taglib[@id='remove']" />
+          <remove path="/web-app/jsp-config/jsp-property-group[@id='remove']" />
+          <remove path="/web-app/resource-ref[@id='remove']" />
+          <remove path="/web-app/security-constraint[@id='remove']" />
+          <remove path="/web-app/login-config[@id='remove']" />
+          <remove path="/web-app/security-role[@id='remove']" />
+          <remove path="/web-app/env-entry[@id='remove']" />
+        </xmltask>
+
+        <if>
+          <or>
+            <!-- web.xml missing: use merged web.xml -->
+            <not>
+              <available file="${deploy.root}/wwwroot/WEB-INF/web.xml" type="file" />
+            </not>
+            <!-- deployment modified and original web.xml exists: compare to original web.xml -->
+            <and>
+              <available file="${deploy.root}/wwwroot/WEB-INF/web.xml.orig" type="file" />
+              <not>
+                <filesmatch file1="${deploy.root}/wwwroot/WEB-INF/web.xml.orig" file2="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" textfile="true" />
+              </not>
+            </and>
+            <!-- no deployment modified and original web.xml exists: compare to web.xml -->
+            <and>
+              <not>
+                <available file="${deploy.root}/wwwroot/WEB-INF/web.xml.orig" type="file" />
+              </not>
+              <not>
+                <filesmatch file1="${deploy.root}/wwwroot/WEB-INF/web.xml" file2="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" textfile="true" />
+              </not>
+            </and>
+          </or>
+          <then>
+            <!-- update web.xml and clear deployment original web.xml -->
+            <move file="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" tofile="${deploy.root}/wwwroot/WEB-INF/web.xml" overwrite="true" />
+            <delete file="${deploy.root}/wwwroot/WEB-INF/web.xml.orig" quiet="true" />
+            <echo message="Updated merged file: web.xml" />
+          </then>
+          <else>
+            <!-- skip web.xml merge -->
+            <delete file="${deploy.root}/wwwroot/WEB-INF/merge-web.xml" quiet="true" />
+            <echo message="Preserved merged file: web.xml" />
+          </else>
+        </if>
+      </then>
+    </if>
+
+    <if>
+      <available file="${deploy.root}/wwwroot/WEB-INF/struts-config.xml" type="file" />
+      <then>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/struts-config.xml" dest="${deploy.root}/wwwroot/WEB-INF/struts-config.xml" outputter="simple:2" preservetype="true">
+          <xmlcatalog refid="allcatalogs"/>
+          <remove path="/struts-config/controller[@id='remove']" />
+          <remove path="/struts-config/message-resources[@id='remove']" />
+          <remove path="/struts-config/plug-in[@id='remove']" />
+        </xmltask>
+      </then>
+    </if>
+
+    <!-- Essentially same as above step but intended for struts-admin-config.xml rather than struts-config.xml -->
+    <if>
+      <available file="${deploy.root}/wwwroot/WEB-INF/struts-admin-config.xml" type="file" />
+      <then>
+        <xmltask source="${deploy.root}/wwwroot/WEB-INF/struts-admin-config.xml" dest="${deploy.root}/wwwroot/WEB-INF/struts-admin-config.xml" outputter="simple:2" preservetype="true">
+          <xmlcatalog refid="allcatalogs"/>
+          <remove path="/struts-config/controller[@id='remove']" />
+          <remove path="/struts-config/message-resources[@id='remove']" />
+          <remove path="/struts-config/plug-in[@id='remove']" />
+        </xmltask>
+      </then>
+    </if>
+  </target>
+</project>

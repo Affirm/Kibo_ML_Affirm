@@ -1,0 +1,543 @@
+#set($orderShipmentMsg = "These items have been shipped today.")
+#foreach( $payment in $order.payments )
+#if ( $payment.paymentType.name == "AFFIRM" )
+    #set($orderShipmentMsg = "Your order will ship within the next 3-4 business days.")
+#end
+#end
+
+
+<div>Thank you for placing an order with $companyName.</div>
+<BR/>
+<div>If you have any questions or comments, please contact our Customer Service Department at $customerServicePhone, or email us at $customerServiceEmailAddress.</div>
+<BR/>
+
+<div>Your Order Shipment Confirmation is below.  $orderShipmentMsg  Thank you again for your business.</div>
+
+<BR/>
+<div>Sincerely,</div>
+<BR/>
+<div>$companyName</div>
+<BR/>
+ORDER CONFIRMATION NUMBER:
+#if (($order.code) && ($order.code != ""))
+${configManager.getAsString("app.b2c.checkout.ThankyouModel.order_prefix")}${order.code}<br />
+#else
+${configManager.getAsString("app.b2c.checkout.ThankyouModel.order_prefix")}${order.pk.asString}<br />
+#end
+<BR/>
+Order Shipment Confirmation Number: $shipmentConfirmationNumber
+<BR/>
+#if (${order.trackings})
+	#foreach($tracking in $order.trackings)
+		Shipment Tracking: ${tracking.carrierName}
+		#if (${tracking.trackingNumber})
+				- ${tracking.trackingNumber}
+				#if (${tracking.carrierURL})
+					<a href="${tracking.carrierURL}" target="_new">track it</a>
+					<BR/>
+				#end
+	  #end
+	#end
+#end
+<BR/>
+
+<BR/>
+
+<table border="0" cellspacing="0" cellpadding="0" width="95%">
+<tr>
+  <td colspan="5" style="background-color:#FFFFFF;padding:3px;">
+      <table border="0" cellspacing="0" cellpadding="3" width="100%" style="border:1px solid #DEDEDE;" >
+## Billing and Payment Headers
+      <tr bgcolor="#DEDEDE">
+          <td width="213"><b>Billing Info</b></td>
+          <td width="40">&nbsp;&nbsp;</td>
+          <td width="213"><b>Payment Method</b></td>
+      </tr>
+      <tr valign=top>
+
+## Billing Data
+          <td>
+              $formatter.escapeHTML(${order.billToInfo.person.firstName})  $formatter.escapeHTML(${order.billToInfo.person.lastName})<br />
+              #if ( ${order.billToInfo.address.street1} )
+               $formatter.escapeHTML(${order.billToInfo.address.street1})
+               <br />
+              #end
+              #if ( ${order.billToInfo.address.street2} )
+               $formatter.escapeHTML(${order.billToInfo.address.street2})
+               <br />
+              #end
+              #if ( ${order.billToInfo.address.street3} )
+               $formatter.escapeHTML(${order.billToInfo.address.street3})
+               <br />
+              #end
+              $formatter.escapeHTML(${order.billToInfo.address.city}),
+              ${order.billToInfo.address.state.stateCode}
+      				$formatter.postalCode(${order.billToInfo.address.postalCode})
+               <br />
+              ${order.billToInfo.address.country.code}
+               <br />
+               $formatter.phone(${order.billToInfo.phone1}, ${order.billToInfo.address.country.code})
+               <br />
+              #if ( ${order.billToInfo.phone2} )
+               $formatter.phone(${order.billToInfo.phone2}, ${order.billToInfo.address.country.code})
+               <br />
+              #end
+              <br/>
+          </td>
+          <td>&nbsp;&nbsp;</td>
+
+## Payment Data
+          <td nowrap>
+          #foreach( $payment in $order.payments )
+              #if ( $payment.paymentType.name == "CREDIT CARD" )
+                ${payment.type}
+                ${payment.maskedNumber}
+                for #currency(${payment.amount})<br />
+              #end
+          #end
+          #foreach( $payment in $order.payments )
+              #if ( $payment.paymentType.name == "GIFT CERTIFICATE" )
+                  Gift Certificate: ${payment.number}
+                  for #currency(${payment.amount})<br />
+              #end
+	       #end
+		   #foreach( $payment in $order.payments )
+			  #if ( $payment.paymentType.name == "PAYPAL" )
+			   ${payment.paymentType.name}
+			   for #currency(${payment.amount})<br />              
+		      #end
+		  #end
+		  #foreach( $payment in $order.payments )
+            #if ( $payment.paymentType.name == "AFFIRM" )
+                Affirm
+                for #currency(${payment.amount})<br/>
+                #if ( $affirmCustomerDetailUrl && $affirmRequestId )
+            		<a target="_blank" href="$affirmCustomerDetailUrl">$affirmRequestId</a><br/>
+            	#end 
+            #end
+          #end
+		  <br />
+		  
+
+## Source Code Data
+          #foreach( $sourceCode in $sourceCodes )
+              Coupon Code: ${sourceCode}<br />
+          #end
+          </td>
+      </tr>
+      </table>
+  </td>
+</tr>
+
+#foreach( $shipment in $order.shipments  )
+<!--  Shipping Header -->
+#if ($order.shipments.size() > 1)
+<tr>
+  <td colspan="5"><div style="padding-top:23px;padding-bottom:5px;font-size:13px;font-weight:bold;">Shipment ${velocityCount}#if($shipment.code == $shipmentConfirmationNumber) - <font color="blue">$orderShipmentMsg</font> #end</div></td>
+</tr>
+#else
+	#if($shipment.code == $shipmentConfirmationNumber)
+	<tr>
+	  <td colspan="5"><div style="padding-top:23px;padding-bottom:5px;font-size:13px;font-weight:bold;"><font color="blue">$orderShipmentMsg</font></div></td>
+	</tr>
+	#end
+#end
+
+<tr>
+  <td colspan="5" style="background-color:#FFFFFF;padding:3px;">
+      <table border="0" cellspacing="0" cellpadding="3" width="100%" style="border:1px solid #DEDEDE;" >
+      <tr bgcolor="#DEDEDE">
+          <td width="213"><b>Shipping Info</b></td>
+          <td width="40">&nbsp;</td>
+          <td width="213"><b>Shipping Method</b></td>
+      </tr>
+
+## Shipping Info
+      <tr valign="top">
+          <td>
+              $formatter.escapeHTML(${shipment.shipToInfo.person.firstName})
+              $formatter.escapeHTML(${shipment.shipToInfo.person.lastName})<br />
+              #if ( ${shipment.shipToInfo.address.street1} )
+               $formatter.escapeHTML(${shipment.shipToInfo.address.street1})<br />
+              #end
+              #if ( ${shipment.shipToInfo.address.street2} )
+               $formatter.escapeHTML(${shipment.shipToInfo.address.street2})<br />
+              #end
+              #if ( ${shipment.shipToInfo.address.street3} )
+               $formatter.escapeHTML(${shipment.shipToInfo.address.street3})<br />
+              #end
+              $formatter.escapeHTML(${shipment.shipToInfo.address.city}),
+              ${shipment.shipToInfo.address.state.stateCode}
+              $formatter.postalCode(${shipment.shipToInfo.address.postalCode})<br />
+              ${shipment.shipToInfo.address.country.code}<br />
+              #if ( ${shipment.shipToInfo.phone1} )
+              $formatter.phone(${shipment.shipToInfo.phone1}, ${shipment.shipToInfo.address.country.code})<br />
+              #end
+              #if ( ${shipment.shipToInfo.phone2} )
+              $formatter.phone(${shipment.shipToInfo.phone2}, ${shipment.shipToInfo.address.country.code})<br />
+              #end
+
+          </td>
+          <td>&nbsp;</td>
+          <td>$formatter.escapeHTML(${shipment.shippingMethod.getPage("description",$locale).entityName}) $formatter.escapeHTML(${shipment.shippingMethod.getPage("description",$locale).description})
+          #if (${shipment.trackings})
+						#foreach($tracking in $shipment.trackings)
+							<br />Shipment Tracking: ${tracking.carrierName}
+							#if (${tracking.trackingNumber})
+									- ${tracking.trackingNumber}
+									#if (${tracking.carrierURL})
+										<a href="${tracking.carrierURL}" target="_new">track it</a>
+										<BR/>
+										<BR/>
+									#end
+						  #end
+						#end
+					#end
+          </td>
+      </tr>
+      </table>
+  </td>
+</tr>
+
+#if ($order.shipments.size() == 1)
+<tr>
+  <td colspan="5"><div style="height:23px;overflow:hidden;">&nbsp;</div></td>
+</tr>
+#end
+
+<tr>
+    <td colspan="5" style="background-color:#FFFFFF;padding:3px;">
+
+<table border="0" cellspacing="0" cellpadding="3" width="100%" style="border:1px solid #DEDEDE;" >
+
+
+
+## Item Table Header
+<tr bgcolor="#DEDEDE">
+  <td nowrap><b>Item #</b></td>
+  <td nowrap><b>Product</b></td>
+  <td nowrap align="center">&nbsp;&nbsp;<b>Qty</b>&nbsp;&nbsp;</td>
+  <td nowrap align="right" nowrap>&nbsp;&nbsp;<b>Price Each</b></td>
+  <td nowrap align="right" nowrap>&nbsp;&nbsp;<b>Total Price</b></td>
+</tr>
+
+## Shipment Items
+  #foreach( $item in $shipment.items )
+<tr valign=top>
+## Item Number
+  <td nowrap>${item.productCode}&nbsp;&nbsp;</td>
+
+## Product name
+  <td>$formatter.escapeHTML(${item.productName})
+  			#if (${item.trackings})
+						#foreach($tracking in $item.trackings)
+							</br>${tracking.carrierName}
+							#if (${tracking.trackingNumber})
+									- ${tracking.trackingNumber}
+									#if (${tracking.carrierURL})
+										<a href="${tracking.carrierURL}" target="_new">track it</a>
+									#end
+						  #end
+						#end
+				#end
+  </td>
+
+## Quantity
+  <td align="center">${item.qty}</td>
+
+## Sell Price
+      #if ($item.freeGift)
+          <td align="right" style="color:#ad197b"><b>Free Gift</b></td>
+      #else
+          <td align="right">
+              #if ($item.discounts && $item.discounts.size() > 0)
+                  <div>#currency(${item.sellPrice})</div>
+                  <div style="text-decoration:line-through;">#currency(${item.regularPrice})</div>
+              #else
+                  <div>#currency($item.sellPrice)</div>
+              #end
+          </td>
+      #end
+
+## Sub Total
+      #if ($item.freeGift)
+          <td align="right" style="color:#ad197b"><b>Free Gift</b></td>
+      #else
+          <td align="right">#currency(${item.subTotal})</td>
+      #end
+</tr>
+
+## Extended Item Information
+##
+## Sku Options
+#if ($item.optionsList.size() > 0)
+<tr>
+  <td>&nbsp;</td>
+  <td colspan=4>
+      #foreach($option in $item.optionsList)
+          $formatter.escapeHTML(${option.getPage("description",$locale).entityName})#if ($velocityCount < $item.optionsList.size()),#else<br />#end
+      #end
+  </td>
+</tr>
+#end
+
+## Personalization
+#if ($item.personalizationItems.size() > 0 && $item.personalizationItemsHasText)
+<tr>
+  <td>&nbsp;</td>
+  <td colspan=4>
+  <b>Personalization:</b><br />
+  #foreach ($personalizationItem in $item.personalizationItems)
+	#if(($personalizationItem.personalizationItem.getPage("description",$locale).labelTextAlt) && ($personalizationItem.personalizationItem.getPage("description",$locale).labelTextAlt != ""))
+		$formatter.escapeHTML(${personalizationItem.personalizationItem.getPage("description",$locale).labelTextAlt}):&nbsp;
+	#end
+	$formatter.escapeHTML(${personalizationItem.personalizationText})<br />
+  #end
+  </td>
+</tr>
+#end
+
+## Kits and Continuity
+#if ($item.isKit() && $item.kitParts.size() > 0)
+ <tr>
+   <td>&nbsp;</td>
+   <td colspan=4>
+     #foreach ($kitPart in $item.kitParts)
+       #if ( $kitPart.getKitElement().getDisplayType().getPk().getAsString() != "3" )
+	#set($kitPartProductName = ${kitPart.product.getName($locale, $order.site)})
+        $formatter.escapeHTML($kitPartProductName)
+         ## Part Options
+           #if ($kitPart.optionsList.size() > 0)
+            (#foreach($option in $kitPart.optionsList)$formatter.escapeHTML(${option.getPage("description",$locale).entityName})#if($velocityCount < $kitPart.optionsList.size()),#else)#end
+           #end#end
+           #if ($kitPart.getQty() > 1)
+                (Qty $kitPart.qty)
+           #end
+           <br>
+         ## Part Personalization
+         #if ($kitPart.personalizationItems.size() > 0 && $kitPart.personalizationItemsHasText)
+           <b>Personalization:</b><br />
+           #foreach ($personalizationItem in $kitPart.personalizationItems)
+		#if(($personalizationItem.personalizationItem.getPage("description",$locale).labelTextAlt) && ($personalizationItem.personalizationItem.getPage("description",$locale).labelTextAlt != ""))
+			$formatter.escapeHTML(${personalizationItem.personalizationItem.getPage("description",$locale).labelTextAlt}):&nbsp;
+		#end
+		$formatter.escapeHTML(${personalizationItem.personalizationText})<br />
+           #end
+         #end
+     #end
+     #end
+  </td>
+</tr>
+#end
+
+## Gift Box Message
+#if ($item.giftBox)
+<tr>
+  <td>&nbsp;</td>
+  <td colspan=4>
+      <b>Gift Box:</b> Yes<br />
+  </td>
+</tr>
+#end
+
+## Gift Wrap Message
+#if ($item.giftWrapping.giftWrap)
+<tr>
+  <td>&nbsp;</td>
+  <td colspan=4>
+      <b>Gift Wrap:</b> $formatter.escapeHTML(${item.giftWrapping.giftWrap.name})<br />
+  </td>
+</tr>
+#end
+
+## Wish List details
+#if ($configManager.getAsBoolean("app.b2c.p2p.basket.show_wishlist_details", false) && ($item.wishListItem))
+<tr>
+<td>&nbsp;</td>
+<td colspan=4>
+  (Wish List item for ${item.wishListItem.wishList.customer.email} from their list named "$formatter.escapeHTML(${item.wishListItem.wishList.name})")
+</td>
+</tr>
+#end
+
+## Discount Message
+#if ($item.discounts && $item.discounts.size() > 0)
+<tr>
+  <td>&nbsp;</td>
+  <td colspan=4 style="color:#ad197b">
+  #foreach ($discount in $item.discounts)
+      #if (${discount.message})
+      $formatter.escapeHTML(${discount.message})<br />
+      #end
+  #end
+  </td>
+</tr>
+#end
+
+<tr>
+  <td colspan="5"><div style="background-color:#DEDEDE;height:1px;overflow:hidden;margin-top:3px;margin-bottom:3px;">&nbsp;</div></td>
+</tr>
+  #end
+
+## Shipment Level Totals. Same for SST and MST
+      <tr valign=top>
+        <td colspan=4 align=right>Merchandise Subtotal:</td>
+        <td align=right>#currency(${shipment.merchandiseTotal})</td>
+      </tr>
+
+    #if ($order.shipments.size() == 1)
+      #foreach ($discount in $order.discounts)
+        <tr>
+          <td colspan=4 align=right style="color:#ad197b">#if(${discount.message})$formatter.escapeHTML(${discount.message})#end</td>
+          <td align=right style="color:#ad197b">#discount(${discount.amount})</td>
+        </tr>
+      #end
+    #end
+
+      <tr valign=top>
+        <td colspan=4 align=right>Shipping:</td>
+        <td align=right>#currency(${shipment.shippingTotal})</td>
+      </tr>
+    #foreach ($discount in $shipment.discounts)
+      <tr>
+        <td colspan=4 align=right style="color:#ad197b">#if(${discount.message})$formatter.escapeHTML(${discount.message})#end</td>
+        <td align=right style="color:#ad197b">#discount(${discount.amount})</td>
+      </tr>
+    #end
+  #if ($formatter.greaterThanZero($shipment.weightSurchargeTotal))
+      <tr valign=top>
+        <td colspan=4 align=right>Oversized Shipping:</td>
+        <td align=right>#currency(${shipment.weightSurchargeTotal})</td>
+      </tr>
+  #end
+
+  #if ($formatter.greaterThanZero($shipment.giftWrapTotal))
+      <tr valign=top>
+        <td colspan=4 align=right>Gift Wrap:</td>
+        <td align=right>#currency(${shipment.giftWrapTotal})</td>
+      </tr>
+  #end
+  #if ($formatter.greaterThanZero($shipment.additionalChargesTotal))
+      <tr valign=top>
+        <td colspan=4 align=right>Additional Charges:</td>
+        <td align=right>#currency(${shipment.additionalChargesTotal})</td>
+      </tr>
+  #end
+      <tr valign=top>
+        <td colspan=4 align=right>Tax:</td>
+        <td align=right>#currency(${shipment.taxTotal})</td>
+      </tr>
+   #if ($formatter.greaterThanZero($ccomOrderOverrideAmount) && $order.shipments.size() == 1)
+      <tr valign=top>
+		 <td colspan=4 align=right>Merchandise Subtotal Override:</td>
+		 <td align=right>#currency(${ccomOrderOverrideAmount})</td>
+      </tr>
+  #end
+      <tr class=tableitembottomdivbg valign=top>
+        <td colspan=5><div style="background-color:#DEDEDE;height:1px;overflow:hidden;margin-top:3px;margin-bottom:3px;">&nbsp;</div></td>
+      </tr>
+      <tr valign=top>
+      <td colspan=3></td>
+   <td align=right style="background-color:#DEDEDE"><b>Total:</b></td>
+   #if ($order.shipments.size() > 1)
+   <td align=right style="background-color:#DEDEDE"><b>#currency(${shipment.total})</b></td>
+   #else
+   <td align=right style="background-color:#DEDEDE"><b>#currency(${order.total})</b></td>
+   #end
+  </tr>
+<tr>
+    <td colspan="5"><div style="height:1px;overflow:hidden;">&nbsp;</div></td>
+</tr>
+
+
+## Gift Message
+#if ($shipment.giftMessage)#if ($shipment.giftMessage != "")
+<tr>
+    <td colspan="5">
+        <div style="color:#333333;font-weight:bold;">Gift Message: $formatter.escapeHTML(${shipment.giftMessage})</div>
+        <div>&nbsp;</div>
+    </td>
+</tr>
+#end#end
+</table>
+   
+   
+   </tr>
+#end
+</table>
+
+
+
+## Order Totals (Used to display totals when Multiple Ship Tos have been assigned)
+#if ($order.shipments.size() > 1)
+<div style="background-color:#FFFFFF;padding:3px;margin-top:23px;">
+<table border="0" cellspacing="0" cellpadding="3" width="100%" style="border:1px solid #DEDEDE;" >
+  <tr bgcolor="#DEDEDE">
+      <td colspan=5><b>Order Totals</b></td>
+  </tr>
+
+  <tr valign=top>
+      <td colspan=4 align=right>Merchandise Total:</td>
+      <td align=right>#currency(${order.merchandiseTotal})</td>
+  </tr>
+
+  #foreach ($orderDiscount in $order.discounts)
+  <tr>
+    <td colspan=4 align=right style="color:#ad197b">#if ($orderDiscount.message) $formatter.escapeHTML(${orderDiscount.message})#end</td>
+    <td align=right style="color:#ad197b">#discount(${orderDiscount.amount})</td>
+  </tr>
+  #end
+
+  #if ($formatter.greaterThanZero($order.giftWrapTotal))
+  <tr valign=top>
+      <td colspan=4 align=right>Gift Wrap Total:</td>
+      <td align=right>#currency(${order.giftWrapTotal})</td>
+  </tr>
+  #end
+
+  <tr valign=top>
+      <td colspan=4 align=right>Shipping Total:</td>
+      <td align=right>#currency(${order.summarizedShippingTotal})</td>
+  </tr>
+
+  <tr valign=top>
+      <td colspan=4 align=right>Tax Total:</td>
+      <td align=right>#currency(${order.taxTotal})</td>
+  </tr>
+
+  #if ($formatter.greaterThanZero($order.additionalChargesTotal))
+  <tr valign=top>
+      <td colspan=4 align=right>Additional Charges Total:</td>
+      <td align=right>#currency(${order.additionalChargesTotal})</td>
+  </tr>
+  #end
+
+  #if ($formatter.greaterThanZero($order.additionalAddressTotal))
+  <tr valign=top>
+      <td colspan=4 align=right>Additional Address Total:</td>
+      <td align=right>#currency(${order.additionalAddressTotal})</td>
+  </tr>
+  #end
+<tr>
+    <td colspan="5"><div style="height:1px;overflow:hidden;">&nbsp;</div></td>
+</tr>
+  #if ($formatter.greaterThanZero($ccomOrderOverrideAmount))
+      <tr valign=top>
+		 <td colspan=4 align=right>Merchandise Subtotal Override:</td>
+		 <td align=right>#currency(${ccomOrderOverrideAmount})</td>
+      </tr>
+  #end
+
+  <tr valign=top>
+      <td width="9%">&nbsp;</td>
+      <td width="50%">&nbsp;</td>
+      <td width="7%">&nbsp;</td>
+      <td width="18%" align=right nowrap style="background-color:#DEDEDE"><b>Order Total:</b></td>
+      <td width="16%" align=right style="background-color:#DEDEDE"><b>#currency(${order.total})</b></td>
+  </tr>
+<tr>
+    <td colspan="5"><div style="height:1px;overflow:hidden;">&nbsp;</div></td>
+</tr>
+</table>
+</div>
+#end

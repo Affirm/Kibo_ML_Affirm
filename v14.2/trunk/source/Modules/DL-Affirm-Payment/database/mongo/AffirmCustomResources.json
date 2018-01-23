@@ -1,0 +1,128 @@
+[{
+		"path" : "lbl.resource.affirmpayment_checkout_payment_method",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppResourcesOverride"
+		},
+		"name" : "lbl.resource.affirmpayment_checkout_payment_method",
+		"value" : "Affirm",
+		"description" : "affirmpayment_checkout_payment_method",
+		"type" : "Text",
+		"resourceType" : "lbl",
+		"groups" : ["Affirm Payment"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23",
+		"dateCreated" : {
+			"$date" : 1473861990331
+		},
+		"dateUpdated" : {
+			"$date" : 1473861990331
+		}
+	}, {
+		"path" : "lnk.resource.affirmpayment_checkout_affirm_image_path",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppResourcesOverride"
+		},
+		"name" : "lnk.resource.affirmpayment_checkout_affirm_image_path",
+		"value" : "https://cdn-assets.affirm.com/images/blue_logo-transparent_bg.png",
+		"description" : "affirmpayment_checkout_affirm_image_path",
+		"type" : "Text",
+		"resourceType" : "lnk",
+		"groups" : ["Affirm Payment"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23",
+		"dateCreated" : {
+			"$date" : 1473885822976
+		},
+		"dateUpdated" : {
+			"$date" : 1473885822976
+		}
+	}, {
+		"path" : "msg.resource.affirmpayment_alternativePayment",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppResourcesOverride"
+		},
+		"name" : "msg.resource.affirmpayment_alternativePayment",
+		"value" : "This payment method doesn't allow for 0 order totals. Contact customer service or checkout with an alternative payment method to continue.",
+		"description" : "affirmpayment_alternativePayment",
+		"type" : "Text",
+		"resourceType" : "msg",
+		"groups" : ["Affirm Payment"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23",
+		"dateCreated" : {
+			"$date" : 1473887274336
+		},
+		"dateUpdated" : {
+			"$date" : 1473887274336
+		}
+	}, {
+		"path" : "msg.resource.affirmpayment_checkout_errorHeader",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppResourcesOverride"
+		},
+		"name" : "msg.resource.affirmpayment_checkout_errorHeader",
+		"value" : "Error!",
+		"description" : "affirmpayment_checkout_errorHeader",
+		"type" : "Text",
+		"resourceType" : "msg",
+		"groups" : ["Affirm Payment"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23",
+		"dateCreated" : {
+			"$date" : 1473887400567
+		},
+		"dateUpdated" : {
+			"$date" : 1473887400567
+		}
+	}, {
+		"path" : "msg.resource.affirmMonthlyPaymentLogo",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppResourcesOverride"
+		},
+		"name" : "msg.resource.affirmMonthlyPaymentLogo",
+		"value" : "<img src=\"https://cdn-assets.affirm.com/images/blue_logo-solid_bg.svg\" style=\"height:1em; margin:0 .3em .15em;vertical-align:bottom;\">",
+		"description" : "Affirm As Low As Image Logo Path",
+		"type" : "Text",
+		"resourceType" : "msg",
+		"groups" : ["Affirm, As Low As"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23",
+		"dateCreated" : {
+			"$date" : 1475513762145
+		},
+		"dateUpdated" : {
+			"$date" : 1475513762145
+		}
+	}, {
+		"path" : "msg.resource.affirmPricingMessage",
+		"context" : {
+			"org" : "tileshop",
+			"configType" : "AppResourcesOverride"
+		},
+		"name" : "msg.resource.affirmPricingMessage",
+		"value" : "Starting at $ dollarsParam a month with {0} Learn More",
+		"description" : "Affirm As Low As Message",
+		"type" : "Text",
+		"resourceType" : "msg",
+		"groups" : ["Affirm, As Low As"],
+		"lastUpdateUser" : "mlconfig",
+		"requiresRestart" : "false",
+		"release" : "15.1.0.23",
+		"dateCreated" : {
+			"$date" : 1475513819713
+		},
+		"dateUpdated" : {
+			"$date" : 1475513819713
+		}
+	}
+]

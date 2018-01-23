@@ -1,0 +1,666 @@
+/*	--------------------------------------------------
+	Detail Page
+	-------------------------------------------------- */
+.jcarousel-skin-tango {
+
+	.jcarousel-next-horizontal {
+		background: none;
+		:after {
+			content: "\f054";
+			display: inline;
+			color: #B4B4B4;
+			font-family: FontAwesome;
+			font-style: normal;
+			font-weight: normal;
+			text-decoration: none!important;
+			font-size: 24px;
+			line-height: 1;
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+			padding: 0;
+			visibility: visible;
+		}
+	}
+}
+
+
+
+.jcarousel-skin-tango {
+	.jcarousel-prev-horizontal {
+		background: none;
+		:after{
+			content: "\f053";
+			display: inline;
+			color: #B4B4B4;
+			font-family: FontAwesome;
+			font-style: normal;
+			font-weight: normal;
+			text-decoration: none!important;
+			font-size: 24px;
+			line-height: 1;
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+			padding: 0;
+			visibility: visible;
+		}
+	}
+}
+
+.detailheader, .detailheader h1 {
+		color: #111C24;
+		font-family: lato,'Source Sans Pro', sans-serif;
+		font-size: 20px;
+		text-transform:uppercase;
+		text-align:center;
+		letter-spacing: .4px;
+		line-height:26px;
+		font-weight: 400;
+		margin-top: 15px;
+}
+
+.coverage-info {
+		margin: 10px 0;
+
+		div {
+			display: inline-block;
+		}
+		
+		.coverage-price {
+			color: #646464;
+			font-family: lato,'Source Sans Pro', sans-serif;
+			font-size: 14px;
+			font-weight: bold;
+		}
+	  .coverage-area {
+		color: #57595a;	
+		font-family: lato,'Source Sans Pro', sans-serif;
+		font-size: 12px;
+		line-height: 20px;
+	 }		
+}
+
+.tableitemheaderbg {
+	background: #e0ded8;
+    text-align: center;
+}
+
+.tableheader {
+  color: #111c24;
+  font-family: lato,'Source Sans Pro', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin: 0;
+  padding: 5px 10px;
+}
+
+.tableitem {
+	color: #57595a;
+	font-family: lato,'Source Sans Pro', sans-serif;
+	font-size: 12px;
+	line-height: 16px;
+	margin: 0;
+	padding: 0px 10px;
+	font-weight:400;	
+	letter-spacing:0.2px;
+}
+
+a[data-reveal-id=grout-selector] {
+	display: inline-block;
+	background: #646464;
+	color: #fff;
+	font-size: 12px;
+	font-weight: 500;
+	text-decoration: none;
+	text-transform: uppercase;
+	line-height: 25px;
+	margin: 20px 20px 0 0;
+	padding: 0 20px;
+	border: none;
+	border-collapse: collapse;
+	box-sizing: border-box;
+	vertical-align: bottom;
+	cursor: pointer;
+}
+
+.fa-times:before {
+	font-family: "streamline-24px" !important;
+	font-style: normal !important;
+	font-weight: normal !important;
+	font-variant: normal !important;
+	text-transform: none !important;
+	content: "\e2c0";	
+	color: #333;
+	speak: none;
+	line-height: 1;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.dl-compatible-installations-message {
+  font-size: 18px;
+  letter-spacing: .2px;
+  color: #111C24;
+  font-family: "Josefin Slab";
+}
+
+.dl-compatible-installation-label {
+	width: auto;
+	display: none;
+}
+	
+.calculator {
+	background: #fff;
+	margin: 20px 0 0;
+	padding: 0px;
+	float: left;
+	-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+	-moz-box-sizing: border-box;    /* Firefox, other Gecko */
+	box-sizing: border-box;         /* Opera/IE 8+ */
+	
+	h4 {
+	  background: transparent;
+	  color: #111C24;
+	  font-family: "Josefin Slab";
+	  font-size: 18px;
+	  letter-spacing: .2px;
+	  font-weight: 400;
+	  text-transform: uppercase;
+	  margin: -20px 0 0 0;
+	  /* padding: 10px 0px; */
+	  text-align: center;
+	}
+	i.fa.fa-times {
+	  float: left;
+	  position: relative;
+	  padding-left: 0px;
+	  margin-left: -8px;
+	  padding-right: 8px;
+	  padding-top: 8px;
+	  width: 40px;
+	}	
+}
+
+div#tile-calculator{
+  background: #fff;
+  width: 500px;
+}
+
+.calculator-form {
+	width: 100%;
+	float: left;
+	-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+	-moz-box-sizing: border-box;    /* Firefox, other Gecko */
+	box-sizing: border-box;         /* Opera/IE 8+ */
+	
+	* {
+	-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+	-moz-box-sizing: border-box;    /* Firefox, other Gecko */
+	box-sizing: border-box;         /* Opera/IE 8+ */
+	} 
+	 .fa {
+		display: block;
+		width: 10%;
+		text-align: center;
+		margin: 50px 0 0 0;
+		padding: 0;
+		border: none;
+		float: left;
+	}
+}
+
+#calculatorLength, #calculatorWidth {
+	display: inline-block;
+	color: #57595a;
+	font-size: 14px;
+	font-weight: 700;
+	line-height: 18px;
+	width: 45%;
+	margin: 20px 0 0;
+	padding: 0;
+	border: none;
+	float: left;
+	
+	input[type=text] {
+		width: 100%;
+		margin: 5px 0 0;
+		padding: 5px;
+		border: none;
+	}
+}
+
+#buttonTileEstimator {
+	display: none;
+}
+
+#calculatorTileNeeded, #calculatorCoverageArea {
+	display: inline-block;
+	color: #57595a;
+	text-align: center;
+	width: 500px;
+	font-size: 12px;
+	font-weight: 700;
+	line-height: 18px;
+	margin: 20px 0 0;
+	padding: 0;
+	border: none;
+	
+	.label {
+		display: none;
+	}
+}
+
+#calculatorCoverageArea{
+		float: left;
+		span {
+			display: none;
+		}
+ }
+
+#calculatorTileNeeded {
+	text-align: center;
+	width: 500px;
+	height: 69px;
+	background: url("/images/tileshop/en_us/global/globalgraphics/icon-openbox.png") no-repeat;
+	background-position: 220px 0px;
+	padding-top: 15px;
+	
+	input[type=text] {
+		display: inline-block;
+		background: none;
+		color: #646464;
+		width: 50px;
+		font-size: 24px;
+		font-weight: 700;
+		text-align: center;
+		padding: 0;
+		border: none;
+		outline: none;
+		-webkit-appearance: none;
+		-moz-appearance:    none;
+		appearance:         none;
+	}
+	span {
+		display: inline-block;
+	}
+}
+
+.dl-calculator-length, .dl-calculator-width  {
+	legend.label {
+	  display: none;
+	}
+	input[type=text] {
+		background: rgba(0,0,0,0) none repeat scroll 0 0;
+    	box-shadow: 2px 2px 3px 0 rgba(139,129,120,0.35) inset;
+    	color: #8b8178;
+    	display: inline-block;
+    	outline: medium none;
+	}
+}
+
+.calculator-form {
+	input[name=buttonCalculatorCart] {
+		display: inline-block;
+		background: #666;
+		color: #fff;
+		font-size: 12px;
+		font-weight: 500;
+		text-decoration: none;
+		text-transform: uppercase;
+		line-height: 25px;
+		margin: 20px 0 0;
+		padding: 0 40px;
+		border: none;
+		border-collapse: collapse;
+		vertical-align: bottom;
+		cursor: pointer;
+		float: right;
+		width: 160px;
+	}
+
+	input[name=buttonCalculatorCart] {
+		display: inline-block;
+		background: #666;
+		color: #fff;
+		font-size: 12px;
+		font-weight: 500;
+		text-decoration: none;
+		text-transform: uppercase;
+		line-height: 25px;
+		margin: 20px 0 0;
+		padding: 0 15px;
+		border: none;
+		border-collapse: collapse;
+		vertical-align: bottom;
+		cursor: pointer;
+		float: right;
+		width: 220px;
+		text-align: right;
+	}
+
+	input[name=buttonSampleCalculatorCart] {
+		background: none repeat scroll 0 0 #646464;
+		border: medium none;
+		border-collapse: collapse;
+		color: #FFFFFF;
+		cursor: pointer;
+		display: inline-block;
+		float: right;
+		font-size: 12px;
+		font-weight: 500;
+		line-height: 25px;
+		margin: 10px 0 0;
+		padding: 0 15px;
+		text-decoration: none;
+		text-transform: uppercase;
+		vertical-align: bottom;
+		width: 220px;
+		text-align: right;
+	}	
+
+	input[name=buttonFreeSampleCalculatorCart] {
+		display: inline-block;
+		background: #666;
+		color: #fff;
+		font-size: 12px;
+		font-weight: 500;
+		text-decoration: none;
+		text-transform: uppercase;
+		line-height: 25px;
+		margin: 10px 0 0;
+		padding: 0 15px;
+		border: none;
+		border-collapse: collapse;
+		vertical-align: bottom;
+		cursor: pointer;
+		float: right;
+		width: 220px;
+		text-align: right;
+	}	
+}
+
+.dl-calculator-buttons {
+	input[name=buttonCalculatorCart] {
+	  display: inline-block;
+	  background: #111C24;
+	  color: #fff;
+	  font-size: 14px;
+	  font-weight: 400;
+	  text-decoration: none;
+	  text-transform: uppercase;
+	  line-height: 30px;
+	  margin: 0;
+	  padding: 0 13px;
+	  border: none;
+	  border-collapse: collapse;
+	  box-sizing: border-box;
+	  vertical-align: bottom;
+	  cursor: pointer;
+	  height: 30px;
+	  letter-spacing: .2px;
+	  margin-top: 25px;
+	}
+
+	input[name=buttonSampleCalculatorCart] {
+	  display: inline-block;
+	  background: #fff;
+	  color: #111C24;
+	  font-size: 13px;
+	  font-weight: 400;
+	  text-decoration: none;
+	  text-transform: uppercase;
+	  line-height: 25px;
+	  margin: 0 20px 0 0;
+	  padding: 0 13px;
+	  border: 2px solid #111C24;
+	  border-collapse: collapse;
+	  box-sizing: border-box;
+	  vertical-align: bottom;
+	  cursor: pointer;
+	  height: 30px;
+	  letter-spacing: .2px;
+	  margin-left: 25px;
+	  margin-top: 25px;
+	}
+}
+
+.dl-calculator-help {
+	  float: left;
+	  clear: both;
+	  line-height: 15px;
+	  background: url("/images/tileshop/en_us/global/globalgraphics/icon-tiles.png") no-repeat bottom left;
+	  padding: 20px 0 0 55px;
+	  font-family: "Josefin Slab";
+	  color: #111C24;
+	  font-size: 12px;
+	  letter-spacing: .2px;
+    
+    p {
+ 	 margin: 0;
+	}
+}
+
+	#taf {
+		display: inline-block;
+		color: #111C24;
+		background: #fff;
+		font-size: 13px;
+		font-weight: 400;
+		text-decoration: none;
+		text-transform: uppercase;
+		line-height: 25px;
+		margin: 0 20px 0 0;
+		border-collapse: collapse;
+		box-sizing: border-box;
+		vertical-align: bottom;
+		padding: 5px 15px;
+		border: 2px solid #111C24;
+		cursor: pointer;
+		height: 40px;
+		letter-spacing: .2px;
+	}
+
+	#launch-estimator {
+		display: inline-block;
+		background: #646464;
+		color: #fff;
+		font-size: 12px;
+		font-weight: 500;
+		text-decoration: none;
+		text-transform: uppercase;
+		line-height: 25px;
+		margin: 0 20px 0 0;
+		padding: 0 13px;
+		border-collapse: collapse;
+		box-sizing: border-box;
+		vertical-align: bottom;
+	}
+
+		#wish-list {
+			display: inline-block;
+			background: #fff;
+			color: #111C24;
+			font-size: 13px;
+			font-weight: 400;
+			text-decoration: none;
+			text-transform: uppercase;
+			line-height: 25px;
+			border: 2px solid #111C24;
+			border-collapse: collapse;
+			box-sizing: border-box;
+			vertical-align: top;
+			cursor: pointer;
+			height: 40px;
+			letter-spacing: .2px;
+			margin: 0 10px 0 0;
+    		padding: 5px 10px;
+	}
+
+	#item-table-launch-estimator {
+		display: inline-block;
+		background: url(/images/tileshop/en_us/local/localgraphics/calculator-icon.png) center center no-repeat;
+		height: 21px;
+		width: 16px;
+		vertical-align: bottom;
+	}
+
+	.default, 
+	.default a:link, 
+	.default a:visited, 
+	.default a:active {
+		color: #333333;
+		font-size: 12px;
+		line-height: 18px;
+	}	
+
+.reveal-modal {
+	.close-reveal-modal {
+	    font-size: 22px;
+	    line-height: .5;
+	    position: absolute;
+	    top: 8px;
+	    right: 11px;
+	    color: #aaa;
+	    text-shadow: 0 -1px 1px rbga(0,0,0,.6);
+	    font-weight: bold;
+	    cursor: pointer;
+	}	 
+}
+
+/* jCarousel - RecentlyViewed */
+#RecentlyViewed_carousel {
+        width: 250px;
+        height: 200px; 
+        
+        .jcarousel-clip-horizontal {
+     	   width: 250px;
+        	height: 200px; 
+    	}
+    	li.productsCarouselContent {
+     	   width: 180px;
+    	}
+}
+
+
+#percentOff {
+	font-weight: 600;
+	color:  #aa272f;
+	font-size: 1.1em;
+	line-height: 1.4em;
+}
+
+
+ul.relatedContentLinks {
+		list-style: none;
+		padding: 0 0 0 5px;
+		.relatedContentHeader {
+			color: #646464;
+			font-family: lato,'Source Sans Pro', sans-serif;
+			font-size: 14px;
+			font-weight: bold;
+			margin: 10px 0 5px;
+		}		
+		.relatedContentHeader:first-child {
+			margin: 0 0 5px;
+		}
+		 li {
+		 	a {
+				color: #57595a;
+				font-family: lato,'Source Sans Pro', sans-serif;
+				font-size: 12px;
+				line-height: 16px;
+				text-decoration: none;
+				
+				:after { 
+					display: inline-block;
+					color: #646464;
+					font-family: FontAwesome;
+					font-style: normal;
+					font-weight: normal;
+					line-height: 1;
+					-webkit-font-smoothing: antialiased;
+					-moz-osx-font-smoothing: grayscale;
+					content: "\f08e";
+					margin-left: 5px;
+				}
+			}
+		}
+	}
+
+	 
+/*---Product Detail Buttons--*/
+/*spacing fix by S.S. 1/13/16*/
+
+.ml-product-detail-buttons {
+	width: 100%;
+	float: left;
+
+	.W32{
+		width:33%!important;
+	}
+	.W22{
+		width:21%!important;
+	}
+	canvas{
+		width:400px;
+	}
+}
+
+
+.free-sample-modal-wrap a, .addTobasket-sample-button {
+    display: inline-block;
+    background: #fff;
+    color: #111C24;
+    font-size: 13px;
+    font-weight: 400;
+    text-decoration: none;
+    text-transform: uppercase;
+    line-height: 25px;
+	margin: 0 10px 0 0;
+    padding: 5px 10px 0 10px;
+    border: 2px solid #111C24;
+    border-collapse: collapse;
+    box-sizing: border-box;
+    vertical-align: bottom;
+    cursor: pointer;
+    height: 40px;
+    letter-spacing: .2px;
+    float: left;
+}
+
+
+#add-to-basket {
+    display: inline-block;
+    background: #111C24;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 400;
+    text-decoration: none;
+    text-transform: uppercase;
+    line-height: 30px;
+    margin: 0;
+    padding: 0 10px;
+    border: none;
+    border-collapse: collapse;
+    box-sizing: border-box;
+    vertical-align: top;
+    cursor: pointer;
+    height: 40px;
+    letter-spacing: .2px;
+}
+
+.ml-navleft-bg{
+	background: none !important;
+}
+
+.dl-detailroom-desingstudiobanner{
+	clear:both;
+}
+
+.dl-calculator-width input[type=number]::-webkit-inner-spin-button, .dl-calculator-length input[type=number]::-webkit-inner-spin-button, 
+.dl-calculator-width input[type=number]::-webkit-outer-spin-button, .dl-calculator-length input[type=number]::-webkit-outer-spin-button,
+#calculatorLength input[type=number]::-webkit-inner-spin-button, #calculatorWidth input[type=number]::-webkit-inner-spin-button, 
+#calculatorLength input[type=number]::-webkit-outer-spin-button, #calculatorWidth input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}

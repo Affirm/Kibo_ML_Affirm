@@ -1,0 +1,152 @@
+<?xml version="1.0"?>
+
+<project name="Include Tasks" basedir=".." default="usage">
+  <property name="version.delimiter" value="-" />
+
+  <!-- bring the system environment variables -->
+  <property environment="env"/>
+  <property name="MARKETLIVE_HOME" value="${env.MARKETLIVE_HOME}" />
+  <property name="MARKETLIVE_LIBRARIES" value="${env.MARKETLIVE_LIBRARIES}" />
+  <property name="MARKETLIVE_RELEASE" value="${env.MARKETLIVE_RELEASE}" />
+  <property name="release.package" value="${MARKETLIVE_RELEASE}/Modules/${path}/${section}${version.delimiter}${version}" />
+
+  <target name="checkVersion">
+    <fail unless="version">You must specify a release version number using -Dversion=M.m</fail>
+    <fail unless="version.section">You must specify a version section number using -Dversion.section=M.m[.p.b]</fail>
+  </target>
+
+  <!-- Custom TaskDefs -->
+  <taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask"/>
+  <taskdef name="junitreport" classname="org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator"/>
+  <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask"
+           classpath="${MARKETLIVE_LIBRARIES}/XMLTask-1.16.1/xmltask-v1.16.1.jar"/>
+  <taskdef resource="net/sf/antcontrib/antlib.xml" classpath="${MARKETLIVE_LIBRARIES}/ant-contrib-1.0b2/lib/ant-contrib.jar"/>
+
+  <!-- Tasks that are the same across all sections -->
+  <path id="build-classpath">
+    <fileset refid="ModuleLibraries.file"/>
+    <fileset dir="${basedir}/../build/${section}/lib/marketlive/" includes="*.*"/>    
+    <fileset refid="MarketLiveLibraries.file"/>
+    <fileset refid="RunTimeLibraries.file"/>
+    <fileset refid="BuildTimeLibraries.file"/>
+  </path>
+
+  <path id="test-classpath">
+    <pathelement path="${basedir}/${section}/conf"/>
+    <pathelement path="${basedir}/${section}/hbm"/>
+    <pathelement path="${basedir}/${section}/test"/>
+    <pathelement path="${basedir}/../build/${section}/classes"/>
+    <pathelement path="${basedir}/../build/${section}/test/classes"/>
+
+    <fileset refid="MarketLiveLibraries.file"/>
+    <fileset refid="MarketLiveTestLibraries.file"/>
+    <fileset refid="RunTimeLibraries.file"/>
+    <fileset refid="BuildTimeLibraries.file"/>
+  </path>
+
+  <target name="compile" depends="compileSchema" description="Compiles java files">
+    <mkdir dir="${basedir}/../build/classes"/>
+    <javac destdir="${basedir}/../build/classes" debug="true" deprecation="false" optimize="false" failonerror="true">
+      <src path="${basedir}/java"/>
+      <classpath refid="build-classpath"/>
+    </javac>
+  </target>
+
+  <target name="compileTest" description="Compiles unit tests">
+    <if>
+      <available file="${basedir}/${section}/test" type="dir" />
+      <then>
+          <mkdir dir="${basedir}/../build/${section}/test/classes"/>
+          <javac destdir="${basedir}/../build/${section}/test/classes" debug="true" deprecation="false" optimize="false" failonerror="true">
+            <src path="${basedir}/${section}/test"/>
+            <classpath refid="test-classpath"/>
+          </javac>
+
+          <copy todir="${basedir}/../build/${section}/test/classes" >
+            <fileset dir="${basedir}/${section}/test">
+              <exclude name="**/*.java" />
+            </fileset>
+          </copy>
+    </then>
+    </if>
+  </target>
+
+  <target name="jar" description="Jar classes and other files in classpath">
+    <mkdir dir="${basedir}/../build/lib/marketlive"/>
+
+    <echo level="verbose">Jar Name : ${basedir}/../build/lib/marketlive/${name}.jar</echo>
+    <echo level="verbose">From : ${basedir}/../build/classes</echo>
+
+    <jar destfile="${basedir}/../build/lib/marketlive/${name}.jar">
+      <fileset dir="${basedir}/../build/classes">
+        <include name="**/*.*"/>
+      </fileset>
+    </jar>
+  </target>
+
+  <target name="jarTest" description="Jar unit tests">
+    <echo level="verbose">${basedir}/../build/${section}/lib/marketlive/${name}_test.jar</echo>
+    <if>
+      <available file="${basedir}/../build/${section}/test/classes" type="dir" />
+      <then>
+        <mkdir dir="${basedir}/../build/${section}/lib/marketlive-test"/>
+        <jar destfile="${basedir}/../build/${section}/lib/marketlive-test/${name}_test.jar">
+          <fileset dir="${basedir}/../build/${section}/test/classes">
+            <include name="**/*.*"/>
+          </fileset>
+          <!-- include non-java files from source -->
+          <fileset dir="${basedir}/${section}/test">
+            <exclude name="**/*.java"/>
+          </fileset>
+        </jar>
+      </then>
+    </if>
+  </target>
+
+  <target name="jarHbm" description="Jar hibernate hbm files">
+    <if>
+      <available file="${basedir}/database/hbm" type="dir" />
+      <then>
+          <echo level="info">Jaring hbm files to: ${build.section.lib.marketlive}/${hbm-name}.jar</echo>
+          <jar destfile="${basedir}/../build/lib/marketlive/${hbm-name}.jar">
+              <fileset dir="${basedir}/database/hbm"/>
+          </jar>
+      </then>
+    </if>
+	</target>
+
+  <!-- ***************************************************************** -->
+  <!-- Custom TaskDefs -->
+  <!-- ***************************************************************** -->
+  <taskdef name="xmlbean" classname="org.apache.xmlbeans.impl.tool.XMLBean">
+    <classpath>
+      <pathelement location="${MARKETLIVE_LIBRARIES}/xmlbeans-2.4.0/lib/xbean.jar"/>
+      <pathelement location="${MARKETLIVE_LIBRARIES}/xmlbeans-2.4.0/lib/xmlpublic.jar"/>
+      <pathelement location="${MARKETLIVE_LIBRARIES}/xmlbeans-2.4.0/lib/jsr173_1.0_api.jar"/>
+    </classpath>
+  </taskdef>
+
+	
+  <!-- XMLBeans Schema Compile -->
+  <target name="compileSchema" description="Generates compiled jar from XSD schemas">
+    <delete dir="${basedir}/${section}/genSrc/classes"/>
+    <delete dir="${basedir}/../build/${section}/schema"/>
+    <mkdir dir="${basedir}/../build/${section}/lib/marketlive"/>
+
+		<mkdir dir="${basedir}/../build/${section}/schema"/>
+
+		<copy todir="${basedir}/../build/${section}/schema" flatten="true">
+  		<fileset refid="MarketLiveSchemas.file"/>
+    </copy>
+		<copy todir="${basedir}/../build/${section}/schema" flatten="true" overwrite="true">
+ 			<fileset dir="${basedir}/schema" includes="*.*"/>
+    </copy>
+
+    <xmlbean schema="${basedir}/../build/${section}/schema"
+						destfile="${basedir}/../build/${section}/lib/marketlive/${name.schema}.jar"
+      classgendir="${basedir}/../build/${section}/genSrc/classes">
+			<classpath refid="build-classpath"/>
+		</xmlbean>
+
+  </target>
+</project>

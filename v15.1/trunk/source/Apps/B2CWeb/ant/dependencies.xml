@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+
+<project name="ClientTemplate.Filesets" basedir="../../..">
+	<!--
+     These are MarketLive libraries and files that should be included for this section.
+     The build script or build manager is responsible for making sure these dependencies
+     have been generated prior to calling tasks that depend on it
+    -->
+    <fileset dir="${basedir}/../build" id="MarketLiveLibraries.file">
+      <include name="Platform/lib/marketlive/*"/>
+    </fileset>
+
+    <fileset dir="${basedir}/../build" id="MarketLiveTestLibraries.file">
+      <include name="Platform/lib/marketlive-test/*"/>
+    </fileset>
+
+    <fileset dir="${MARKETLIVE_LIBRARIES}" id="RunTimeLibraries.file">
+        <!-- Jakarta Commons -->
+        <include name="commons-collections-3.2/commons-collections-3.2.jar"/>
+        <include name="commons-httpclient-3.1/commons-httpclient-3.1.jar"/>
+        <include name="commons-io-2.4/commons-io-2.4.jar"/>
+        <include name="commons-lang-3.1/commons-lang3-3.1.jar"/>
+        <include name="commons-validator-1.1.4/commons-validator-1.1.4.jar"/>
+
+        <!-- Tomcat JDBC -->
+        <include name="tomcat-jdbc-7.0.52/tomcat-jdbc-7.0.52.jar"/>
+        <include name="tomcat-jdbc-7.0.52/tomcat-juli-7.0.52.jar"/>
+        
+        <!-- Struts presentation framework -->
+        <include name="jakarta-struts-1.2.4/lib/struts.jar"/>
+        
+        <include name="jaf-1.0.2/activation.jar"/>
+
+        <!-- JDOM -->
+        <include name="jdom/jdom.jar"/>
+
+        <!-- log4j logging implementation  -->
+        <include name="logging-log4j-1.2.14/dist/lib/log4j-1.2.14.jar"/>
+        
+        <!-- Spring container framework -->
+        <include name="spring-framework-3.2.4/dist/*.jar"/>
+        <include name="asm-3.2/asm-3.2.jar"/>
+        <include name="asm-attrs-2.2/asm-attrs-2.2.jar"/>
+        
+        <!-- StrutsLive library -->
+        <include name="strutslive-ml-0.2.2/strutslive-ml.jar"/>
+        
+        <!-- Velocity Templating Engine -->
+        <include name="velocity-1.4/velocity-1.4.jar"/>
+        
+        <!-- Hibernate -->
+        <include name="hibernate-distribution-3.3.2.GA/hibernate3.jar"/>
+        <include name="hibernate-distribution-3.3.2.GA/lib/bytecode/cglib/cglib-2.2.jar"/>
+        
+        <!-- SLF4J -->
+        <include name="slf4j-1.6.2/slf4j-api-1.6.2.jar"/>
+        <include name="slf4j-1.6.2/slf4j-log4j12-1.6.2.jar"/>
+    
+        <!-- Xerces XML parser  -->
+        <include name="xerces-2_9_1/xercesImpl.jar"/>
+
+        <!-- ICU4J -->
+        <include name="icu4j-51.1/icu4j-51_1.jar"/>
+	</fileset>
+
+    <fileset dir="${MARKETLIVE_LIBRARIES}" id="BuildTimeLibraries.file">
+        <!-- JUnit testing -->
+        <include name="junit-4.10/junit-4.10.jar"/>
+        
+        <!-- Java servlet specification.  -->
+        <include name="glassfish-2.1/lib/javaee.jar" />
+        
+        <include name="strutstest213-1.2_2.3/strutstest-2.1.3.jar" />
+                
+        <!-- JWebUnit and dependant libraries -->
+        <include name="jwebunit-1.3/jwebunit-core-1.3.jar"/>
+        <include name="jwebunit-1.3/jwebunit-htmlunit-plugin-1.3.jar"/>
+        <include name="jwebunit-1.3/lib/avalon-framework-4.1.3.jar"/>
+        <include name="commons-codec-1.4/commons-codec-1.4.jar"/>
+        <include name="jwebunit-1.3/lib/htmlunit-1.9.jar"/>
+        <include name="jaxen-1.1/jaxen-1.1.jar"/>
+        <include name="jwebunit-1.3/lib/jdom-1.0.jar"/>
+        <include name="jwebunit-1.3/lib/logkit-1.0.1.jar"/>
+        <include name="jwebunit-1.3/lib/nekohtml-0.9.5.jar"/>
+        <include name="jwebunit-1.3/lib/regexp-1.3.jar"/>
+        <include name="jwebunit-1.3/lib/servlet-api-2.4.jar"/>
+        <include name="jwebunit-1.3/lib/tagsoup-0.9.7.jar"/>
+        <include name="jwebunit-1.3/lib/xercesImpl-2.6.2.jar"/>
+        <include name="jwebunit-1.3/lib/xmlParserAPIs-2.6.2.jar"/>
+        <include name="jwebunit-1.3/lib/xom-1.0b3.jar"/>
+        
+        <!-- Used by jwebunit -->
+        <include name="httpunit-1.6/lib/httpunit.jar"/>
+        
+        <!-- Commons logging api and wrapper  -->
+        <include name="commons-logging-1.1.1/commons-logging-1.1.1.jar"/>
+        
+        <!-- xmlbeans -->
+        <include name="xmlbeans-2.4.0/lib/jsr173_1.0_api.jar"/>
+        <include name="xmlbeans-2.4.0/lib/resolver.jar"/>
+        <include name="xmlbeans-2.4.0/lib/xbean.jar"/>
+        <include name="xmlbeans-2.4.0/lib/xbean_xpath.jar"/> 
+        <include name="xmlbeans-2.4.0/lib/xmlpublic.jar"/>
+        
+        <!-- xmlunit --> 
+        <include name="xmlunit-1.0/lib/xmlunit1.0.jar"/>	
+        
+        <!-- SLF4J -->
+        <include name="slf4j-1.6.2/slf4j-api-1.6.2.jar"/>
+        <include name="slf4j-1.6.2/slf4j-log4j12-1.6.2.jar"/>
+
+        <!-- Solr -->
+        <include name="apache-solr-3.4.0/dist/apache-solr-solrj-3.4.0.jar"/>
+
+        <!-- ICU4J -->
+        <include name="icu4j-51.1/icu4j-51_1.jar"/>
+    </fileset>
+    
+</project>

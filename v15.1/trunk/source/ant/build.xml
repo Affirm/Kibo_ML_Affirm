@@ -1,0 +1,1156 @@
+<?xml version="1.0"?>
+
+<project name="Marketlive Site Build Script" basedir=".." default="usage">
+  <property environment="env"/>
+  <property name="MARKETLIVE_HOME" value="${env.MARKETLIVE_HOME}" />
+  <property name="MARKETLIVE_LIBRARIES" value="${env.MARKETLIVE_LIBRARIES}" />
+  <property name="MARKETLIVE_RELEASE" value="${env.MARKETLIVE_RELEASE}" />
+
+  <property name="filter" value="app" />
+  <property name="deploy.root" value="${basedir}/../deploy/${deploy.name}-${filter}" />
+  <property name="build.root" value="${basedir}/../build/${deploy.name}-${filter}" />
+  <property name="test.root" value="${basedir}/../test/${deploy.name}-${filter}" />
+  <property name="compile.jsp.root" value="${basedir}/../build/jsp" />
+
+  <property name="maven" value="true"/>
+  <property name="log.level" value="info" />
+  <property name="log.name" value="build.log" />
+
+  <xmlproperty file="${basedir}/ant/sites.xml" collapseAttributes="true" semanticAttributes="true" keepRoot="false" />
+
+  <import file="${basedir}/ant/merge.xml" />
+  <import file="${basedir}/ant/database.xml" />
+
+  <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask"
+           classpath="${MARKETLIVE_LIBRARIES}/XMLTask-1.16.1/xmltask-v1.16.1.jar"/>
+
+  <taskdef resource="net/sf/antcontrib/antlib.xml" classpath="${MARKETLIVE_LIBRARIES}/ant-contrib-1.0b2/lib/ant-contrib.jar"/>
+
+
+  <patternset id="filter.app">
+    <include name="**/*"/>
+    <!-- ensure web.xml is only merged and not copied, (web.xml requires special handling
+         to support Tomcat monitoring which triggers webapp reload) -->
+    <exclude name="**/WEB-INF/web.xml"/>
+  </patternset>
+  <patternset id="filter.web">
+    <include name="**/*.htm"/>
+    <include name="**/*.html"/>
+    <include name="**/*.js"/>
+    <include name="**/*.css"/>
+    <include name="**/*.jpg"/>
+    <include name="**/*.gif"/>
+    <include name="**/*.htc"/>
+  </patternset>
+
+
+  <target name="init">
+    <!-- Set up the time and start logging -->
+    <tstamp>
+      <format property="TODAY1" pattern="MMMM-d-yyyy HH:mm:ss" locale="en" />
+    </tstamp>
+
+    <record name="build.log" action="start" loglevel="${log.level}" />
+    <echo message="${TODAY1}" />
+    <echo>MARKETLIVE_HOME      = ${MARKETLIVE_HOME}</echo>
+    <echo>MARKETLIVE_LIBRARIES = ${MARKETLIVE_LIBRARIES}</echo>
+    <echo>MARKETLIVE_RELEASE   = ${MARKETLIVE_RELEASE}</echo>
+
+    <!-- Check Ant version -->
+      <property name="required.ant.version" value="1.7.1"/>
+      <antversion property="version.running"/>
+      <echo>Running Ant version ${version.running}</echo>
+      <fail message="FATAL ERROR:  The running Ant version, ${version.running}, is too old, build requires version ${required.ant.version} or higher">
+          <condition>
+              <not>
+                  <antversion atleast="${required.ant.version}"/>
+              </not>
+          </condition>
+      </fail>
+
+      <!-- Check Java version -->
+    <if>
+      <not>
+        <contains string="${java.version}" substring="1.6." />
+      </not>
+      <then>
+        <!-- <fail message="Java must be version 1.6 or higher. Check your JAVA_HOME setting." /> -->
+      </then>
+    </if>
+    <echo>Running Java version ${java.version}</echo>
+  </target>
+
+  <target name="usage">
+    <echo>
+      MarketLive Site Build File
+      --------------------------
+      Parameters:
+        -Ddeploy.name=[name of your deployment] - REQUIRED.
+        -Dfilter=web - deployment targeted for web servers. - OPTIONAL.
+        -Dfilter=app - deployment targeted for application servers.
+                     - OPTIONAL. This is the default.
+          NOTE: filter value is appended to the name of your deployment
+                to create the deployment name.
+        -Denv=[dev/staging/review/production]
+              - environment to run database target against.
+              - if omitted, default database target is used.
+        -Dmarketlive.site.home=[location of your site home]
+              - ${MARKETLIVE_SITE_HOME}/wwwroot required when deploying a WAR vs. to a local file system
+              - if omitted, the site will fail to function properly
+
+      Examples:
+        To create a deployment for a web server named 'ml5-src-web'
+          ant deploy -Ddeploy.name=ml5-src -Dfilter=web
+
+        To create a deployment for an application server named 'ml5-src-app'
+          ant deploy -Ddeploy.name=ml5-src -Dfilter=app
+          ant deploy -Ddeploy.name=ml5-src
+
+        To create a new database for deployment 'ml5-src-app' in the review environment
+          ant createDb -Ddeploy.name=ml5-src -Dfilter=app -Denv=review
+
+        To create a WAR deployment for an application server named 'ml5-src-app' 
+        with a MARKETLIVE_SITE_HOME of /marketlive/sites/ml5-src
+          ant deployWar -Ddeploy.name=ml5-src -Dmarketlive.site.home=/marketlive/sites/ml5-src/wwwroot
+
+      Available targets are:
+      clean        --> Removes a deployment
+      inc          --> Moves only changed JSPs and compiles only changed classes
+      deploy       --> Creates a runnable deployment based on the deploy target
+                       in sites.xml. Only copies and compiles code that has changed.
+      deployClean  --> Runs clean before running deploy
+      deployWar    --> Runs deploy and then creates the required WAR based deployment packages: 
+                       ${deploy.name-version}.web.dir.zip
+                       ${deploy.name-version}.site_data.dir.zip 
+                       ${deploy.name-version}.integration.dir.zip
+                       ${deploy.name-version}.war
+      deployCleanWar  --> Runs clean before running deployWar
+	  compilejsp  --> Runs deploy then compiles the JSP files.
+      test         --> Runs deploy then compiles unit tests, runs unit tests and
+                       generates a test results report OPTIONAL -Dstoponfailure=true
+		       will exit test on first failure
+      testClean    --> Runs clean before running test
+      version      --> Creates the conf/default/system/version.properties file
+      touch        --> Updates timestamp for all files in the sites source
+      usage        --> This message
+
+      Database Targets:
+        NOTE: To manipulate the database an existing application server
+              deployment is required.
+      cleanDb      --> Remove all generated database files
+      createDb     --> Creates a database
+      exportDb     --> Exports data from an existing database
+      generateDtd  --> Generates a DTD from an existing schema
+      importDb     --> Imports Non-Localized data into an existing database
+      importDbLocalized --> Imports Non and Localized data into an existing database
+      refreshDb    --> Runs removeDb, createDb and importDb
+      refreshDbLocalized --> Runs removeDb, createDb and importDbLocalized
+      removeDb     --> Drops an existing database
+      showDbConfig --> Displays database configurations
+      patchDb      --> Applies a patch to an existing database. REQUIRED PARAMETER:
+                       -Dfile.name=[patch file name without path]
+    </echo>
+  </target>
+
+  <target name="checkDeploy">
+    <fail unless="deploy.name">You must specify a deploy name using -Ddeploy.name=[deployment name]</fail>
+  </target>
+
+  <target name="checkEnv" depends="checkDeploy">
+    <fail unless="env">You must specify an environment using -Denv=[environment]</fail>
+  </target>
+
+  <target name="clean" description="Removes the deployment specified by -Ddeploy.name=" depends="checkDeploy, init">
+    <delete dir="${build.root}"/>
+    <delete dir="${deploy.root}"/>
+    <delete dir="${test.root}"/>
+    <property name="do.touch" value="touch" />
+  </target>
+
+  <target name="inc" description="Moves JSPs and compiles all classes" depends="checkDeploy, init" >
+    <xmltask source="${basedir}/ant/sites.xml">
+      <call path="/sites/deploy[@name='${deploy.name}']/section" target="incSection">
+        <param name="type" path="@type" />
+        <param name="package" path="@package" />
+        <param name="section" path="@name" />
+        <param name="version" path="@version" />
+      </call>
+    </xmltask>
+
+    <xmltask source="${basedir}/ant/sites.xml">
+      <call path="/sites/deploy[@name='${deploy.name}']/section" target="moduleSection">
+        <param name="type" path="@type" />
+        <param name="package" path="@package" />
+        <param name="section" path="@name" />
+        <param name="version" path="@version" />
+      </call>
+    </xmltask>
+
+    <xmltask source="${basedir}/ant/sites.xml">
+      <call path="/sites/deploy[@name='${deploy.name}']/section" target="cleanSection">
+        <param name="type" path="@type" />
+        <param name="package" path="@package" />
+        <param name="section" path="@name" />
+        <param name="version" path="@version" />
+      </call>
+    </xmltask>
+  </target>
+
+  <target name="incSection">
+    <echo>Incremental Deploy For section ${section}</echo>
+    <if>
+      <equals arg1="${type}" arg2="source" />
+      <then>
+        <property name="section.root" value="${MARKETLIVE_HOME}/${package}/${section}" />
+        <echo>Section Root = ${section.root}</echo>
+        <condition property="section.ant.assemble.antfile" value="${section.root}/ant/maven-assemble.xml" else="${section.root}/ant/assemble.xml">
+          <and>
+            <istrue value="${maven}"/>
+            <available file="${section.root}/ant/maven-assemble.xml"/>
+          </and>
+        </condition>
+        <ant antfile="${section.ant.assemble.antfile}" target="inc" inheritRefs="true" inheritall="false">
+          <property name="MARKETLIVE_HOME" value="${MARKETLIVE_HOME}" />
+          <property name="MARKETLIVE_LIBRARIES" value="${MARKETLIVE_LIBRARIES}" />
+          <property name="MARKETLIVE_RELEASE" value="${MARKETLIVE_RELEASE}" />
+          <property name="section.root" value="${section.root}" />
+          <property name="deploy.root" value="${deploy.root}" />
+          <property name="site.root" value="${basedir}" />
+          <property name="build.root" value="${build.root}" />
+          <property name="filter" value="${filter}" />
+          <property name="maven" value="${maven}" />
+        </ant>
+      </then>
+    </if>
+  </target>
+
+  <target name="deployClean" description="Cleans and assemble all the pieces to create a runnable deployment" depends="clean, deploy" >
+      <antcall target="overlayContextFiles"/>
+  </target>
+
+  <target name="overlayContextFiles">
+      <!-- applicationContext.xml -->
+      <copy todir="${deploy.root}/wwwroot/WEB-INF" preservelastmodified="true" overwrite="true">
+          <fileset dir="${merge.source.dir}/Apps/B2CWeb/wwwroot/WEB-INF/">
+              <include name="applicationContext.xml"/>
+          </fileset>
+      </copy>
+      <!-- platformBeanScan.context.xml -->
+      <copy todir="${deploy.root}/wwwroot/WEB-INF/classes" preservelastmodified="true" overwrite="true">
+          <fileset dir="${merge.source.dir}/Apps/B2CWeb/wwwroot/WEB-INF/classes">
+              <include name="platformBeanScan.context.xml"/>
+          </fileset>
+      </copy>
+      <!-- tiles.xml -->
+      <copy todir="${deploy.root}/wwwroot/WEB-INF/tiles" preservelastmodified="true" overwrite="true">
+          <fileset dir="${merge.source.dir}/Apps/B2CWeb/wwwroot/WEB-INF/tiles">
+              <include name="tiles.xml"/>
+          </fileset>
+      </copy>
+  </target>
+
+  <target name="deploy" description="Assemble all the pieces to create a runnable deployment" depends="checkDeploy, init" >
+    <antcall target="doDeploy">
+      <param name="test" value="" />
+    </antcall>
+    <antcall target="postDeployAppResourcesMerge">
+      <param name="test" value="" />
+    </antcall>
+    <antcall target="versionBuild"/>
+    <antcall target="defaultDbConfig" inheritRefs="false" inheritall="false">
+      <param name="default" value="true" />
+    </antcall>
+    <antcall target="envDbConfig" inheritRefs="false" inheritall="false"/>
+    <antcall target="overlayContextFiles"/>
+  </target>
+
+  <target name="doDeploy">
+    <echo>Deploy = ${deploy.name}</echo>
+    <echo>Filter = ${filter}</echo>
+
+    <!-- need to remove all the xml files we've merged, (except web.xml which requires special
+         handling to support Tomcat monitoring which triggers webapp reload) -->
+    <delete failonerror="false">
+      <fileset dir="${deploy.root}/wwwroot/WEB-INF">
+        <include name="*.xml" />
+        <exclude name="web.xml" />
+        <include name="classes/com/marketlive/ApplicationResources*.properties" />
+        <include name="classes/jndi.context.xml" />
+        <include name="classes/jdbc.context.xml" />
+        <include name="classes/biz.context.xml" />
+        <include name="classes/site.context.xml" />
+        <include name="classes/entity.context.xml" />
+        <include name="classes/entity.mgrs.biz.context.xml" />
+        <include name="classes/integration.context.xml" />
+        <include name="classes/platform.scan.context.xml" />
+        <include name="classes/system.context.xml" />
+        <include name="classes/system.b2c.context.xml" />
+        <include name="classes/beanRefContext.xml" />
+        <include name="classes/hibernate.cfg.xml" />
+        <include name="classes/ehcache.xml" />
+        <include name="classes/ehcache-marketlive.xml" />
+        <include name="classes/*.hbm.xml" />
+        <include name="tiles/tiles-def.xml" />
+      </fileset>
+      <fileset dir="${build.root}/database/hbm">
+        <include name="*.hbm.xml" />
+      </fileset>
+      <fileset dir="${deploy.root}/IntegrationCLI/classes">
+		<include name="*.hbm.xml" />
+      </fileset>
+    </delete>
+    <delete file="${deploy.root}/conf/default/system/version.properties" failonerror="false" />
+
+    <xmltask source="${basedir}/ant/sites.xml">
+      <call path="/sites/deploy[@name='${deploy.name}']/section" target="deploySection">
+        <param name="type" path="@type" />
+        <param name="package" path="@package" />
+        <param name="section" path="@name" />
+        <param name="version" path="@version" />
+        <param name="test" value="${test}" />
+      </call>
+    </xmltask>
+
+    <!-- complete merge, (includes web.xml which requires special handling to support
+         Tomcat monitoring which triggers webapp reload) -->
+    <antcall target="postMerge" />
+
+    <xmltask source="${basedir}/ant/sites.xml">
+      <call path="/sites/deploy[@name='${deploy.name}']/section" target="moduleSection">
+        <param name="type" path="@type" />
+        <param name="package" path="@package" />
+        <param name="section" path="@name" />
+        <param name="version" path="@version" />
+        <param name="test" value="${test}" />
+      </call>
+    </xmltask>
+
+    <xmltask source="${basedir}/ant/sites.xml">
+      <call path="/sites/deploy[@name='${deploy.name}']/section" target="cleanSection">
+        <param name="type" path="@type" />
+        <param name="package" path="@package" />
+        <param name="section" path="@name" />
+        <param name="version" path="@version" />
+        <param name="test" value="${test}" />
+      </call>
+    </xmltask>
+  </target>
+
+  <target name="deploySection" >
+    <echo>Deploying Section ${section}</echo>
+    <if>
+      <equals arg1="${type}" arg2="source" />
+      <then>
+        <property name="section.root" value="${MARKETLIVE_HOME}/${package}/${section}" />
+      </then>
+      <else>
+        <property name="section.root" value="${MARKETLIVE_RELEASE}/${package}/${section}-${version}" />
+      </else>
+    </if>
+
+    <echo>Section Root = ${section.root}</echo>
+    <condition property="section.ant.assemble.antfile" value="${section.root}/ant/maven-assemble.xml" else="${section.root}/ant/assemble.xml">
+      <and>
+        <istrue value="${maven}"/>
+        <available file="${section.root}/ant/maven-assemble.xml"/>
+      </and>
+    </condition>
+    <ant antfile="${section.ant.assemble.antfile}" target="${type}Assemble${test}" inheritRefs="true" inheritall="false">
+      <property name="MARKETLIVE_HOME" value="${MARKETLIVE_HOME}" />
+      <property name="MARKETLIVE_LIBRARIES" value="${MARKETLIVE_LIBRARIES}" />
+      <property name="MARKETLIVE_RELEASE" value="${MARKETLIVE_RELEASE}" />
+      <property name="section.root" value="${section.root}" />
+      <property name="deploy.root" value="${deploy.root}" />
+      <property name="site.root" value="${basedir}" />
+      <property name="build.root" value="${build.root}" />
+      <property name="filter" value="${filter}" />
+      <property name="do.touch" value="${do.touch}" />
+      <property name="maven" value="${maven}" />
+    </ant>
+
+    <!-- IMPORTANT: Leave the closing </concat> on the next line, this puts the CR at the end of the concatenation -->
+    <concat append="true" destfile="${deploy.root}/conf/default/system/version.properties">${section}=${version}
+    </concat>
+  </target>
+
+  <target name="postDeployAppResourcesMerge" >
+    <echo>postDeployAppResourcesMerge</echo>
+  	
+  	<!-- Prepend merged ApplicationResources.properties as defaults to every ApplicationResources_X.properties -->
+    <if>
+      <available file="${deploy.root}/wwwroot/WEB-INF/classes/com/marketlive/ApplicationResources.properties"/>
+      <then>
+        <for param="file">
+          <path>
+      		<fileset dir="${deploy.root}/wwwroot/WEB-INF/classes/com/marketlive">
+        	  <include name="ApplicationResources*.properties"/>
+      		  <exclude name="ApplicationResources.properties"/>
+      		</fileset>
+          </path>
+      	  <sequential>
+            <echo>- postDeployAppResourcesMerge: @{file}</echo>
+      		<concat destfile="@{file}.concat">
+              <fileset file="${deploy.root}/wwwroot/WEB-INF/classes/com/marketlive/ApplicationResources.properties"/>
+              <fileset file="@{file}"/>
+            </concat>
+            <move file="@{file}.concat" tofile="@{file}"/>
+          </sequential>
+        </for>
+      </then>
+    </if>
+  </target>	
+	
+  <!--	Unit Test Related Targets	-->
+
+  <target name="testClean" description="Cleans, build and runs the tests" depends="clean, test">
+  </target>
+
+  <target name="test" description="Build and runs the tests" depends="checkDeploy, init, deploy, testDeploy, testSection, testReport">
+  </target>
+
+  <!-- Target 'testAll' has additional dependency on targets 'refreshDb' and 'runJameleon' -->
+  <target name="testAll" description="Build and runs the tests" depends="checkDeploy, init, deploy, refreshDb, testDeploy, testSection, testReport,  runJameleon">
+  </target>
+
+  <!-- Target 'runJameleon' will run Jameleon test scripts-->
+  <target name="runJameleon" description="Build and runs the tests">
+    <ant antfile="${MARKETLIVE_HOME}/dev/trunk/source/Apps/JameleonTest/ant/assemble.xml" target="testJameleon" inheritRefs="true" inheritall="false">
+	  <property name="MARKETLIVE_HOME" value="${MARKETLIVE_HOME}" />
+      <property name="MARKETLIVE_LIBRARIES" value="${MARKETLIVE_LIBRARIES}" />
+      <property name="MARKETLIVE_RELEASE" value="${MARKETLIVE_RELEASE}" />
+      <property name="deploy.root" value="${deploy.root}" />
+      <property name="site.root" value="${basedir}" />
+      <property name="build.root" value="${build.root}" />
+      <property name="env" value="${env}" />
+	</ant>
+  </target>
+
+	<!-- Target 'runJameleonIntegration' will run Jameleon Integration test scripts-->
+  <target name="runJameleonIntegration" description="Build and runs the integration tests">
+    <ant antfile="${MARKETLIVE_HOME}/dev/trunk/source/Apps/JameleonTest/ant/assemble.xml" target="testJameleonIntegration" inheritRefs="true" inheritall="false">
+	  <property name="MARKETLIVE_HOME" value="${MARKETLIVE_HOME}" />
+      <property name="MARKETLIVE_LIBRARIES" value="${MARKETLIVE_LIBRARIES}" />
+      <property name="MARKETLIVE_RELEASE" value="${MARKETLIVE_RELEASE}" />
+      <property name="deploy.root" value="${deploy.root}" />
+      <property name="site.root" value="${basedir}" />
+      <property name="build.root" value="${build.root}" />
+      <property name="env" value="${env}" />
+	</ant>
+  </target>
+
+  <target name="testDeploy" >
+    <delete dir="${test.root}" failonerror="false" />
+    <antcall target="doDeploy">
+      <param name="test" value="Test" />
+    </antcall>
+  </target>
+
+    <target name="getExclude">
+  	<delete file="${test.root}/excludeList.txt" />
+
+    <xmltask source="${basedir}/ant/sites.xml">
+      <call path="/sites/deploy[@name='${deploy.name}']/section" target="getExcludeSection" inheritRefs="true" inheritAll="false">
+        <param name="type" path="@type" />
+        <param name="package" path="@package" />
+        <param name="section" path="@name" />
+        <param name="version" path="@version" />
+      </call>
+    </xmltask>
+
+  	<loadfile property="excludeListFile" srcFile="${test.root}/excludeList.txt" />
+  	<echo>completeExcludeList ${excludeListFile} </echo>
+  </target>
+
+  <target name="getExcludeSection">
+    <echo>Testing Section ${section}</echo>
+    <if>
+      <equals arg1="${type}" arg2="source" />
+      <then>
+        <property name="section.root" value="${MARKETLIVE_HOME}/${package}/${section}" />
+      </then>
+      <else>
+        <property name="section.root" value="${MARKETLIVE_RELEASE}/${package}/${section}-${version}" />
+      </else>
+    </if>
+
+    <condition property="section.ant.assemble.antfile" value="${section.root}/ant/maven-assemble.xml" else="${section.root}/ant/assemble.xml">
+      <and>
+        <istrue value="${maven}"/>
+        <available file="${section.root}/ant/maven-assemble.xml"/>
+      </and>
+    </condition>
+    <antfetch antfile="${section.ant.assemble.antfile}" target="getExcludeList-${type}" return="exclude.list" inheritRefs="true" inheritall="false">
+		  <property name="MARKETLIVE_HOME" value="${MARKETLIVE_HOME}" />
+		  <property name="MARKETLIVE_LIBRARIES" value="${MARKETLIVE_LIBRARIES}" />
+		  <property name="MARKETLIVE_RELEASE" value="${MARKETLIVE_RELEASE}" />
+		  <property name="section.root" value="${section.root}" />
+		  <property name="deploy.root" value="${deploy.root}" />
+		  <property name="site.root" value="${basedir}" />
+		  <property name="build.root" value="${build.root}" />
+		  <property name="filter" value="${filter}" />
+		  <property name="test.root" value="${test.root}" />
+		  <property name="env" value="${env}" />
+		  <property name="section" value="${section}" />
+    </antfetch>
+    <echo>exlude list: ${exclude.list} </echo>
+    <if>
+      <isset property="exclude.list" />
+      <then>
+    		<concat append="true" destfile="${test.root}/excludeList.txt">${exclude.list},</concat>
+			</then>
+		</if>
+
+  </target>
+
+  <target name="testSection" depends="getExclude">
+    <delete dir="${test.root}"/>
+    <mkdir dir="${test.root}/data"/>
+
+    <xmltask source="${basedir}/ant/sites.xml">
+      <call path="/sites/deploy[@name='${deploy.name}']/section" target="testRun">
+        <param name="type" path="@type" />
+        <param name="package" path="@package" />
+        <param name="section" path="@name" />
+        <param name="version" path="@version" />
+        <param name="exclude.list" value="${excludeListFile}" />
+      </call>
+    </xmltask>
+  </target>
+
+  <target name="testRun">
+    <echo>Testing Section ${section}</echo>
+    <if>
+      <equals arg1="${type}" arg2="source" />
+      <then>
+        <property name="section.root" value="${MARKETLIVE_HOME}/${package}/${section}" />
+      </then>
+      <else>
+        <property name="section.root" value="${MARKETLIVE_RELEASE}/${package}/${section}-${version}" />
+      </else>
+    </if>
+
+    <echo>Section Root = ${section.root}</echo>
+    <condition property="section.ant.assemble.antfile" value="${section.root}/ant/maven-assemble.xml" else="${section.root}/ant/assemble.xml">
+      <and>
+        <istrue value="${maven}"/>
+        <available file="${section.root}/ant/maven-assemble.xml"/>
+      </and>
+    </condition>
+    <ant antfile="${section.ant.assemble.antfile}" target="testRun-${type}" inheritRefs="true" inheritall="false">
+      <property name="MARKETLIVE_HOME" value="${MARKETLIVE_HOME}" />
+      <property name="MARKETLIVE_LIBRARIES" value="${MARKETLIVE_LIBRARIES}" />
+      <property name="MARKETLIVE_RELEASE" value="${MARKETLIVE_RELEASE}" />
+      <property name="section.root" value="${section.root}" />
+      <property name="deploy.root" value="${deploy.root}" />
+      <property name="site.root" value="${basedir}" />
+      <property name="build.root" value="${build.root}" />
+      <property name="filter" value="${filter}" />
+      <property name="test.root" value="${test.root}" />
+      <property name="env" value="${env}" />
+      <property name="section" value="${section}" />
+    </ant>
+  </target>
+
+  <target name="testReport">
+    <junitreport todir="${test.root}">
+      <fileset dir="${test.root}/data">
+        <include name="TEST-*.xml" />
+      </fileset>
+      <report format="frames" todir="${test.root}/report" />
+    </junitreport>
+  </target>
+
+  <target name="moduleSection">
+    <echo>Merging Module Code for Section ${section}</echo>
+    <if>
+      <equals arg1="${type}" arg2="source" />
+      <then>
+        <property name="section.root" value="${MARKETLIVE_HOME}/${package}/${section}" />
+      </then>
+      <else>
+        <property name="section.root" value="${MARKETLIVE_RELEASE}/${package}/${section}-${version}" />
+      </else>
+    </if>
+
+    <echo>Section Root = ${section.root}</echo>
+    <condition property="section.ant.assemble.antfile" value="${section.root}/ant/maven-assemble.xml" else="${section.root}/ant/assemble.xml">
+      <and>
+        <istrue value="${maven}"/>
+        <available file="${section.root}/ant/maven-assemble.xml"/>
+      </and>
+    </condition>
+    <ant antfile="${section.ant.assemble.antfile}" target="moduleMerge" inheritRefs="true" inheritall="false">
+      <property name="MARKETLIVE_HOME" value="${MARKETLIVE_HOME}" />
+      <property name="MARKETLIVE_LIBRARIES" value="${MARKETLIVE_LIBRARIES}" />
+      <property name="MARKETLIVE_RELEASE" value="${MARKETLIVE_RELEASE}" />
+      <property name="section.root" value="${section.root}" />
+      <property name="deploy.root" value="${deploy.root}" />
+      <property name="site.root" value="${basedir}" />
+      <property name="build.root" value="${build.root}" />
+      <property name="filter" value="${filter}" />
+      <property name="maven" value="${maven}" />
+    </ant>
+  </target>
+
+  <target name="cleanSection">
+    <echo>Clean for Section ${section}</echo>
+    <if>
+      <equals arg1="${type}" arg2="source" />
+      <then>
+        <property name="section.root" value="${MARKETLIVE_HOME}/${package}/${section}" />
+      </then>
+      <else>
+        <property name="section.root" value="${MARKETLIVE_RELEASE}/${package}/${section}-${version}" />
+      </else>
+    </if>
+
+    <echo>Section Root = ${section.root}</echo>
+    <if>
+      <istrue value="${maven}"/>
+      <then>
+        <condition property="section.ant.clean.antfile" value="${section.root}/ant/maven-assemble.xml" else="${section.root}/ant/assemble.xml">
+          <available file="${section.root}/ant/maven-assemble.xml"/>
+        </condition>
+        <ant antfile="${section.ant.clean.antfile}" target="clean" inheritRefs="true" inheritall="false">
+          <property name="MARKETLIVE_HOME" value="${MARKETLIVE_HOME}" />
+          <property name="MARKETLIVE_LIBRARIES" value="${MARKETLIVE_LIBRARIES}" />
+          <property name="MARKETLIVE_RELEASE" value="${MARKETLIVE_RELEASE}" />
+          <property name="section.root" value="${section.root}" />
+          <property name="deploy.root" value="${deploy.root}" />
+          <property name="site.root" value="${basedir}" />
+          <property name="build.root" value="${build.root}" />
+          <property name="filter" value="${filter}" />
+          <property name="maven" value="${maven}" />
+        </ant>
+      </then>
+    </if>
+  </target>
+
+  <target name="version" description="Creates a conf/default/system/version.properties file" depends="checkDeploy, init">
+    <delete file="${deploy.root}/conf/default/system/version.properties" failonerror="false" />
+    <xmltask source="${basedir}/ant/sites.xml">
+      <call path="/sites/deploy[@name='${deploy.name}']/section" target="versionSection">
+        <param name="section" path="@name" />
+        <param name="version" path="@version" />
+        <param name="section.nodename" path="name(self::node())" />
+      </call>
+    </xmltask>
+
+    <antcall target="versionBuild"/>
+  </target>
+
+  <!-- generates a conf/base/system/version.properties file that contains the version information
+  for the current Section. ie. Apps.b2c=5.0.0.54  -->
+  <target name="versionSection">
+    <echo>${section}=${version}</echo>
+    <!-- build a properties file in default, which is based on the assembly version information -->
+    <!-- generate a properties file that contains the version information. ie. Apps.b2c=5.0.0.54 -->
+    <!-- IMPORTANT: Leave the closing </concat> on the next line, this puts the CR at the end of the concatenation -->
+    <concat append="true" destfile="${deploy.root}/conf/default/system/version.properties">${section}=${version}
+</concat>
+  </target>
+
+  <!-- This is a build master ONLY target -->
+  <target name="versionBuild">
+    <if>
+      <isset property="anthill.version" />
+      <then>
+        <!-- IMPORTANT: Leave the closing </concat> on the next line, this puts the CR at the end of the concatenation -->
+        <concat append="true" destfile="${deploy.root}/conf/default/system/version.properties">BuildNumber=${anthill.version}
+        </concat>
+      </then>
+    </if>
+    <if>
+      <isset property="anthill.build.tag_built" />
+      <then>
+      <!-- IMPORTANT: Leave the closing </concat> on the next line, this puts the CR at the end of the concatenation -->
+        <concat append="true" destfile="${deploy.root}/conf/default/system/version.properties">TagNumber=${anthill.build.tag_built}
+        </concat>
+      </then>
+    </if>
+    <if>
+      <isset property="anthill.branch.name" />
+      <then>
+      <!-- IMPORTANT: Leave the closing </concat> on the next line, this puts the CR at the end of the concatenation -->
+        <concat append="true" destfile="${deploy.root}/conf/default/system/version.properties">BranchName=${anthill.branch.name}
+        </concat>
+      </then>
+    </if>
+    <if>
+      <isset property="anthill.build.date_time" />
+      <then>
+      <!-- IMPORTANT: Leave the closing </concat> on the next line, this puts the CR at the end of the concatenation -->
+        <concat append="true" destfile="${deploy.root}/conf/default/system/version.properties">CompileTime=${anthill.build.date_time}
+        </concat>
+      </then>
+    </if>
+  </target>
+
+  <target name="touch" description="Updates timestamp for all files in the sites source" depends="init">
+    <echo>Removing readonly attributes from all files</echo>
+    <attrib readonly="false">
+      <fileset dir="${basedir}"/>
+    </attrib>
+      <antcall target="sleep"/>
+    <touch>
+      <fileset dir="${basedir}"/>
+    </touch>
+  </target>
+
+ <target name="compilejsp" description="Compiles the JSP files" depends="deploy">
+    <mkdir dir="${compile.jsp.root}"/>
+    <java classname="com.caucho.jsp.JspCompiler" fork="true" failonerror="true">
+      <classpath>
+		<fileset dir="${basedir}/../deploy/${deploy.name}-${filter}/wwwroot/WEB-INF/lib">
+			<include name="**/*.jar"/>
+		</fileset>
+        <pathelement location="${basedir}/../deploy/${deploy.name}-${filter}/wwwroot/WEB-INF/classes"/>
+		<fileset dir="${MARKETLIVE_LIBRARIES}/resin-pro-3.0.14/lib">
+			<include name="**/*.jar"/>
+		</fileset>
+        <pathelement location="${java.home}/lib/tools.jar"/>
+      </classpath>
+      <arg line="-app-dir ${basedir}/../deploy/${deploy.name}-${filter}/wwwroot"/>
+      <arg line="-class-dir	${compile.jsp.root}"/>
+      <arg line="${basedir}/../deploy/${deploy.name}-${filter}/wwwroot"/>
+    </java>
+  </target>
+
+  <!-- Build war file for GlassFish deployment and zip files for Apache and conf -->
+  <target name="deployWar" description="Build war file for GlassFish deployment and zip files for Apache and conf" depends="deploy">
+        
+        <!-- Setting version to be used when naming deployment artifacts.  Using version assigned to App/B2C section -->
+        <xmltask source="${basedir}/ant/sites.xml">
+          <copy path="/sites/deploy[@name='${deploy.name}']/section[@name='Apps/B2C'][last()]/@version" attrValue="true" property="deploy.version" />
+        </xmltask>
+
+        <!-- If deploying external templates then add alternate docroot to sun-web.xml -->
+        <!-- and create zip archive of wwwroot/templates -->
+        <if>
+          <isset property="marketlive.site.home" />
+          <then>
+              <xmltask source="${deploy.root}/wwwroot/WEB-INF/sun-web.xml" dest="${deploy.root}/wwwroot/WEB-INF/sun-web.xml">
+                  <remove path="/sun-web-app/property[@name='alternatedocroot_1']"/>
+                  <remove path="/sun-web-app/property[@name='alternatedocroot_2']"/>
+                  <remove path="/sun-web-app/property[@name='alternatedocroot_3']"/>
+                  <insert path="/sun-web-app" xml='&lt;property name="alternatedocroot_1" value="from=/templates/* dir=${marketlive.site.home}"/&gt;'/>
+                  <insert path="/sun-web-app" xml='&lt;property name="alternatedocroot_2" value="from=/admin/libraries/layouts/* dir=${marketlive.site.home}"/&gt;'/>
+                  <insert path="/sun-web-app" xml='&lt;property name="alternatedocroot_3" value="from=/text/* dir=${marketlive.site.home}"/&gt;'/>
+              </xmltask>
+              
+              <delete file="${deploy.root}/../${deploy.name}-${deploy.version}.war" failonerror="false" />
+              <war destfile="${deploy.root}/../${deploy.name}-${deploy.version}.war" webxml="${deploy.root}/wwwroot/WEB-INF/web.xml">
+                  <fileset dir="${deploy.root}/wwwroot">
+                    <exclude name="WEB-INF/**"/>
+                    <exclude name="text/**"/>
+                    <exclude name="templates/**"/>
+                    <exclude name="admin/libraries/layouts/**"/>
+                  </fileset>
+                  <classes dir="${deploy.root}/wwwroot/WEB-INF/classes"/>
+                  <webinf dir="${deploy.root}/wwwroot/WEB-INF"/>
+              </war>
+
+              <delete file="${deploy.root}/../${deploy.name}-${deploy.version}.site_data.dir.zip" failonerror="false" />
+              <zip destfile="${deploy.root}/../${deploy.name}-${deploy.version}.site_data.dir.zip">
+                  <zipfileset dir="${deploy.root}/conf" prefix="${deploy.name}-${deploy.version}/conf"/>
+                  <zipfileset dir="${deploy.root}/wwwroot/text" prefix="${deploy.name}-${deploy.version}/wwwroot/text" />
+                  <zipfileset dir="${deploy.root}/wwwroot/templates" prefix="${deploy.name}-${deploy.version}/wwwroot/templates" />
+                  <zipfileset dir="${deploy.root}/wwwroot/admin/libraries/layouts" prefix="${deploy.name}-${deploy.version}/wwwroot/admin/libraries/layouts" />
+              </zip>
+
+          </then>
+          <else>
+
+              <xmltask source="${deploy.root}/wwwroot/WEB-INF/sun-web.xml" dest="${deploy.root}/wwwroot/WEB-INF/sun-web.xml">
+                  <remove path="/sun-web-app/property[@name='alternatedocroot_1']"/>
+              </xmltask>
+
+              <delete file="${deploy.root}/../${deploy.name}-${deploy.version}.war" failonerror="false" />
+              <war destfile="${deploy.root}/../${deploy.name}-${deploy.version}.war" webxml="${deploy.root}/wwwroot/WEB-INF/web.xml">
+                  <fileset dir="${deploy.root}/wwwroot">
+                    <exclude name="WEB-INF/**"/>
+                    <exclude name="text/**"/>
+                  </fileset>
+                  <classes dir="${deploy.root}/wwwroot/WEB-INF/classes"/>
+                  <webinf dir="${deploy.root}/wwwroot/WEB-INF"/>
+              </war>
+
+              <delete file="${deploy.root}/../${deploy.name}-${deploy.version}.site_data.dir.zip" failonerror="false" />
+              <zip destfile="${deploy.root}/../${deploy.name}-${deploy.version}.site_data.dir.zip">
+                    <zipfileset dir="${deploy.root}/conf" prefix="${deploy.name}-${deploy.version}/conf"/>
+                    <zipfileset dir="${deploy.root}/wwwroot/text" prefix="${deploy.name}-${deploy.version}/wwwroot/text" />
+              </zip>
+
+          </else>
+        </if>
+        
+        <delete file="${deploy.root}/../${deploy.name}-${deploy.version}.web.dir.zip" failonerror="false" />
+        <delete dir="${deploy.root}/../web-zip-dir" />
+        <copy todir="${deploy.root}/../web-zip-dir" includeEmptyDirs="false">
+            <fileset dir="${deploy.root}/wwwroot">
+                <exclude name="WEB-INF/**"/>
+                <exclude name="text/**"/>
+                <exclude name="templates/**"/>
+                <exclude name="**/*.jsp"/>
+                <exclude name="**/*.tld"/>
+            </fileset>
+        </copy>
+        <zip destfile="${deploy.root}/../${deploy.name}-${deploy.version}.web.dir.zip">
+            <zipfileset dir="${deploy.root}/../web-zip-dir" prefix="${deploy.name}-${deploy.version}/htdocs" />
+        </zip>
+        <delete dir="${deploy.root}/../web-zip-dir" />
+        
+        <delete file="${deploy.root}/../${deploy.name}-${deploy.version}.integration.dir.zip" failonerror="false" />
+        <zip destfile="${deploy.root}/../${deploy.name}-${deploy.version}.integration.dir.zip">
+            <zipfileset dir="${deploy.root}/IntegrationCLI" prefix="${deploy.name}-${deploy.version}/IntegrationCLI"/>
+        </zip>
+        
+        <if>
+    	  <available file="${deploy.root}/KeyManagementCLI"/>
+    	  <then>
+            <delete file="${deploy.root}/../${deploy.name}-${deploy.version}.keymanagement.dir.zip" failonerror="false" />
+            <zip destfile="${deploy.root}/../${deploy.name}-${deploy.version}.keymanagement.dir.zip">
+              <zipfileset dir="${deploy.root}/KeyManagementCLI" prefix="${deploy.name}-${deploy.version}/KeyManagementCLI"/>
+            </zip>
+    	  </then>
+    	</if>
+  </target>
+    
+    <target name="deployCleanWar" description="Build war file for GlassFish deployment and zip files for Apache and conf with a clean deploy." depends="deployClean, deployWar"/>
+    
+	<target name="listMandatoryPatches">
+
+	  <fail unless="version">You must specify a platform version number for which the mandatory patch list is to be generated, using a -Dversion parameter, for example: ant listPatches -Dversion=5.8.0.29</fail>
+
+    <var name="count" unset="true"/>
+
+	<xmltask source="${MARKETLIVE_RELEASE}/Patches/mandatorypatches.xml">
+        <copy path="count(/mandatorypatches/platform[@version='${version}'])" property="count" />
+    </xmltask>
+	<if>
+		<equals arg1="${count}" arg2="0" />
+		<then>
+			<echo>Input Platform version: ${version} not defined in mandatorypatches.xml</echo>
+		</then>
+	</if>
+	<if>
+		<equals arg1="${count}" arg2="1" />
+		<then>
+			<xmltask source="${MARKETLIVE_RELEASE}/Patches/mandatorypatches.xml">
+				<copy path="count(/mandatorypatches/platform[@version='${version}']/patches/patch)" property="patchCount" />
+			</xmltask>
+			<if>
+				<equals arg1="${patchCount}" arg2="0" />
+				<then>
+					<echo>No patches defined in mandatorypatches.xml for input Platform Version: ${version}</echo>
+				</then>
+				<else>
+					<echo></echo>
+					<echo>Mandatory patch count for Platform Version ${version}: ${patchCount}</echo>
+					<echo></echo>
+					<echo>Mandatory patches for Platform Version ${version} are:</echo>
+					<xmltask source="${MARKETLIVE_RELEASE}/Patches/mandatorypatches.xml">
+						<call path="/mandatorypatches/platform[@version='${version}']/patches/patch">
+						<param name="patchNumber" path="patchNumber/text()"/>
+						<param name="patchDescription" path="description/text()"/>
+						  <actions>
+							<echo>@{patchNumber}</echo><!--<echo> - @{patchDescription}</echo-->
+						  </actions>
+					  </call>
+					</xmltask>
+				</else>
+			</if>
+		</then>
+	</if>
+  </target>
+
+  <target name="checkDeploymentForMandatoryPatches">
+
+	<fail unless="version">You must specify a platform version number for which this check for mandatory patches is being executed, using a -Dversion parameter, for example: ant checkDeploymentForMandatoryPatches -Dversion=5.8.0.29</fail>
+	<fail unless="deploymentName">You must specify a deployment name as defined in the sites.xml file using a -DdeploymentName parameter, for example: ant listMissingMandatoryPatches -DdeploymentName=ml5-rel</fail>
+
+	<xmltask source="${basedir}/ant/sites.xml">
+		<copy path="count(/sites/deploy[@name='${deploymentName}'])" property="deployCount" />
+    </xmltask>
+	<if>
+		<equals arg1="${deployCount}" arg2="0" />
+		<then>
+			<fail>No deployment with name: ${deploymentName} found in sites.xml</fail>
+		</then>
+	</if>
+
+	<xmltask source="${MARKETLIVE_RELEASE}/Patches/mandatorypatches.xml">
+        <copy path="count(/mandatorypatches/platform[@version='${version}'])" property="platformCount" />
+    </xmltask>
+	<if>
+		<equals arg1="${platformCount}" arg2="0" />
+		<then>
+			<echo>Input Platform version: ${version} not defined in mandatorypatches.xml</echo>
+		</then>
+	</if>
+	<if>
+		<equals arg1="${platformCount}" arg2="1" />
+		<then>
+			<xmltask source="${MARKETLIVE_RELEASE}/Patches/mandatorypatches.xml">
+				<copy path="count(/mandatorypatches/platform[@version='${version}']/patches/patch)" property="patchCount" />
+			</xmltask>
+			<if>
+				<equals arg1="${patchCount}" arg2="0" />
+				<then>
+					<echo>No patches defined in mandatorypatches.xml for input Platform Version: ${version}</echo>
+				</then>
+				<else>
+					<xmltask source="${MARKETLIVE_RELEASE}/Patches/mandatorypatches.xml">
+					  <call path="/mandatorypatches/platform[@version='${version}']/patches/patch">
+						<param name="patchNumber" path="patchNumber/text()"/>
+						<param name="patchDescription" path="description/text()"/>
+						<param name="patchVersion" path="version/text()" default="N/A" />
+						<param name="platformVersionNumber" path="platformVersionNumber/text()" default="N/A" />
+						<param name="isworkaround" path="workaround/text()" default="false" />
+						<actions>
+						  <if>
+				            <equals arg1="@{isworkaround}" arg2="true" />
+				            <then>
+							  <echo></echo>
+					          <echo>Patch: @{patchNumber} is a workaround patch, make sure that it is implemented in this deployment</echo>
+				            </then>
+				            <else>
+						      <var name="expectedPathToMandatoryPatch" value="/Patches/@{patchNumber}-@{platformVersionNumber}/@{patchNumber}-@{patchVersion}" />
+                              <var name="found" value="false" />
+						      <xmltask source="${basedir}/ant/sites.xml">
+	                            <call path="/sites/deploy[@name='${deploymentName}']/section">
+							      <param name="package" path="@package" />
+                                  <param name="name" path="@name" />
+                                  <param name="version" path="@version" />
+							      <actions>
+							        <if>
+                                      <equals arg1="${expectedPathToMandatoryPatch}" arg2="/@{package}/@{name}-@{version}" />
+								      <then>
+									    <!--echo>Found mandatory patch: @{patchNumber} definition in sites.xml for deployment: ${deploymentName}</echo-->
+									    <var name="found" value="true" />
+							          </then>
+							        </if>
+							      </actions>
+	                            </call>
+	                          </xmltask>
+						      <if>
+                                <equals arg1="${found}" arg2="false" />
+						        <then>
+								  <echo></echo>
+							      <echo>Patch: @{patchNumber}-@{platformVersionNumber}/@{patchNumber}-@{patchVersion} is mandatory but not defined in sites.xml</echo>
+							    </then>
+						      </if>
+							</else>
+					      </if>
+						</actions>
+					  </call>
+					</xmltask>
+				</else>
+			</if>
+		</then>
+	</if>
+  </target>
+
+  <target name="listMissingMandatoryPatches">
+
+	<fail unless="deploymentName">You must specify a deployment name as defined in the sites.xml file using a -DdeploymentName parameter, for example: ant listMissingMandatoryPatches -DdeploymentName=ml5-rel</fail>
+
+	<xmltask source="${basedir}/ant/sites.xml">
+		<copy path="count(/sites/deploy[@name='${deploymentName}'])" property="count" />
+    </xmltask>
+	<if>
+		<equals arg1="${count}" arg2="0" />
+		<then>
+			<fail>No deployment with name: ${deploymentName} found in sites.xml</fail>
+		</then>
+	</if>
+	<if>
+		<equals arg1="${count}" arg2="1" />
+		<then>
+			<xmltask source="${basedir}/ant/sites.xml">
+				<call path="/sites/deploy[@name='${deploymentName}']/section[@name='Platform']">
+					<param name="platformVersion" path="@version" />
+					<actions>
+						<echo>Platform version of given deployment with name: ${deploymentName} (as defined in sites.xml) is: @{platformVersion}</echo>
+						<antcall target="listMandatoryPatches">
+							<param name="version" value="@{platformVersion}" />
+						</antcall>
+						<antcall target="checkDeploymentForMandatoryPatches">
+							<param name="version" value="@{platformVersion}" />
+						</antcall>
+						<!-- check for any modules that are defined in sites.xml that have mandatory patches defined for those modules in mandatorypatches.xml -->
+						<xmltask source="${MARKETLIVE_RELEASE}/Patches/mandatorypatches.xml">
+						  <call path="/mandatorypatches/module">
+						    <param name="moduleName" path="@name" />
+							<param name="moduleVersion" path="@version" />
+							<param name="moduleSvnPath" path="svnPath/text()" />
+							<actions>
+							  <xmltask source="${basedir}/ant/sites.xml">
+						        <call path="/sites/deploy[@name='${deploymentName}']/section">
+								  <param name="package" path="@package" />
+                                  <param name="name" path="@name" />
+                                  <param name="version" path="@version" />
+								  <actions>
+							        <if>
+									  <equals arg1="@{moduleSvnPath}" arg2="/@{package}/@{name}-@{version}" casesensitive="no" />
+								      <then>
+									    <echo></echo>
+										<echo></echo>
+									    <echo>Found module @{moduleName}, version @{moduleVersion} defined in sites.xml</echo>
+									    <antcall target="listMandatoryPatchesForModule">
+										  <param name="module" value="@{moduleName}" />
+										  <param name="version" value="@{moduleVersion}" />
+						                </antcall>
+										<antcall target="checkDeploymentForMandatoryPatchesForModule">
+										  <param name="module" value="@{moduleName}" />
+										  <param name="version" value="@{moduleVersion}" />
+						                </antcall>
+							          </then>
+							        </if>
+							      </actions>
+								</call>
+							  </xmltask>
+							</actions>
+					      </call>
+						</xmltask>
+					</actions>
+				</call>
+			</xmltask>
+		</then>
+	</if>
+  </target>
+
+  <target name="listMandatoryPatchesForModule">
+
+	<fail unless="module">You must specify a module name for which the mandatory patch list is to be generated, using a -Dmodule parameter, for example: ant listMandatoryPatchesForModule -Dmodule=EndecaConnector -Dversion=2.3.5</fail>
+	<fail unless="version">You must specify a module version number for which the mandatory patch list is to be generated, using a -Dversion parameter, for example: ant listMandatoryPatchesForModule -Dmodule=EndecaConnector -Dversion=2.3.5</fail>
+
+    <var name="count" unset="true"/>
+
+	<xmltask source="${MARKETLIVE_RELEASE}/Patches/mandatorypatches.xml">
+        <copy path="count(/mandatorypatches/module[@name='${module}'][@version='${version}'])" property="count" />
+    </xmltask>
+	<if>
+		<equals arg1="${count}" arg2="0" />
+		<then>
+			<echo>Input module: ${module} and/or version number: ${version} not defined in mandatorypatches.xml</echo>
+		</then>
+	</if>
+	<if>
+		<equals arg1="${count}" arg2="1" />
+		<then>
+			<xmltask source="${MARKETLIVE_RELEASE}/Patches/mandatorypatches.xml">
+				<copy path="count(/mandatorypatches/module[@name='${module}'][@version='${version}']/patches/patch)" property="patchCount" />
+			</xmltask>
+			<if>
+				<equals arg1="${patchCount}" arg2="0" />
+				<then>
+					<echo>No patches defined in mandatorypatches.xml for input module: ${module}, version: ${version}</echo>
+				</then>
+				<else>
+					<echo></echo>
+					<echo>Mandatory patch count for module ${module}, version ${version}: ${patchCount}</echo>
+					<echo></echo>
+					<echo>Mandatory patches for module ${module}, version ${version} are:</echo>
+					<xmltask source="${MARKETLIVE_RELEASE}/Patches/mandatorypatches.xml">
+						<call path="/mandatorypatches/module[@name='${module}'][@version='${version}']/patches/patch">
+						<param name="patchNumber" path="patchNumber/text()"/>
+						<param name="patchDescription" path="description/text()"/>
+						  <actions>
+							<echo>@{patchNumber}</echo><!--<echo> - @{patchDescription}</echo-->
+						  </actions>
+					  </call>
+					</xmltask>
+				</else>
+			</if>
+		</then>
+	</if>
+  </target>
+
+  <target name="checkDeploymentForMandatoryPatchesForModule">
+
+	<fail unless="module">You must specify a module name for which this check for mandatory patches is being executed, using a -Dmodule parameter, for example: ant checkDeploymentForMandatoryPatchesForModule -Dmodule=EndecaConnector -Dversion=2.3.5 -DdeploymentName=ml5-rel</fail>
+	<fail unless="version">You must specify a module version number for which this check for mandatory patches is being executed, using a -Dversion parameter, for example: ant checkDeploymentForMandatoryPatchesForModule -Dmodule=EndecaConnector -Dversion=2.3.5 -DdeploymentName=ml5-rel</fail>
+	<fail unless="deploymentName">You must specify a deployment name as defined in the sites.xml file using a -DdeploymentName parameter, for example: ant checkDeploymentForMandatoryPatchesForModule -Dmodule=EndecaConnector -Dversion=2.3.5 -DdeploymentName=ml5-rel</fail>
+
+	<xmltask source="${basedir}/ant/sites.xml">
+		<copy path="count(/sites/deploy[@name='${deploymentName}'])" property="deployCount" />
+    </xmltask>
+	<if>
+		<equals arg1="${deployCount}" arg2="0" />
+		<then>
+			<fail>No deployment with name: ${deploymentName} found in sites.xml</fail>
+		</then>
+	</if>
+
+	<xmltask source="${MARKETLIVE_RELEASE}/Patches/mandatorypatches.xml">
+        <copy path="count(/mandatorypatches/module[@name='${module}'][@version='${version}'])" property="moduleCount" />
+    </xmltask>
+	<if>
+		<equals arg1="${moduleCount}" arg2="0" />
+		<then>
+			<echo>Input module: ${module}, version: ${version} not defined in mandatorypatches.xml</echo>
+		</then>
+	</if>
+	<if>
+		<equals arg1="${moduleCount}" arg2="1" />
+		<then>
+			<xmltask source="${MARKETLIVE_RELEASE}/Patches/mandatorypatches.xml">
+				<copy path="count(/mandatorypatches/module[@name='${module}'][@version='${version}']/patches/patch)" property="patchCount" />
+			</xmltask>
+			<if>
+				<equals arg1="${patchCount}" arg2="0" />
+				<then>
+					<echo>No patches defined in mandatorypatches.xml for input module ${module}, version: ${version}</echo>
+				</then>
+				<else>
+					<xmltask source="${MARKETLIVE_RELEASE}/Patches/mandatorypatches.xml">
+					  <call path="/mandatorypatches/module[@name='${module}'][@version='${version}']/patches/patch">
+						<param name="patchNumber" path="patchNumber/text()"/>
+						<param name="patchDescription" path="description/text()"/>
+						<param name="patchVersion" path="version/text()" default="N/A" />
+						<param name="platformVersionNumber" path="platformVersionNumber/text()" default="N/A" />
+						<param name="isworkaround" path="workaround/text()" default="false" />
+						<actions>
+						  <if>
+				            <equals arg1="@{isworkaround}" arg2="true" />
+				            <then>
+							  <echo></echo>
+					          <echo>Patch: @{patchNumber} is a workaround patch and is mandatory for the ${module} module, make sure that it is implemented in this deployment</echo>
+				            </then>
+				            <else>
+						      <var name="expectedPathToMandatoryPatch" value="/Patches/@{patchNumber}-@{platformVersionNumber}/@{patchNumber}-@{patchVersion}" />
+                              <var name="found" value="false" />
+						      <xmltask source="${basedir}/ant/sites.xml">
+	                            <call path="/sites/deploy[@name='${deploymentName}']/section">
+							      <param name="package" path="@package" />
+                                  <param name="name" path="@name" />
+                                  <param name="version" path="@version" />
+							      <actions>
+							        <if>
+                                      <equals arg1="${expectedPathToMandatoryPatch}" arg2="/@{package}/@{name}-@{version}" />
+								      <then>
+									    <var name="found" value="true" />
+							          </then>
+							        </if>
+							      </actions>
+	                            </call>
+	                          </xmltask>
+						      <if>
+                                <equals arg1="${found}" arg2="false" />
+						        <then>
+								  <echo></echo>
+							      <echo>Patch: @{patchNumber}-@{platformVersionNumber}/@{patchNumber}-@{patchVersion} is mandatory for module ${module}, version ${version} but it is not defined in sites.xml</echo>
+							    </then>
+						      </if>
+							</else>
+					      </if>
+						</actions>
+					  </call>
+					</xmltask>
+				</else>
+			</if>
+		</then>
+	</if>
+  </target>
+</project>

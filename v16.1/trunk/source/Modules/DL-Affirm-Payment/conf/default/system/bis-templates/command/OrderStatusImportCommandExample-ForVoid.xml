@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<marketlive xmlns="http://marketlive.com/integration/xmlbean" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://marketlive.com/integration/xmlbean http://localhost:8083/IntegrationWS/schema/MarketLive.xsd">
+	<import>
+		<command type="createOrUpdate">
+			<orders>
+				<order>
+					<code>ML_246803</code>
+					<siteCode>ylang</siteCode>
+					<locale>en_US</locale>
+					<customerCode>ML_383504</customerCode>
+					<status>Canceled</status>
+					<shipments>
+						<orderShipment>
+							<code>ML_252803</code>
+							<status>Canceled</status>
+							<items>
+								<orderItem>
+									<code>ML_253504</code>
+									<status>Canceled</status>
+								</orderItem>
+							</items>
+						</orderShipment>
+					</shipments>
+				</order>
+			</orders>
+		</command>
+	</import>
+</marketlive>

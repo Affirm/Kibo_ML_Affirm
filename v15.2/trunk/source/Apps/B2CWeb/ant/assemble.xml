@@ -1,0 +1,356 @@
+<?xml version="1.0"?>
+
+<!--  Called by the client build process to include this section into a distribution -->
+<project name="Site Section Assembler" basedir="..">
+  <property name="name.schema" value="marketlive-schema-50"/>
+  <import file="${basedir}/ant/site.config.xml" />
+  <import file="${basedir}/ant/dependencies.xml" />
+  <import file="${site.root}/ant/merge.xml" />
+
+  <path id="build-classpath">
+    <fileset dir="${deploy.root}/wwwroot/WEB-INF/lib">
+      <include name="**/*"/>
+    </fileset>
+    <fileset refid="RunTimeLibraries.file" />
+    <fileset refid="BuildTimeLibraries.file" />
+  </path>
+  <path id="build-schema-classpath">
+    <fileset refid="RunTimeLibraries.file" />
+    <fileset refid="BuildTimeLibraries.file" />
+  </path>
+  <path id="test-classpath">
+    <pathelement path="${deploy.root}/conf"/>
+    <pathelement path="${deploy.root}/wwwroot/WEB-INF/classes"/>
+    <fileset dir="${deploy.root}">
+      <include name="wwwroot/WEB-INF/lib/*.jar"/>
+    </fileset>
+  </path>
+
+  <taskdef name="xmlbean" classname="org.apache.xmlbeans.impl.tool.XMLBean">
+    <classpath>
+      <pathelement location="${MARKETLIVE_LIBRARIES}/xmlbeans-2.4.0/lib/xbean.jar"/>
+      <pathelement location="${MARKETLIVE_LIBRARIES}/xmlbeans-2.4.0/lib/xmlpublic.jar"/>
+      <pathelement location="${MARKETLIVE_LIBRARIES}/xmlbeans-2.4.0/lib/jsr173_1.0_api.jar"/>
+    </classpath>
+  </taskdef>
+  <taskdef resource="net/sf/antcontrib/antlib.xml"
+           classpath="${MARKETLIVE_LIBRARIES}/ant-contrib-1.0b2/lib/ant-contrib.jar"/>
+
+  <!-- Add your customized implementation to siteConfig target defined in site.config.xml. -->
+  <!-- The Master Build script calls moduleMerge target -->
+  <target name="moduleMerge" description="Merges module specific code into core code" depends="siteConfig">
+  </target>
+
+  <target name="sourceAssemble" description="Assembles a version using site source code" >
+      <antcall target="sleep"/>
+      <touch>
+          <fileset dir="${basedir}"/>
+      </touch>
+    <if>
+      <available file="${deploy.root}/wwwroot/WEB-INF/classes" type="dir" />
+      <then>
+        <antcall target="sourceAssembleWebApp" inheritRefs="true" />
+      </then>
+    </if>
+
+    <!-- conf files -->
+    <copy toDir="${deploy.root}/conf" preservelastmodified="true" overwrite="true">
+      <fileset dir="${basedir}/conf">
+        <patternset refid="filter.${filter}" />
+      </fileset>
+    </copy>
+
+    <!-- Database stuff -->
+    <antcall target="mergeHbmFiles">
+      <param name="database" value="Database"/>
+    </antcall>
+    <mkdir dir="${build.root}/database"/>
+    <copy toDir="${build.root}/database" preservelastmodified="true">
+      <fileset dir="${basedir}/database">
+        <include name="**/*"/>
+        <present present="srconly" targetdir="${deploy.root}/database"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="sourceAssembleWebApp" description="Assembles a version using site source code"
+          depends="compile, mergeFiles">
+    <!--  Bin Files -->
+    <mkdir dir="${deploy.root}/bin"/>
+    <copy toDir="${deploy.root}/bin" preservelastmodified="true" overwrite="true">
+     <fileset dir="${basedir}/bin">
+       <patternset refid="filter.${filter}" />
+     </fileset>
+    </copy>
+
+    <!-- Hibernate files -->
+    <copy toDir="${deploy.root}/wwwroot/WEB-INF/classes" flatten="true" preservelastmodified="true">
+      <fileset dir="${basedir}/database/hbm">
+        <include name="**/*"/>
+        <present present="srconly" targetdir="${deploy.root}/wwwroot/WEB-INF/classes">
+          <mapper type="flatten"/>
+        </present>
+      </fileset>
+    </copy>
+    <!-- Also copy hbm files to IntegrationCLI -->
+    <copy toDir="${deploy.root}/IntegrationCLI/classes" flatten="true" preservelastmodified="true">
+      <fileset dir="${basedir}/database/hbm">
+        <include name="**/*"/>
+        <present present="srconly" targetdir="${deploy.root}/wwwroot/WEB-INF/classes">
+          <mapper type="flatten"/>
+        </present>
+      </fileset>
+    </copy>
+
+    <!--  Web Files -->
+    <copy toDir="${deploy.root}/wwwroot" preservelastmodified="true" overwrite="true">
+      <fileset dir="${basedir}/wwwroot">
+        <patternset refid="filter.${filter}" />
+        <exclude name="**/ApplicationResources*.properties"/>
+        <exclude name="**/LocalizedResources*.properties"/>
+        <exclude name="WEB-INF/web.xml"/>
+        <exclude name="WEB-INF/action-servlet.xml"/>
+        <exclude name="WEB-INF/applicationContext.xml"/>
+        <exclude name="WEB-INF/tiles/tiles-def.xml"/>
+        <exclude name="WEB-INF/validation.xml"/>
+        <exclude name="WEB-INF/validator-rules.xml"/>
+        <exclude name="WEB-INF/classes/biz.context.xml"/>
+        <exclude name="WEB-INF/classes/integration.context.xml"/>
+        <exclude name="WEB-INF/classes/entity.context.xml"/>
+        <exclude name="WEB-INF/classes/system.context.xml"/>
+        <exclude name="WEB-INF/classes/system.b2c.context.xml"/>
+        <exclude name="WEB-INF/classes/platform.scan.context.xml"/>
+        <exclude name="WEB-INF/classes/site.context.xml"/>
+        <exclude name="WEB-INF/classes/hibernate.cfg.xml"/>
+        <exclude name="WEB-INF/classes/ehcache.xml"/>
+        <exclude name="WEB-INF/struts-config.xml"/>
+        <exclude name="WEB-INF/struts-admin-config.xml"/>
+      </fileset>
+    </copy>
+
+    <if>
+      <not>
+        <istrue value="${maven}"/>
+      </not>
+      <then>
+        <copy toDir="${deploy.root}/wwwroot/WEB-INF/lib" flatten="true">
+          <fileset refid="RunTimeLibraries.file" />
+        </copy>
+      </then>
+    </if>
+  </target>
+
+  <target name="inc" description="Incremental Compile main source tree java files" depends="compile" >
+    <if>
+      <available file="${deploy.root}/wwwroot" type="dir" />
+      <then>
+        <copy toDir="${deploy.root}/wwwroot">
+          <fileset dir="${basedir}/wwwroot">
+            <include name="**/*.jsp" />
+          </fileset>
+        </copy>
+      </then>
+    </if>
+  </target>
+
+  <target name="compile" description="Compile main source tree java files">
+    <if>
+      <istrue value="${maven}"/>
+      <then>
+        <antcall target="mavenSchemaCompile"/>
+      </then>
+      <else>
+        <antcall target="antSchemaCompile"/>
+      </else>
+    </if>
+    <if>
+      <available file="${deploy.root}/wwwroot/WEB-INF/classes" type="dir" />
+      <then>
+        <!-- copy over client specific libs -->
+        <copy toDir="${deploy.root}/wwwroot/WEB-INF/lib" flatten="true" overwrite="true" >
+          <fileset dir="${basedir}/wwwroot/WEB-INF/lib">
+            <patternset refid="filter.${filter}" />
+          </fileset>
+        </copy>
+
+        <javac destdir="${deploy.root}/wwwroot/WEB-INF/classes" debug="true" deprecation="false" optimize="false" failonerror="true">
+          <src path="${basedir}/java"/>
+          <classpath refid="build-classpath"/>
+        </javac>
+      </then>
+    </if>
+  </target>
+
+  <!-- XMLBeans Schema Compile -->
+
+  <target name="mavenSchemaCompile" description="Regenerates marketlive-integration-xmlbeans XSD schema JAR">
+    <!-- check for schema files -->
+    <pathconvert property="has.schema.files" pathsep=" " setonempty="false">
+      <path>
+        <fileset dir="${basedir}/schema" includes="*.xsd"/>
+      </path>
+    </pathconvert>
+    <if>
+      <isset property="has.schema.files"/>
+      <then>
+        <!-- get deployed xmlbeans JAR file -->
+        <path id="xmlbeans.jar.path.id"> 
+          <fileset dir="${deploy.root}/wwwroot/WEB-INF/lib"> 
+            <include name="marketlive-integration-xmlbeans*.jar"/> 
+          </fileset> 
+        </path> 
+        <property name="xmlbeans.jar" refid="xmlbeans.jar.path.id"/>
+        <if>
+          <not>
+            <available file="${xmlbeans.jar}"/>
+          </not>
+          <then>
+            <fail message="Unable to find compiled schema JAR file, (${xmlbeans.jar})."/>
+          </then>
+        </if>
+        <echo message="Check schema, (${xmlbeans.jar})..."/>
+        <!-- check if deployed xmlbeans JAR file is up to date -->
+        <if>
+          <or>
+            <not>
+              <available file="${build.root}/${section}/.schema-deployed"/>
+            </not>
+            <not>
+              <uptodate targetfile="${xmlbeans.jar}">
+                <srcfiles dir="${basedir}/schema" includes="*.xsd"/>
+              </uptodate>
+            </not>
+          </or>
+          <then>
+            <echo message="Update out of date schema..."/>
+            <!-- unjar schema and config sources -->
+            <delete dir="${build.root}/${section}/tmp/schema"/>
+            <mkdir dir="${build.root}/${section}/tmp/schema"/>
+            <unjar src="${xmlbeans.jar}" dest="${build.root}/${section}/tmp/schema">
+              <patternset>
+                <include name="**/src/*.xsd"/>
+                <include name="xmlbeans.xsdconfig"/>
+              </patternset>
+              <mapper type="flatten"/>
+            </unjar>
+            <!-- merge custom xmlbeans into schema -->
+            <copy toDir="${build.root}/${section}/tmp/schema" overwrite="true" preservelastmodified="true">
+              <fileset dir="${basedir}/schema">
+                <include name="**/*.*"/>
+              </fileset>
+            </copy>
+            <!-- compile schema into new xmlbeans JAR file -->
+            <echo message="Compile schema..."/>
+            <property name="new.xmlbeans.jar" value="${build.root}/${section}/tmp/lib/marketlive-integration-xmlbeans.jar"/>
+            <delete dir="${build.root}/${section}/tmp/lib"/>
+            <mkdir dir="${build.root}/${section}/tmp/lib"/>
+            <xmlbean schema="${build.root}/${section}/tmp/schema"
+                     destfile="${new.xmlbeans.jar}"
+                     classgendir="${build.root}/${section}/tmp/genSrc/classes">
+              <classpath refid="build-schema-classpath"/>
+            </xmlbean>
+            <jar basedir="${build.root}/${section}/tmp/schema" includes="xmlbeans.xsdconfig" destfile="${new.xmlbeans.jar}" update="true"/>
+            <!-- deploy new xmlbeans JAR file, (replace original) -->
+            <echo message="Deploy schema, (in ${new.xmlbeans.jar})..."/>
+            <if>
+              <available file="${deploy.root}/IntegrationCLI" type="dir"/>
+              <then>
+                <delete>
+                  <fileset dir="${deploy.root}/IntegrationCLI/lib"> 
+                    <include name="marketlive-integration-xmlbeans*.jar"/> 
+                  </fileset> 
+                </delete>
+                <copy file="${new.xmlbeans.jar}" todir="${deploy.root}/IntegrationCLI/lib" overwrite="true"/>
+              </then>
+            </if>
+            <delete file="${xmlbeans.jar}"/>
+            <copy file="${new.xmlbeans.jar}" todir="${deploy.root}/wwwroot/WEB-INF/lib" overwrite="true"/>
+            <!-- mark schema deployed -->
+            <touch file="${build.root}/${section}/.schema-deployed"/>
+          </then>
+          <else>
+            <echo message="Schema up to date, (in ${xmlbeans.jar})."/>
+          </else>
+        </if>
+      </then>
+    </if>
+  </target>
+
+  <target name="antSchemaCompile" description="Generates compiled jar from XSD schemas"
+          depends="set-ant.schema.compile.notneeded" unless="ant.schema.compile.notneeded">
+    <xmlbean schema="${build.root}/Integration/XMLBeans/schema"
+      destfile="${build.root}/Integration/XMLBeans/lib/${name.schema}.jar"
+      classgendir="${build.root}/Integration/XMLBeans/genSrc/classes">
+      <classpath refid="build-schema-classpath"/>
+    </xmlbean>
+
+    <if>
+      <available file="${deploy.root}/IntegrationCLI" type="dir" />
+      <then>
+        <copy toDir="${deploy.root}/IntegrationCLI/lib" overwrite="true">
+          <fileset file="${build.root}/Integration/XMLBeans/lib/${name.schema}.jar" />
+        </copy>
+      </then>
+    </if>
+    <if>
+      <available file="${deploy.root}/wwwroot" type="dir" />
+      <then>
+        <copy toDir="${deploy.root}/wwwroot/WEB-INF/lib" overwrite="true">
+          <fileset file="${build.root}/Integration/XMLBeans/lib/${name.schema}.jar" />
+        </copy>
+      </then>
+    </if>
+  </target>
+
+  <target name="set-ant.schema.compile.notneeded">
+    <!-- copy custom beans to integration for compilation -->
+    <copy toDir="${build.root}/Integration/XMLBeans/schema" overwrite="false">
+      <fileset dir="${basedir}/schema">
+        <include name="**/*.*" />
+      </fileset>
+    </copy>
+
+    <uptodate property="ant.schema.compile.notneeded" targetfile="${build.root}/Integration/XMLBeans/lib/${name.schema}.jar" >
+      <srcfiles dir="${build.root}/Integration/XMLBeans/schema" includes="*.xsd"/>
+    </uptodate>
+  </target>
+
+  <target name="sourceAssembleTest" description="Assembles a version using site test source code"
+          depends="sourceAssemble, compileTest">
+  </target>
+
+  <target name="compileTest" description="Compiles the tests">
+    <mkdir dir="${deploy.root}/wwwroot/WEB-INF/classes"/>
+    <javac destdir="${deploy.root}/wwwroot/WEB-INF/classes" debug="true" deprecation="false" optimize="false" failonerror="true">
+      <src path="${basedir}/test"/>
+      <classpath refid="test-classpath"/>
+    </javac>
+
+    <copy todir="${deploy.root}/wwwroot/WEB-INF/classes" >
+      <fileset dir="${basedir}/test">
+        <exclude name="**/*.java" />
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="getExcludeList-source">
+  </target>
+
+  <target name="getExcludeList-release">
+  </target>
+
+  <target name="testRun-release">
+  </target>
+
+  <target name="testRun-source">
+  </target>
+
+  <target name="clean">
+    <if>
+      <istrue value="${maven}"/>
+      <then>
+        <delete dir="${build.root}/${section}/tmp"/>
+      </then>
+    </if>
+  </target>
+</project>

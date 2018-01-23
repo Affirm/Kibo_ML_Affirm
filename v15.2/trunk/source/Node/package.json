@@ -1,0 +1,24 @@
+{
+  "name": "marketlive-front-end-live-build",
+  "description": "a marketlive development tool for front-end live builds",
+  "version": "0.0.0",
+  "repository": {
+    "type": "svn",
+    "url": "http://pd-svn.marketlive.com/repo/marketlive/tools/front-end/live-build"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-available-tasks": "^0.5.1",
+    "grunt-concurrent": "^1.0.0",
+    "grunt-contrib-copy": "^0.7.0",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-exec": "^0.4.6",
+    "grunt-newer": "^0.8.0",
+    "less": "=2.0.0",
+    "load-grunt-tasks": "^1.0.0",
+    "time-grunt": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=0.10.33"
+  }
+}

@@ -1,0 +1,274 @@
+/*! media_query_lg.less | (c) 2014 MarketLive, Inc. | All Rights Reserved */
+
+.dl-mq-lg-mixin-site (@a) when (@a = true), (@a = LG_screenWidth) {
+    .make-column(@num) {
+        .make-lg-column(@num);
+    }
+	.ml-footer-copyright {
+		width:auto;
+		margin-left:15px;		
+	}
+	.ml-footer-social-connect,.ml-footer-bottom,.ml-footer-social-connect,.ml-footer-phone-number{
+		margin-left: 0%;
+	}
+	.ml-footer-social-links {
+		margin-left:-25%;
+	}
+	.ml-footer-privacy,.ml-footer-terms,.ml-footer-lastupdated,.ml-icon.ml-icon-global-cart,.bcFloat,.globalnav-kicker,.dl-calculator-boxes-needed,.ml-product-detail-olapic, .dl-footer-adchoices-optout{
+		display:block !important;
+	}
+	.ml-footer-phone-number {
+		a {
+			font-size:12px;
+		}
+	}
+	.ml-header-search-wrapper {
+		left:73.5%;
+		.ml-header-search-btn-wrapper {
+			left:99%!important;	
+		}
+	}
+	.ml-dir-header-category-sort {
+		padding-bottom:15px;
+		float:right;
+	}
+	.ml-grid-view-multi-column .ml-grid-view-item{
+		float:left;
+	}
+	.ml-password-recovery-left-container .control-label-content{
+		float: right;
+	}
+	.ml-product-detail-right-nav {
+		.ml-product-detail-table {
+			margin-top:0%!important;
+			.tableheader{
+				font-size:12px;
+				font-weight:300;
+				letter-spacing:0.2px;
+			}
+		}
+		#pinitBtnId {
+			float:right;
+			position:relative !important;
+		}
+		.tableitemheaderdivbg {
+			.tableitem {
+				font-size:12px;
+				margin-left: 0;
+			}
+		}
+	}
+	.ml-product-detail-info-tabs {
+		width:39%;
+		clear:both;
+	}
+	.ml-product-detdetail-olapic-container {
+		width:60%;
+		float:right;
+	}
+	#scene7RoomViewContainer,#fillSlot3,.dl-footer-social-button-container,.ml-header-global-cart i,.ml-product-detail-table-lg,.ml-info-container .nav-tabs,.ml-product-detail-buttons-lg {
+		display:block;
+	}
+	.addTobasket-sample-button{
+		margin-left:0;
+		margin-right:5px;
+		float:none;
+	}
+
+	.dl-itemtable-howmuch-container ,.ml-product-detdetail-olapic-container,.ml-header-account,.dl-footer-social-button-container .ml-product-detail-cart {
+	    display: block;
+	}
+	.ml-product-detail-left-nav {
+		.detailheader {	
+			h1 {
+			    margin-left: 0;
+                font-size: 18px !important; 
+			}
+		}
+		.coverage-info {
+			.regular-price {
+				color: #8B8178;
+				margin-left: 0;
+				margin-right: 20px;
+			}
+			.coverage-area {
+			    margin-left: 0px;
+			}
+		}	
+	}
+	.ml-product-nav-back-next-wrapper {
+		.pagination {
+			display:block;
+			border: none;
+			margin-right:83%;
+			float:right !important;
+		}
+	}
+	#olapic_specific_widget .olapic-slider {
+		margin-left: 30px;
+		width: 315px; 
+		margin-top: 0;
+	}
+	.ml-product-detail-table {
+		.ml-product-detail-content-section {
+			float:none;
+			width:100%;
+		}
+		margin-top:0;
+	}
+	.directoryCell {
+		width:23%;
+		display:inline-block;
+		a img {
+			width:160px !important;
+		}
+	}
+	.ml-basket-basketItemTableRow {
+		.ml-basket-priceeach,.ml-basket-totalprice,.ml-basket-qty,.ml-basket-product,.ml-basket-itemcode {
+			display:none;
+		}
+		.ml-basket-producttype {
+			margin-left: 0;
+		}
+	}
+	.ml-product-detail-buttons {
+		margin-bottom:0;
+		#free-sample-modal {
+			background:transparent url(/images/tileshop/en_us/global/globalgraphics/free-sample-pop-bg.png) no-repeat 0px 0px;
+			width:28.5%;
+			min-width: 543px;
+			.dl-free-sample-description {
+				width:100%!important;
+			}
+			
+			.dl-free-sample-buttons {
+				width: 280px;
+    			padding-top: 5px;
+    		}
+    		.dl-free-sample-product {
+    			img {
+					width: 85px;
+				}
+			}
+			.dl-free-sample-content {
+				.dl-free-sample-buttons {
+					input{
+						margin-top: 0px;
+					}
+				}
+			}
+			.close-reveal-modal {
+					right:0;
+					left: 78%;
+			}
+		}
+		.dl-free-sample-buttons {
+				input {
+					margin-top:25px;
+				}
+			}
+	}
+	.ml-footer-social-links-wrapper {
+		float:right;
+	}
+	#fillSlot4,.panel-heading,.xs-product-detail-buttons,.md-product-detail-buttons{
+		display:none;
+	}
+	.ml-footer-links-wrapper {
+		padding-left:0;
+	}
+	
+	
+	.tab-pane,.xs-product-detail-table,.xs-product-detail-olapic {
+		display:none !important;
+	}
+
+	.dl-content-category-dir {
+		max-width: 955px; 
+    	margin: 0 auto;
+    	
+		.pagination{
+			margin: 18px 0;
+		}
+		.ml-dir-header-category {
+			.directoryCategoryHeader {
+				width:50%;
+			}
+			.dl-dir-header-category-dropdown {
+				width: 30%;
+				float: right;
+				margin-top: 2%;
+			}
+		}
+		.ml-grid-view {
+			.reveal-modal{
+			    background: #eee url("/images/tileshop/en_us/global/globalgraphics/modal-gloss.png") no-repeat scroll -200px -80px;
+	    		border-radius: 5px;
+	    		left: 0;
+	    		padding: 30px 40px 34px;
+	    		position: absolute;
+	    		z-index: 101;
+				img{
+					margin-left: 0 !important;
+	    			width: 100%;
+				}
+			}
+			div[id*="contentGalleryId_"] {
+			   margin-left: 0 !important;
+	   			width: 100%;
+			}
+		}
+	}
+	
+	#s7ViewerContainer_roomView_container {
+		margin-left: 0;
+	}
+	
+	 #dl-storelocator-state-sticky-navbar.sticky-state-nav {
+        width: 990px;
+    }
+
+    .ml-accordion-checkout {
+    	.ml-accordion-annotations{
+			width: 34%;
+			position: fixed;
+			right: 1%;
+			top: 0%
+		}
+	}
+}
+@media only screen and (min-width:768px) and (max-width:1000px) {
+	.ml-home-page-wrapper {
+		.colstack{
+			width:50%;
+			float:left;
+			div{
+				width:49%;	
+			}
+		}
+		.captionWrapper.inspiration{
+			width:49.5%;
+			.ctitle{
+				font-size:25px !important;	
+			}
+		}
+		.captionWrapper.highlight{
+			width:32.4%;	
+		}
+	}
+	
+	.olapic .olapic-slider-header p{
+		font-size:12px !important;	
+	}
+	
+	div.promo{
+			font-size:45px !important;	
+		}	
+	
+	.featureSample{
+			width:auto !important;	
+		}
+	.pro-network .yt-player{
+			height:233px;	
+	}
+}

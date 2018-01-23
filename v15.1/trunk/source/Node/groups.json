@@ -1,0 +1,39 @@
+[
+    {
+        "groupName": "site",
+        "lessDir": "/sites/",
+        "cssFile": "site"
+    },
+    {
+        "groupName": "account"
+    },
+    {
+        "groupName": "category"
+    },
+    {
+        "groupName": "home"
+    },
+    {
+        "groupName": "product"
+    },
+    {
+        "groupName": "basket"
+    },
+    {
+        "groupName": "checkout"
+    },
+    {
+        "groupName": "search"
+    },
+    {
+        "groupName": "storelocator"
+    },
+    {
+        "groupName": "ancillary"
+    },
+    {
+        "groupName": "admin_kicker_support",
+        "lessDir": "/marketlive/global/",
+        "lessFile": "root.less"
+    }
+]

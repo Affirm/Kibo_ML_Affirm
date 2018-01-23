@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<!--  Called by the client build process to include this section into a distribution -->
+<project name="Site Specific Configurations" basedir="..">
+
+  <!--
+    Add your customized implementation to this target.
+    For modification to applicationContext.xml, action-servlet.xml, tiles-def.xml, validator-rules.xml,
+    validation.xml add your modifications to a separate file and include it where the default is defined. Except
+    for validation files, all files must be defined after the default to override things defined in earlier 
+    loaded files. In the commented examples below all the site specific definition files have '-site' in the 
+    file name.
+
+    For all other xml files such as ehcache.xml and hibernate.cfg.xml do not have an override mechanism, 
+    therefore you must explicitly add and replace things or replace the entire file with your version.
+  -->
+  <target name="siteConfig" description="Site specific configurations" >
+    <!--
+    <replace file="${deploy.root}/wwwroot/WEB-INF/web.xml"
+      token="/WEB-INF/applicationContext.xml"
+      value="/WEB-INF/applicationContext.xml,/WEB-INF/applicationContext-site.xml" />
+
+    <replace file="${deploy.root}/wwwroot/WEB-INF/struts-config.xml"
+      token="/WEB-INF/action-servlet.xml"
+      value="/WEB-INF/action-servlet.xml,/WEB-INF/action-servlet-site.xml" />
+
+    <replace file="${deploy.root}/wwwroot/WEB-INF/struts-config.xml"
+      token="/WEB-INF/search-tiles-defs.xml,/WEB-INF/tiles/tiles-def.xml"
+      value="/WEB-INF/search-tiles-defs.xml,/WEB-INF/tiles/tiles-def.xml,/WEB-INF/tiles/tiles-def-site.xml" />
+
+    <replace file="${deploy.root}/wwwroot/WEB-INF/struts-config.xml"
+      token="/WEB-INF/validator-rules.xml,/WEB-INF/validation.xml"
+      value="/WEB-INF/validator-rules-site.xml,/WEB-INF/validation-site.xml,/WEB-INF/validator-rules.xml,/WEB-INF/validation.xml" />
+    -->
+  </target>
+
+</project>
